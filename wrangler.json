@@ -1,7 +1,9 @@
 {
 	"name": "astro-blog-starter-template",
 	"compatibility_date": "2025-10-08",
-	"compatibility_flags": ["nodejs_compat"],
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
 	"main": "./dist/_worker.js/index.js",
 	"assets": {
 		"directory": "./dist",
@@ -10,8 +12,8 @@
 	"d1_databases": [
 		{
 			"binding": "DB",
-			"database_name": "ecommerce_d1",
-			"database_id": "local-ecommerce-d1"
+			"database_name": "navanusa",
+			"database_id": "75d7e747-80a5-476b-8e98-20ab62328f90"
 		}
 	],
 	"observability": {
