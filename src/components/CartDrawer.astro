@@ -4,7 +4,7 @@
 <!-- Cart Slide-Over Drawer -->
 <div id="cart-drawer" class="fixed inset-0 z-50 overflow-hidden pointer-events-none transition-all duration-300 opacity-0 invisible" aria-labelledby="cart-title" role="dialog" aria-modal="true">
   <!-- Backdrop -->
-  <div id="cart-backdrop" class="fixed inset-0 bg-black/50 backdrop-blur-xs transition-opacity duration-300 opacity-0"></div>
+  <div id="cart-backdrop" class="fixed inset-0 transition-opacity duration-300 opacity-0" style="background-color: rgba(0, 0, 0, 0.5);"></div>
 
   <div class="fixed inset-y-0 right-0 max-w-full flex pl-10">
     <div id="cart-panel" class="w-screen max-w-md bg-white shadow-2xl flex flex-col pointer-events-auto transform translate-x-full transition-transform duration-300 ease-in-out">
@@ -49,7 +49,7 @@
       </div>
 
       <!-- Drawer Footer -->
-      <div id="cart-footer" class="p-6 border-t border-gray-100 bg-gray-50/50 space-y-4">
+      <div id="cart-footer" class="p-6 border-t border-gray-100 bg-gray-50 space-y-4">
         <div class="flex items-center justify-between text-base font-medium text-gray-900">
           <span>Subtotal</span>
           <span id="cart-subtotal" class="text-lg font-bold">Rp 0</span>
@@ -70,7 +70,6 @@
 </div>
 
 <script is:inline>
-  // Script untuk Cart Management di Client
   (function () {
     const STORAGE_KEY = 'nordic_cart_items';
 
@@ -117,7 +116,7 @@
         }
         saveCart(items);
         window.NordicCart.open();
-        window.NordicToast?.show(`"${product.name}" ditambahkan ke keranjang.`);
+        window.NordicToast?.show(`"${product.name}" ditambahkan ke keranjang`, 'cart');
       },
       updateQty: function (id, delta) {
         let items = getCart();
@@ -237,7 +236,6 @@
 
       subtotalEl.textContent = formatIDR(subtotal);
 
-      // Event delegation for items
       container.querySelectorAll('.cart-qty-btn').forEach((btn) => {
         btn.addEventListener('click', (e) => {
           e.stopPropagation();
@@ -256,7 +254,6 @@
       });
     }
 
-    // Attach DOM Events
     document.addEventListener('DOMContentLoaded', () => {
       renderCartUI();
 

@@ -4,7 +4,7 @@
 <!-- Wishlist Slide-Over Drawer -->
 <div id="wishlist-drawer" class="fixed inset-0 z-50 overflow-hidden pointer-events-none transition-all duration-300 opacity-0 invisible" aria-labelledby="wishlist-title" role="dialog" aria-modal="true">
   <!-- Backdrop -->
-  <div id="wishlist-backdrop" class="fixed inset-0 bg-black/50 backdrop-blur-xs transition-opacity duration-300 opacity-0"></div>
+  <div id="wishlist-backdrop" class="fixed inset-0 transition-opacity duration-300 opacity-0" style="background-color: rgba(0, 0, 0, 0.5);"></div>
 
   <div class="fixed inset-y-0 right-0 max-w-full flex pl-10">
     <div id="wishlist-panel" class="w-screen max-w-md bg-white shadow-2xl flex flex-col pointer-events-auto transform translate-x-full transition-transform duration-300 ease-in-out">
@@ -53,7 +53,6 @@
 </div>
 
 <script is:inline>
-  // Script untuk Wishlist Management di Client
   (function () {
     const STORAGE_KEY = 'nordic_wishlist_items';
 
@@ -90,7 +89,7 @@
         if (exists) {
           items = items.filter((item) => item.id !== product.id);
           saveWishlist(items);
-          window.NordicToast?.show(`"${product.name}" dihapus dari wishlist.`);
+          window.NordicToast?.show(`"${product.name}" dihapus dari wishlist`, 'wishlist');
           return false;
         } else {
           items.push({
@@ -102,7 +101,7 @@
             stock: product.stock || 99,
           });
           saveWishlist(items);
-          window.NordicToast?.show(`"${product.name}" ditambahkan ke wishlist.`);
+          window.NordicToast?.show(`"${product.name}" ditambahkan ke wishlist`, 'wishlist');
           return true;
         }
       },
@@ -161,10 +160,10 @@
         if (icon) {
           if (isFavorited) {
             icon.classList.add('text-red-500', 'fill-current');
-            icon.classList.remove('text-gray-500');
+            icon.classList.remove('text-gray-500', 'fill-none');
           } else {
-            icon.classList.remove('text-red-500');
-            icon.classList.add('text-gray-500');
+            icon.classList.remove('text-red-500', 'fill-current');
+            icon.classList.add('text-gray-500', 'fill-none');
           }
         }
       });
@@ -231,7 +230,6 @@
       });
     }
 
-    // Attach DOM Events
     document.addEventListener('DOMContentLoaded', () => {
       renderWishlistUI();
 

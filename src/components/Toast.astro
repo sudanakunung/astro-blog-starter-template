@@ -1,39 +1,74 @@
 ---
 ---
 
-<!-- Toast Notification Container -->
-<div id="nordic-toast-container" class="fixed bottom-5 right-5 z-60 space-y-3 pointer-events-none">
-  <!-- Toast messages will be injected here -->
+<!-- Toast Notification Container (Top-Center Floating) -->
+<div
+  id="nordic-toast-container"
+  class="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 pointer-events-none flex flex-col items-center"
+  style="max-width: 90vw; width: 420px;"
+>
+  <!-- Toast message will be injected here -->
 </div>
+
+<style>
+  .nordic-toast-item {
+    background-color: #111827;
+    color: #ffffff;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
+    border: 1px solid #374151;
+    border-radius: 9999px;
+    padding: 10px 20px;
+    font-size: 13px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    pointer-events: auto;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  .nordic-toast-item.show {
+    transform: translateY(0);
+    opacity: 1;
+  }
+</style>
 
 <script is:inline>
   window.NordicToast = {
-    show: function (message, duration = 3000) {
+    timeoutId: null,
+    show: function (message, type = 'success', duration = 2500) {
       const container = document.getElementById('nordic-toast-container');
       if (!container) return;
 
+      // Clear any existing toast so they don't stack up
+      container.innerHTML = '';
+      if (this.timeoutId) clearTimeout(this.timeoutId);
+
       const toast = document.createElement('div');
-      toast.className =
-        'bg-black/95 text-white px-4 py-3 rounded shadow-xl text-sm flex items-center space-x-3 pointer-events-auto transform translate-y-4 opacity-0 transition-all duration-300 backdrop-blur-sm border border-gray-800';
+      toast.className = 'nordic-toast-item';
+
+      const iconSvg =
+        type === 'wishlist'
+          ? `<svg class="w-4 h-4 text-red-400 shrink-0 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5C2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 C19.58 3,22 5.42,22 8.5c0,3.78-3.4,6.86-8.55,11.54L12 21.35z"/></svg>`
+          : `<svg class="w-4 h-4 text-green-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>`;
+
       toast.innerHTML = `
-        <svg class="w-4 h-4 text-green-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-        </svg>
-        <span>${message}</span>
+        ${iconSvg}
+        <span class="truncate">${message}</span>
       `;
 
       container.appendChild(toast);
 
       // Trigger enter animation
       requestAnimationFrame(() => {
-        toast.classList.remove('translate-y-4', 'opacity-0');
-        toast.classList.add('translate-y-0', 'opacity-100');
+        toast.classList.add('show');
       });
 
-      // Remove after duration
-      setTimeout(() => {
-        toast.classList.add('opacity-0', 'translate-y-2');
-        setTimeout(() => toast.remove(), 300);
+      // Auto dismiss
+      this.timeoutId = setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 250);
       }, duration);
     },
   };
