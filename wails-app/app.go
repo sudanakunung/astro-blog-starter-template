@@ -13,16 +13,18 @@ import (
 
 // App struct
 type App struct {
-	ctx           context.Context
-	syncService   *services.SyncService
-	configStorage *storage.ConfigStorage
+	ctx             context.Context
+	syncService     *services.SyncService
+	settingsService *services.SettingsService
+	configStorage   *storage.ConfigStorage
 }
 
 // NewApp creates a new App application struct
 func NewApp() *App {
 	return &App{
-		syncService:   services.NewSyncService(),
-		configStorage: storage.NewConfigStorage(),
+		syncService:     services.NewSyncService(),
+		settingsService: services.NewSettingsService(),
+		configStorage:   storage.NewConfigStorage(),
 	}
 }
 
@@ -80,10 +82,37 @@ func (a *App) TriggerRebuild() (string, error) {
 	return a.syncService.TriggerRebuild(cfg)
 }
 
+// SaveStoreSettings mengirim kredensial Mayar & Biteship ke D1 via Worker (dienkripsi di server)
+func (a *App) SaveStoreSettings(settings models.StoreSettings) error {
+	cfg, err := a.configStorage.Load()
+	if err != nil {
+		return err
+	}
+	return a.settingsService.SaveStoreSettings(settings, cfg)
+}
+
+// GetStoreSettingsStatus mengambil status masked dari D1
+func (a *App) GetStoreSettingsStatus() (*models.StoreSettingsStatus, error) {
+	cfg, err := a.configStorage.Load()
+	if err != nil {
+		return nil, err
+	}
+	return a.settingsService.GetStoreSettingsStatus(cfg)
+}
+
+// TestMayarConnection menguji API key Mayar
+func (a *App) TestMayarConnection(apiKey string) (models.ConnectionTestResult, error) {
+	return a.settingsService.TestMayarConnection(apiKey)
+}
+
+// TestBiteshipConnection menguji API key Biteship
+func (a *App) TestBiteshipConnection(apiKey string) (models.ConnectionTestResult, error) {
+	return a.settingsService.TestBiteshipConnection(apiKey)
+}
+
 // GenerateSlug helper to create URL-friendly slug from title/name
 func (a *App) GenerateSlug(name string) string {
 	slug := strings.ToLower(name)
-	// Replace non-alphanumeric with hyphen
 	reg := regexp.MustCompile(`[^a-z0-9]+`)
 	slug = reg.ReplaceAllString(slug, "-")
 	slug = strings.Trim(slug, "-")
