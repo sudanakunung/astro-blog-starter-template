@@ -210,3 +210,10 @@ dist
 
 dist/
 seed.sql
+
+### Wails App ###
+wails-app/build/bin/
+wails-app/build/windows/*.syso
+wails-app/*.exe
+wails-app/config.json
+wails-app/frontend/node_modules/

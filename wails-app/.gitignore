@@ -1,0 +1,29 @@
+# ==============================================================================
+# Wails Application - Git Ignore
+# ==============================================================================
+
+# Wails build outputs & compiled executables
+build/bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Windows resource syso files generated during build
+build/windows/*.syso
+
+# Local user configuration / credentials cache
+config.json
+*.local.json
+
+# Go test binaries & coverage outputs
+*.test
+*.out
+*.prof
+
+# Frontend dependencies & caches (if installed)
+frontend/node_modules/
+frontend/.cache/
+frontend/npm-debug.log*
+frontend/yarn-error.log*

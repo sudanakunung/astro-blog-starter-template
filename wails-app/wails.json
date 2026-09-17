@@ -1,0 +1,16 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "wails-app",
+  "outputfilename": "store-manager-sync",
+  "frontend:dir": "frontend/dist",
+  "author": {
+    "name": "Store Developer",
+    "email": "dev@example.com"
+  },
+  "info": {
+    "companyName": "Navanusa",
+    "productName": "Store Manager & Cloudflare Sync",
+    "productVersion": "1.0.0",
+    "copyright": "Copyright 2026"
+  }
+}

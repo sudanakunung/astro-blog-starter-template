@@ -1,0 +1,1222 @@
+---
+export const prerender = false;
+// src/pages/admin/index.astro
+---
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard - Astro & D1 Product Sync</title>
+  <style>
+    /* Pure self-contained CSS - No external CDN dependency */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #f8fafc;
+      color: #1e293b;
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Navbar */
+    .navbar {
+      background-color: #ffffff;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 0.875rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-icon {
+      width: 2.25rem;
+      height: 2.25rem;
+      border-radius: 0.625rem;
+      background-color: #4f46e5;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.125rem;
+      box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.25);
+    }
+
+    .brand-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .brand-sub {
+      font-size: 0.75rem;
+      color: #64748b;
+    }
+
+    .badge-web {
+      font-size: 0.625rem;
+      font-weight: 700;
+      background-color: #e0e7ff;
+      color: #4338ca;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+    }
+
+    /* Layout */
+    .container {
+      max-width: 1280px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 1.5rem;
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (min-width: 1024px) {
+      .container {
+        grid-template-columns: 5fr 7fr;
+      }
+    }
+
+    .card {
+      background-color: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 0.75rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .card-sub {
+      font-size: 0.75rem;
+      color: #64748b;
+    }
+
+    /* Forms */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.875rem;
+    }
+
+    .col-span-2 {
+      grid-column: span 2 / span 2;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #334155;
+      margin-bottom: 0.25rem;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      border-radius: 0.5rem;
+      border: 1px solid #cbd5e1;
+      background-color: #ffffff;
+      color: #0f172a;
+      font-size: 0.875rem;
+      outline: none;
+      transition: all 0.15s ease-in-out;
+    }
+
+    .input-field:focus {
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+    }
+
+    .input-mono {
+      font-family: ui-monospace, Menlo, Consolas, monospace;
+    }
+
+    .currency-wrap {
+      position: relative;
+    }
+
+    .currency-prefix {
+      position: absolute;
+      left: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #64748b;
+    }
+
+    .input-currency {
+      padding-left: 2.25rem;
+      font-family: ui-monospace, Menlo, monospace;
+      font-weight: 700;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.375rem;
+      padding: 0.5rem 0.875rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      font-size: 0.8125rem;
+      text-decoration: none;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.15s ease-in-out;
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background-color: #4f46e5;
+      color: #ffffff;
+      box-shadow: 0 2px 4px rgba(79, 70, 229, 0.2);
+    }
+    .btn-primary:hover:not(:disabled) {
+      background-color: #4338ca;
+    }
+
+    .btn-secondary {
+      background-color: #ffffff;
+      border-color: #e2e8f0;
+      color: #334155;
+    }
+    .btn-secondary:hover:not(:disabled) {
+      background-color: #f8fafc;
+      border-color: #cbd5e1;
+    }
+
+    .btn-warning {
+      background-color: #fef3c7;
+      border-color: #fde68a;
+      color: #92400e;
+    }
+    .btn-warning:hover:not(:disabled) {
+      background-color: #fde68a;
+    }
+
+    .btn-dark {
+      background-color: #0f172a;
+      color: #ffffff;
+    }
+    .btn-dark:hover:not(:disabled) {
+      background-color: #1e293b;
+    }
+
+    .btn-text {
+      background: none;
+      border: none;
+      color: #4f46e5;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.25rem 0.5rem;
+      cursor: pointer;
+      border-radius: 0.375rem;
+    }
+    .btn-text:hover {
+      background-color: #eef2ff;
+    }
+
+    .btn-sync-large {
+      width: 100%;
+      padding: 0.75rem;
+      font-size: 0.875rem;
+    }
+
+    /* Badge */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.25rem 0.625rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background-color: #eef2ff;
+      border: 1px solid #e0e7ff;
+      color: #4338ca;
+    }
+
+    .badge-dot {
+      width: 0.5rem;
+      height: 0.5rem;
+      border-radius: 9999px;
+      background-color: #10b981;
+    }
+
+    /* Sync Timeline Log */
+    .sync-log-box {
+      margin-top: 0.75rem;
+      padding: 0.875rem;
+      background-color: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.75rem;
+      font-size: 0.75rem;
+    }
+
+    .sync-log-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 700;
+      color: #1e293b;
+      padding-bottom: 0.375rem;
+      border-bottom: 1px solid #e2e8f0;
+      margin-bottom: 0.5rem;
+    }
+
+    .step-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.625rem;
+      margin-top: 0.5rem;
+    }
+
+    .step-indicator {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.35rem;
+      height: 1.35rem;
+      border-radius: 9999px;
+      background-color: #e2e8f0;
+      color: #475569;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .step-success {
+      background-color: #10b981 !important;
+      color: #ffffff !important;
+    }
+
+    .step-error {
+      background-color: #ef4444 !important;
+      color: #ffffff !important;
+    }
+
+    .step-loading {
+      background-color: #3b82f6 !important;
+      color: #ffffff !important;
+      animation: pulse 1.5s infinite;
+    }
+
+    /* Product Item List */
+    .product-list-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      overflow-y: auto;
+      max-height: calc(100vh - 220px);
+      padding-right: 0.25rem;
+    }
+
+    .product-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0.875rem;
+      background-color: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.75rem;
+      transition: all 0.15s ease;
+    }
+
+    .product-item:hover {
+      border-color: #cbd5e1;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+    }
+
+    .product-thumb {
+      width: 3.5rem;
+      height: 3.5rem;
+      border-radius: 0.5rem;
+      object-fit: cover;
+      border: 1px solid #f1f5f9;
+      flex-shrink: 0;
+    }
+
+    .product-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .product-name-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .product-name {
+      font-size: 0.8125rem;
+      font-weight: 700;
+      color: #0f172a;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .product-price {
+      font-family: ui-monospace, Menlo, monospace;
+      font-size: 0.8125rem;
+      font-weight: 800;
+      color: #4f46e5;
+      margin-top: 0.125rem;
+    }
+
+    .product-meta {
+      font-size: 0.6875rem;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      margin-top: 0.125rem;
+    }
+
+    .status-pill {
+      font-size: 0.625rem;
+      font-weight: 700;
+      padding: 0.125rem 0.375rem;
+      border-radius: 9999px;
+    }
+    .status-active {
+      background-color: #d1fae5;
+      color: #047857;
+    }
+    .status-inactive {
+      background-color: #f1f5f9;
+      color: #64748b;
+    }
+
+    /* Modal Overlay */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .modal-card {
+      background-color: #ffffff;
+      border-radius: 1rem;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+      max-width: 32rem;
+      width: 100%;
+      padding: 1.5rem;
+      border: 1px solid #f1f5f9;
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .modal-close {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 0.5rem;
+      border: none;
+      background: none;
+      color: #94a3b8;
+      font-size: 1.25rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-close:hover {
+      background-color: #f1f5f9;
+      color: #334155;
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid #f1f5f9;
+      margin-top: 1rem;
+    }
+
+    /* Toast */
+    .toast-container {
+      position: fixed;
+      bottom: 1.25rem;
+      right: 1.25rem;
+      z-index: 60;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      pointer-events: none;
+    }
+
+    .toast-item {
+      padding: 0.625rem 1rem;
+      border-radius: 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #ffffff;
+      background-color: #0f172a;
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .toast-error {
+      background-color: #ef4444;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .spin {
+      animation: spin 1s linear infinite;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+  <!-- Toast Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Top Navbar -->
+  <header class="navbar">
+    <div class="brand">
+      <div class="brand-icon">A</div>
+      <div>
+        <div class="brand-title">
+          <span>Admin Store & Sync</span>
+          <span class="badge-web">Web Edition</span>
+        </div>
+        <p class="brand-sub">Cloudflare D1 Real-Time DB &bull; Pages SSG Rebuild</p>
+      </div>
+    </div>
+
+    <!-- Quick Status & Action Buttons -->
+    <div class="nav-actions">
+      <a href="/" target="_blank" class="btn btn-secondary" title="Buka Toko / Storefront">
+        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+        <span>Lihat Toko</span>
+      </a>
+
+      <div id="store-badge" class="badge" style="cursor: pointer;" title="Klik untuk ubah pengaturan">
+        <span class="badge-dot"></span>
+        <span id="badge-store-name">Store: navanusa</span>
+      </div>
+
+      <button id="btn-refresh" class="btn btn-secondary">
+        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+        <span>Refresh</span>
+      </button>
+
+      <button id="btn-rebuild" class="btn btn-warning">
+        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+        <span>Rebuild Astro</span>
+      </button>
+
+      <button id="btn-settings-open" class="btn btn-dark">
+        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+        <span>Settings</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content Layout -->
+  <main class="container">
+    <!-- Left Column: Product Form & 2-Step Sync -->
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <h2 id="form-title" class="card-title">Tambah / Edit Produk</h2>
+          <p class="card-sub">Otomatis update ke D1 & memicu rebuild Astro</p>
+        </div>
+        <button id="btn-reset-form" type="button" class="btn-text">
+          + Form Baru
+        </button>
+      </div>
+
+      <form id="product-form" style="display: flex; flex-direction: column; gap: 0.875rem;">
+        <input type="hidden" id="p-id" />
+
+        <div class="form-grid">
+          <div class="form-group col-span-2">
+            <label class="form-label">Nama Produk <span style="color: #ef4444;">*</span></label>
+            <input type="text" id="p-name" required placeholder="Contoh: Premium Linen Shirt" class="input-field" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">URL Slug (Auto) <span style="color: #ef4444;">*</span></label>
+            <input type="text" id="p-slug" required placeholder="premium-linen-shirt" class="input-field input-mono" style="font-size: 0.75rem;" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Status Produk</label>
+            <select id="p-status" class="input-field">
+              <option value="1">Aktif (Tampil di Toko)</option>
+              <option value="0">Nonaktif (Sembunyikan)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Harga (Rupiah) <span style="color: #ef4444;">*</span></label>
+            <div class="currency-wrap">
+              <span class="currency-prefix">Rp</span>
+              <input type="number" id="p-price" required min="0" placeholder="150000" class="input-field input-currency" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Stok Tersedia <span style="color: #ef4444;">*</span></label>
+            <input type="number" id="p-stock" required min="0" placeholder="50" class="input-field input-mono" style="font-weight: 700;" />
+          </div>
+
+          <div class="form-group col-span-2">
+            <label class="form-label">Berat (Gram) - Ongkir Biteship</label>
+            <input type="number" id="p-weight" min="0" placeholder="250" class="input-field input-mono" />
+          </div>
+
+          <div class="form-group col-span-2">
+            <label class="form-label">URL Foto Produk</label>
+            <input type="url" id="p-image" placeholder="https://images.unsplash.com/..." class="input-field input-mono" style="font-size: 0.75rem;" />
+            <div id="image-preview-container" class="hidden" style="margin-top: 0.5rem; display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem; background-color: #f8fafc; border-radius: 0.5rem; border: 1px solid #e2e8f0;">
+              <img id="image-preview" src="" alt="Preview" style="width: 3.5rem; height: 3.5rem; object-fit: cover; border-radius: 0.375rem; border: 1px solid #cbd5e1;" />
+              <div style="font-size: 0.75rem; color: #64748b;">Preview Foto Produk</div>
+            </div>
+          </div>
+
+          <div class="form-group col-span-2">
+            <label class="form-label">Deskripsi Produk</label>
+            <textarea id="p-desc" rows="3" placeholder="Deskripsi lengkap bahan, varian, ukuran..." class="input-field" style="font-size: 0.75rem; resize: vertical;"></textarea>
+          </div>
+        </div>
+
+        <!-- Sync Button -->
+        <div style="padding-top: 0.5rem; border-top: 1px solid #f1f5f9;">
+          <button type="submit" id="btn-sync" class="btn btn-primary btn-sync-large">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+            <span>Sync ke D1 & Rebuild Astro</span>
+          </button>
+
+          <!-- Sync Progress Timeline Box -->
+          <div id="sync-log-box" class="sync-log-box hidden">
+            <div class="sync-log-header">
+              <span style="display: flex; align-items: center; gap: 0.375rem;">
+                <span class="badge-dot" style="background-color: #4f46e5;"></span>
+                <span>Alur Sinkronisasi 2-Langkah:</span>
+              </span>
+              <span id="sync-timer" style="color: #64748b; font-family: monospace;">0.0s</span>
+            </div>
+
+            <!-- Step 1 -->
+            <div id="step-d1" class="step-row">
+              <span class="step-indicator">1</span>
+              <div>
+                <div style="font-weight: 700; color: #0f172a;">Langkah 1: Simpan ke Cloudflare D1</div>
+                <div id="step-d1-status" style="color: #64748b; font-size: 0.6875rem; margin-top: 0.125rem;">Menunggu...</div>
+              </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div id="step-hook" class="step-row">
+              <span class="step-indicator">2</span>
+              <div>
+                <div style="font-weight: 700; color: #0f172a;">Langkah 2: Trigger Deploy Hook Astro</div>
+                <div id="step-hook-status" style="color: #64748b; font-size: 0.6875rem; margin-top: 0.125rem;">Menunggu...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <!-- Right Column: Database Products List -->
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <h2 class="card-title">Produk di Database (Cloudflare D1)</h2>
+          <p class="card-sub">Data live produk yang tersimpan di database</p>
+        </div>
+        <span id="product-count" class="badge">
+          0 Produk
+        </span>
+      </div>
+
+      <div id="product-list" class="product-list-container">
+        <div style="padding: 2.5rem; text-align: center; color: #94a3b8; font-size: 0.75rem; background-color: #f8fafc; border-radius: 0.75rem; border: 1px dashed #cbd5e1;">
+          <div class="spin" style="width: 1.25rem; height: 1.25rem; border: 2px solid #4f46e5; border-top-color: transparent; border-radius: 9999px; margin-bottom: 0.5rem;"></div>
+          <div>Memuat data produk dari database...</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Settings Modal -->
+  <div id="settings-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <h3 style="font-size: 1rem; font-weight: 700; color: #0f172a;">Pengaturan Sinkronisasi & API</h3>
+          <p style="font-size: 0.75rem; color: #64748b;">Konfigurasi endpoint dan token Cloudflare</p>
+        </div>
+        <button id="btn-settings-close" type="button" class="modal-close">&times;</button>
+      </div>
+
+      <form id="settings-form" style="display: flex; flex-direction: column; gap: 0.875rem; padding-top: 1rem;">
+        <div class="form-group">
+          <label class="form-label">Store ID <span style="color: #ef4444;">*</span></label>
+          <input type="text" id="cfg-store-id" required placeholder="navanusa" class="input-field" />
+          <p style="font-size: 0.6875rem; color: #64748b; margin-top: 0.25rem;">ID unik toko di database D1 multi-tenant.</p>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Nama Toko</label>
+          <input type="text" id="cfg-store-name" placeholder="Navanusa Store" class="input-field" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Worker / API Base URL <span style="color: #ef4444;">*</span></label>
+          <input type="url" id="cfg-worker-url" required placeholder="http://localhost:4321 atau https://your-domain.pages.dev" class="input-field input-mono" style="font-size: 0.75rem;" />
+          <p style="font-size: 0.6875rem; color: #64748b; margin-top: 0.25rem;">Base URL endpoint API <code>/api/products</code>.</p>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Internal API Token (Bearer Token)</label>
+          <input type="password" id="cfg-token" placeholder="INTERNAL_API_TOKEN" class="input-field input-mono" style="font-size: 0.75rem;" />
+          <p style="font-size: 0.6875rem; color: #64748b; margin-top: 0.25rem;">Token rahasia yang di-set di <code>wrangler secret put INTERNAL_API_TOKEN</code>.</p>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Cloudflare Pages Deploy Hook URL</label>
+          <input type="url" id="cfg-deploy-hook" placeholder="https://api.cloudflare.com/client/v4/pages/webhooks/deploy_hooks/..." class="input-field input-mono" style="font-size: 0.75rem;" />
+          <p style="font-size: 0.6875rem; color: #64748b; margin-top: 0.25rem;">Didapat dari Cloudflare Pages: <em>Settings &rarr; Builds &rarr; Deploy hooks</em>.</p>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" id="btn-settings-cancel" class="btn btn-secondary">Batal</button>
+          <button type="submit" class="btn btn-primary">Simpan Pengaturan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script is:inline>
+    // State management in localStorage
+    const STORAGE_KEY = 'astro_sync_config';
+    let currentConfig = {
+      store_id: 'navanusa',
+      store_name: 'Navanusa Store',
+      worker_url: window.location.origin,
+      internal_token: '',
+      deploy_hook_url: ''
+    };
+
+    let productsList = [];
+
+    // DOM Elements
+    const form = document.getElementById('product-form');
+    const pId = document.getElementById('p-id');
+    const pName = document.getElementById('p-name');
+    const pSlug = document.getElementById('p-slug');
+    const pStatus = document.getElementById('p-status');
+    const pPrice = document.getElementById('p-price');
+    const pStock = document.getElementById('p-stock');
+    const pWeight = document.getElementById('p-weight');
+    const pImage = document.getElementById('p-image');
+    const pDesc = document.getElementById('p-desc');
+    const imagePreview = document.getElementById('image-preview');
+    const imagePreviewContainer = document.getElementById('image-preview-container');
+
+    const btnSync = document.getElementById('btn-sync');
+    const btnResetForm = document.getElementById('btn-reset-form');
+    const btnRefresh = document.getElementById('btn-refresh');
+    const btnRebuild = document.getElementById('btn-rebuild');
+    const formTitle = document.getElementById('form-title');
+
+    const syncLogBox = document.getElementById('sync-log-box');
+    const stepD1 = document.getElementById('step-d1');
+    const stepD1Status = document.getElementById('step-d1-status');
+    const stepHook = document.getElementById('step-hook');
+    const stepHookStatus = document.getElementById('step-hook-status');
+    const syncTimer = document.getElementById('sync-timer');
+
+    const productListEl = document.getElementById('product-list');
+    const productCountBadge = document.getElementById('product-count');
+    const badgeStoreName = document.getElementById('badge-store-name');
+    const storeBadge = document.getElementById('store-badge');
+
+    // Settings Modal Elements
+    const settingsModal = document.getElementById('settings-modal');
+    const btnSettingsOpen = document.getElementById('btn-settings-open');
+    const btnSettingsClose = document.getElementById('btn-settings-close');
+    const btnSettingsCancel = document.getElementById('btn-settings-cancel');
+    const settingsForm = document.getElementById('settings-form');
+    const cfgStoreId = document.getElementById('cfg-store-id');
+    const cfgStoreName = document.getElementById('cfg-store-name');
+    const cfgWorkerUrl = document.getElementById('cfg-worker-url');
+    const cfgToken = document.getElementById('cfg-token');
+    const cfgDeployHook = document.getElementById('cfg-deploy-hook');
+    const toastContainer = document.getElementById('toast-container');
+
+    function showToast(message, type = 'success') {
+      const toast = document.createElement('div');
+      toast.className = `toast-item ${type === 'error' ? 'toast-error' : ''}`;
+      const icon = type === 'success' ? '✓' : '⚠️';
+      toast.innerHTML = `<span>${icon}</span><span>${message}</span>`;
+      toastContainer.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    function generateUUID() {
+      if (crypto.randomUUID) return crypto.randomUUID();
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
+
+    function generateSlug(text) {
+      return text.toString().toLowerCase()
+        .replace(/\s+/g, '-')
+        .replace(/[^\w\-]+/g, '')
+        .replace(/\-\-+/g, '-')
+        .replace(/^-+/, '')
+        .replace(/-+$/, '');
+    }
+
+    function loadConfig() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          currentConfig = { ...currentConfig, ...JSON.parse(saved) };
+        }
+      } catch (e) {
+        console.warn('Failed to load local config:', e);
+      }
+
+      badgeStoreName.textContent = `Store: ${currentConfig.store_id || 'navanusa'}`;
+      cfgStoreId.value = currentConfig.store_id || '';
+      cfgStoreName.value = currentConfig.store_name || '';
+      cfgWorkerUrl.value = currentConfig.worker_url || window.location.origin;
+      cfgToken.value = currentConfig.internal_token || '';
+      cfgDeployHook.value = currentConfig.deploy_hook_url || '';
+    }
+
+    function saveConfig(cfg) {
+      currentConfig = cfg;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(cfg));
+      badgeStoreName.textContent = `Store: ${currentConfig.store_id || 'navanusa'}`;
+    }
+
+    async function loadProducts() {
+      productListEl.innerHTML = `
+        <div style="padding: 2rem; text-align: center; color: #94a3b8; font-size: 0.75rem; background-color: #f8fafc; border-radius: 0.75rem; border: 1px dashed #cbd5e1;">
+          <div class="spin" style="width: 1.25rem; height: 1.25rem; border: 2px solid #4f46e5; border-top-color: transparent; border-radius: 9999px; margin-bottom: 0.5rem;"></div>
+          <div>Mengambil data produk dari database...</div>
+        </div>
+      `;
+
+      try {
+        const base = (currentConfig.worker_url || window.location.origin).replace(/\/+$/, '');
+        const targetUrl = `${base}/api/products?store_id=${encodeURIComponent(currentConfig.store_id || 'navanusa')}&all=true`;
+        
+        const res = await fetch(targetUrl);
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+        }
+
+        const data = await res.json();
+        productsList = Array.isArray(data) ? data : [];
+        renderProducts();
+      } catch (err) {
+        productListEl.innerHTML = `
+          <div style="padding: 1.5rem; text-align: center; color: #92400e; font-size: 0.75rem; background-color: #fef3c7; border-radius: 0.75rem; border: 1px solid #fde68a;">
+            <p style="font-weight: 700; margin-bottom: 0.25rem;">Belum dapat memuat produk dari D1</p>
+            <p style="font-size: 0.6875rem; color: #b45309; margin-bottom: 0.5rem;">${err.message}</p>
+            <p style="font-size: 0.6875rem; color: #64748b;">Anda dapat mengisi form di sebelah kiri untuk menyinkronkan produk.</p>
+          </div>
+        `;
+        productCountBadge.textContent = '0 Produk';
+      }
+    }
+
+    function renderProducts() {
+      productCountBadge.textContent = `${productsList.length} Produk`;
+
+      if (productsList.length === 0) {
+        productListEl.innerHTML = `
+          <div style="padding: 2rem; text-align: center; color: #94a3b8; font-size: 0.75rem; background-color: #f8fafc; border-radius: 0.75rem; border: 1px dashed #cbd5e1;">
+            Belum ada produk di database. Tambahkan produk melalui form di sebelah kiri!
+          </div>
+        `;
+        return;
+      }
+
+      productListEl.innerHTML = productsList.map(p => {
+        const formattedPrice = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(p.price);
+        const imgUrl = p.image_url || 'https://images.unsplash.com/photo-1555982105-d25af4182e4e?auto=format&fit=crop&w=200&q=80';
+        const isActive = p.is_active === 1;
+
+        return `
+          <div class="product-item">
+            <div style="display: flex; align-items: center; gap: 0.875rem; min-width: 0;">
+              <img src="${imgUrl}" alt="${p.name}" class="product-thumb" onerror="this.src='https://placehold.co/100x100?text=No+Image'" />
+              <div class="product-info">
+                <div class="product-name-row">
+                  <h4 class="product-name">${p.name}</h4>
+                  <span class="status-pill ${isActive ? 'status-active' : 'status-inactive'}">
+                    ${isActive ? 'Aktif' : 'Nonaktif'}
+                  </span>
+                </div>
+                <div class="product-price">${formattedPrice}</div>
+                <div class="product-meta">
+                  <span>Stok: <strong style="color: #334155;">${p.stock}</strong></span>
+                  <span>&bull;</span>
+                  <span>${p.weight_gram || 0}g</span>
+                  <span>&bull;</span>
+                  <a href="/products/${p.slug}" target="_blank" style="font-family: monospace; color: #4f46e5; text-decoration: none;">/products/${p.slug}</a>
+                </div>
+              </div>
+            </div>
+
+            <div style="flex-shrink: 0;">
+              <button onclick="editProduct('${p.id}')" class="btn btn-secondary" style="font-size: 0.75rem; padding: 0.375rem 0.625rem;">
+                Edit
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    window.editProduct = function(id) {
+      const p = productsList.find(item => item.id === id);
+      if (!p) return;
+
+      pId.value = p.id;
+      pName.value = p.name;
+      pSlug.value = p.slug;
+      pStatus.value = p.is_active;
+      pPrice.value = p.price;
+      pStock.value = p.stock;
+      pWeight.value = p.weight_gram || '';
+      pImage.value = p.image_url || '';
+      pDesc.value = p.description || '';
+
+      if (p.image_url) {
+        imagePreview.src = p.image_url;
+        imagePreviewContainer.classList.remove('hidden');
+      } else {
+        imagePreviewContainer.classList.add('hidden');
+      }
+
+      formTitle.textContent = 'Edit: ' + p.name;
+      btnResetForm.textContent = 'Batal / Form Baru';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    function resetForm() {
+      pId.value = '';
+      pName.value = '';
+      pSlug.value = '';
+      pStatus.value = '1';
+      pPrice.value = '';
+      pStock.value = '';
+      pWeight.value = '';
+      pImage.value = '';
+      pDesc.value = '';
+      imagePreviewContainer.classList.add('hidden');
+      formTitle.textContent = 'Tambah / Edit Produk';
+      syncLogBox.classList.add('hidden');
+      btnResetForm.textContent = '+ Form Baru';
+    }
+
+    function openSettings() {
+      cfgStoreId.value = currentConfig.store_id || '';
+      cfgStoreName.value = currentConfig.store_name || '';
+      cfgWorkerUrl.value = currentConfig.worker_url || window.location.origin;
+      cfgToken.value = currentConfig.internal_token || '';
+      cfgDeployHook.value = currentConfig.deploy_hook_url || '';
+      settingsModal.classList.remove('hidden');
+    }
+
+    function closeSettings() {
+      settingsModal.classList.add('hidden');
+    }
+
+    function setupEventListeners() {
+      pName.addEventListener('input', () => {
+        if (!pId.value) {
+          pSlug.value = generateSlug(pName.value);
+        }
+      });
+
+      pImage.addEventListener('input', () => {
+        const url = pImage.value.trim();
+        if (url) {
+          imagePreview.src = url;
+          imagePreviewContainer.classList.remove('hidden');
+        } else {
+          imagePreviewContainer.classList.add('hidden');
+        }
+      });
+
+      btnResetForm.addEventListener('click', resetForm);
+      btnRefresh.addEventListener('click', () => {
+        loadProducts();
+        showToast('Data produk diperbarui', 'success');
+      });
+
+      // Manual Rebuild Trigger
+      btnRebuild.addEventListener('click', async () => {
+        if (!currentConfig.deploy_hook_url) {
+          showToast('Deploy Hook URL belum diisi di menu Settings', 'error');
+          openSettings();
+          return;
+        }
+
+        if (!confirm('Picu Rebuild Cloudflare Pages untuk meng-generate ulang seluruh halaman statis Astro sekarang?')) {
+          return;
+        }
+
+        btnRebuild.disabled = true;
+        btnRebuild.innerHTML = `<span class="spin" style="margin-right: 0.375rem;">⏳</span> Mengirim Webhook...`;
+
+        try {
+          const res = await fetch(currentConfig.deploy_hook_url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({})
+          });
+
+          if (res.ok) {
+            showToast('Rebuild Cloudflare Pages berhasil dipicu!', 'success');
+          } else {
+            showToast(`Deploy hook status: ${res.status}`, 'error');
+          }
+        } catch (err) {
+          showToast(`Gagal trigger hook: ${err.message}`, 'error');
+        }
+
+        btnRebuild.disabled = false;
+        btnRebuild.innerHTML = `
+          <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+          <span>Rebuild Astro</span>
+        `;
+      });
+
+      // Settings Modal
+      btnSettingsOpen.addEventListener('click', openSettings);
+      storeBadge.addEventListener('click', openSettings);
+      btnSettingsClose.addEventListener('click', closeSettings);
+      btnSettingsCancel.addEventListener('click', closeSettings);
+      settingsModal.addEventListener('click', (e) => {
+        if (e.target === settingsModal) closeSettings();
+      });
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !settingsModal.classList.contains('hidden')) closeSettings();
+      });
+
+      settingsForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const newCfg = {
+          store_id: cfgStoreId.value.trim(),
+          store_name: cfgStoreName.value.trim(),
+          worker_url: cfgWorkerUrl.value.trim(),
+          internal_token: cfgToken.value.trim(),
+          deploy_hook_url: cfgDeployHook.value.trim()
+        };
+        saveConfig(newCfg);
+        closeSettings();
+        showToast('Pengaturan berhasil disimpan!', 'success');
+        loadProducts();
+      });
+
+      // Product Form Submission (2-Step Sync)
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const product = {
+          id: pId.value.trim() || generateUUID(),
+          store_id: currentConfig.store_id || 'navanusa',
+          name: pName.value.trim(),
+          slug: pSlug.value.trim(),
+          description: pDesc.value.trim(),
+          price: parseInt(pPrice.value, 10) || 0,
+          stock: parseInt(pStock.value, 10) || 0,
+          weight_gram: parseInt(pWeight.value, 10) || 0,
+          image_url: pImage.value.trim(),
+          is_active: parseInt(pStatus.value, 10) || 1
+        };
+
+        btnSync.disabled = true;
+        btnSync.innerHTML = `<span class="spin" style="margin-right: 0.5rem;">⚙️</span> Menyinkronkan Produk...`;
+
+        syncLogBox.classList.remove('hidden');
+        stepD1.querySelector('.step-indicator').className = 'step-indicator step-loading';
+        stepD1Status.textContent = 'Mengirim data produk ke Cloudflare Worker / D1...';
+        stepHook.querySelector('.step-indicator').className = 'step-indicator';
+        stepHookStatus.textContent = 'Menunggu langkah 1 selesai...';
+
+        const startTime = Date.now();
+        const timerInterval = setInterval(() => {
+          syncTimer.textContent = ((Date.now() - startTime) / 1000).toFixed(1) + 's';
+        }, 100);
+
+        try {
+          // LANGKAH 1: Kirim ke D1 via API
+          const base = (currentConfig.worker_url || window.location.origin).replace(/\/+$/, '');
+          const headers = { 'Content-Type': 'application/json' };
+          if (currentConfig.internal_token) {
+            headers['Authorization'] = `Bearer ${currentConfig.internal_token}`;
+          }
+
+          const syncRes = await fetch(`${base}/api/products`, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify(product)
+          });
+
+          const syncData = await syncRes.json();
+          if (!syncRes.ok || !syncData.ok) {
+            throw new Error(syncData.error || `HTTP ${syncRes.status}`);
+          }
+
+          stepD1.querySelector('.step-indicator').className = 'step-indicator step-success';
+          stepD1Status.textContent = `Sukses disimpan ke D1 (ID: ${product.id})`;
+
+          // LANGKAH 2: Trigger Deploy Hook (Jika ada)
+          if (currentConfig.deploy_hook_url) {
+            stepHook.querySelector('.step-indicator').className = 'step-indicator step-loading';
+            stepHookStatus.textContent = 'Memicu rebuild statis di Cloudflare Pages...';
+
+            try {
+              const hookRes = await fetch(currentConfig.deploy_hook_url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({})
+              });
+
+              if (hookRes.ok) {
+                stepHook.querySelector('.step-indicator').className = 'step-indicator step-success';
+                stepHookStatus.textContent = `Rebuild Astro berhasil dimulai (HTTP ${hookRes.status})`;
+              } else {
+                stepHook.querySelector('.step-indicator').className = 'step-indicator step-error';
+                stepHookStatus.textContent = `Deploy Hook Warning (HTTP ${hookRes.status})`;
+              }
+            } catch (hookErr) {
+              stepHook.querySelector('.step-indicator').className = 'step-indicator step-error';
+              stepHookStatus.textContent = `Deploy Hook Gagal: ${hookErr.message}`;
+            }
+          } else {
+            stepHook.querySelector('.step-indicator').className = 'step-indicator step-success';
+            stepHookStatus.textContent = 'Dilewati (Deploy Hook URL kosong)';
+          }
+
+          clearInterval(timerInterval);
+          showToast('Produk berhasil disinkronkan!', 'success');
+          await loadProducts();
+          resetForm();
+
+        } catch (err) {
+          clearInterval(timerInterval);
+          stepD1.querySelector('.step-indicator').className = 'step-indicator step-error';
+          stepD1Status.textContent = `Gagal simpan ke D1: ${err.message}`;
+          showToast(`Gagal: ${err.message}`, 'error');
+        }
+
+        btnSync.disabled = false;
+        btnSync.innerHTML = `
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+          <span>Sync ke D1 & Rebuild Astro</span>
+        `;
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadConfig();
+      loadProducts();
+      setupEventListeners();
+    });
+  </script>
+</body>
+</html>
