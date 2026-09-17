@@ -1,0 +1,107 @@
+---
+import type { CarouselSlide } from '../types/store';
+
+interface Props {
+  slides: CarouselSlide[];
+}
+
+const { slides } = Astro.props;
+---
+
+<div class="carousel relative container mx-auto" style="max-width:1600px;">
+  <div class="carousel-inner relative overflow-hidden w-full">
+    {slides.map((slide, idx) => {
+      const prevIdx = idx === 0 ? slides.length : idx;
+      const nextIdx = idx === slides.length - 1 ? 1 : idx + 2;
+      return (
+        <Fragment key={slide.id}>
+          <input
+            class="carousel-open"
+            type="radio"
+            id={`carousel-${slide.id}`}
+            name="carousel"
+            aria-hidden="true"
+            hidden=""
+            checked={idx === 0}
+          />
+          <div class="carousel-item absolute opacity-0" style="height:50vh;">
+            <div
+              class="block h-full w-full mx-auto flex pt-6 md:pt-0 md:items-center bg-cover bg-right"
+              style={`background-image: url('${slide.image}');`}
+            >
+              <div class="container mx-auto">
+                <div class="flex flex-col w-full lg:w-1/2 md:ml-16 items-center md:items-start px-6 tracking-wide">
+                  <p class="text-black text-2xl my-4 font-normal">{slide.title}</p>
+                  <a
+                    class="text-xl inline-block no-underline border-b border-gray-600 leading-relaxed hover:text-black hover:border-black"
+                    href={slide.link}
+                  >
+                    {slide.linkText}
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <label
+            for={`carousel-${prevIdx}`}
+            class={`prev control-${slide.id} w-10 h-10 ml-2 md:ml-10 absolute cursor-pointer hidden text-3xl font-bold text-black hover:text-white rounded-full bg-white hover:bg-gray-900 leading-tight text-center z-10 inset-y-0 left-0 my-auto`}
+          >
+            ‹
+          </label>
+          <label
+            for={`carousel-${nextIdx}`}
+            class={`next control-${slide.id} w-10 h-10 mr-2 md:mr-10 absolute cursor-pointer hidden text-3xl font-bold text-black hover:text-white rounded-full bg-white hover:bg-gray-900 leading-tight text-center z-10 inset-y-0 right-0 my-auto`}
+          >
+            ›
+          </label>
+        </Fragment>
+      );
+    })}
+
+    <!-- Indicators -->
+    <ol class="carousel-indicators">
+      {slides.map((slide) => (
+        <li class="inline-block mr-3">
+          <label
+            for={`carousel-${slide.id}`}
+            class="carousel-bullet cursor-pointer block text-4xl text-gray-400 hover:text-gray-900"
+          >
+            •
+          </label>
+        </li>
+      ))}
+    </ol>
+  </div>
+</div>
+
+<style>
+  .carousel-open:checked + .carousel-item {
+    position: static;
+    opacity: 100;
+  }
+  .carousel-item {
+    -webkit-transition: opacity 0.6s ease-out;
+    transition: opacity 0.6s ease-out;
+  }
+  #carousel-1:checked ~ .control-1,
+  #carousel-2:checked ~ .control-2,
+  #carousel-3:checked ~ .control-3 {
+    display: block;
+  }
+  .carousel-indicators {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    bottom: 2%;
+    left: 0;
+    right: 0;
+    text-align: center;
+    z-index: 10;
+  }
+  #carousel-1:checked ~ .control-1 ~ .carousel-indicators li:nth-child(1) .carousel-bullet,
+  #carousel-2:checked ~ .control-2 ~ .carousel-indicators li:nth-child(2) .carousel-bullet,
+  #carousel-3:checked ~ .control-3 ~ .carousel-indicators li:nth-child(3) .carousel-bullet {
+    color: #000;
+  }
+</style>

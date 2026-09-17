@@ -1,0 +1,69 @@
+---
+import Navbar from '../components/Navbar.astro';
+import ShopFooter from '../components/ShopFooter.astro';
+import CartDrawer from '../components/CartDrawer.astro';
+import WishlistDrawer from '../components/WishlistDrawer.astro';
+import Toast from '../components/Toast.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  storeName?: string;
+}
+
+const {
+  title = 'Nordic Shop - Minimalist Store',
+  description = 'Platform multi-tenant toko online minimalis',
+  storeName = 'NORDICS',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta
+      name="keywords"
+      content="tailwind,tailwindcss,tailwind css,css,starter template,free template,store template, shop layout, minimal, monochrome, minimalistic, theme, nordic"
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Tailwind CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/tailwindcss@2.2.19/dist/tailwind.min.css" />
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Work+Sans:200,400,500,600,700&display=swap" rel="stylesheet" />
+
+    <style is:global>
+      .work-sans {
+        font-family: 'Work Sans', sans-serif;
+      }
+      .hover\:grow {
+        transition: all 0.3s;
+        transform: scale(1);
+      }
+      .hover\:grow:hover {
+        transform: scale(1.02);
+      }
+    </style>
+  </head>
+
+  <body class="bg-white text-gray-600 work-sans leading-normal text-base tracking-normal flex flex-col min-h-screen">
+    <Navbar storeName={storeName} />
+    
+    <main class="flex-1">
+      <slot />
+    </main>
+
+    <ShopFooter />
+
+    <!-- Interactive Global Drawers & Toast Notifications -->
+    <CartDrawer />
+    <WishlistDrawer />
+    <Toast />
+  </body>
+</html>

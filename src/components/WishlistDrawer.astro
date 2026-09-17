@@ -1,0 +1,249 @@
+---
+---
+
+<!-- Wishlist Slide-Over Drawer -->
+<div id="wishlist-drawer" class="fixed inset-0 z-50 overflow-hidden pointer-events-none transition-all duration-300 opacity-0 invisible" aria-labelledby="wishlist-title" role="dialog" aria-modal="true">
+  <!-- Backdrop -->
+  <div id="wishlist-backdrop" class="fixed inset-0 bg-black/50 backdrop-blur-xs transition-opacity duration-300 opacity-0"></div>
+
+  <div class="fixed inset-y-0 right-0 max-w-full flex pl-10">
+    <div id="wishlist-panel" class="w-screen max-w-md bg-white shadow-2xl flex flex-col pointer-events-auto transform translate-x-full transition-transform duration-300 ease-in-out">
+      
+      <!-- Drawer Header -->
+      <div class="p-6 border-b border-gray-100 flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <svg class="w-5 h-5 text-red-500 fill-current" viewBox="0 0 24 24">
+            <path d="M12,21.35l-1.45-1.32C5.4,15.36,2,12.28,2,8.5C2,5.42,4.42,3,7.5,3c1.74,0,3.41,0.81,4.5,2.09C13.09,3.81,14.76,3,16.5,3 C19.58,3,22,5.42,22,8.5c0,3.78-3.4,6.86-8.55,11.54L12,21.35z"/>
+          </svg>
+          <h2 id="wishlist-title" class="text-lg font-medium text-gray-900 tracking-wide uppercase">
+            Wishlist Saya
+          </h2>
+          <span id="wishlist-badge-count" class="bg-gray-100 text-gray-800 text-xs px-2 py-0.5 rounded-full font-semibold">
+            0
+          </span>
+        </div>
+        <button id="close-wishlist-btn" type="button" class="p-2 text-gray-400 hover:text-gray-900 transition-colors focus:outline-none" aria-label="Tutup wishlist">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Drawer Body: Wishlist Items List -->
+      <div id="wishlist-items-container" class="flex-1 overflow-y-auto p-6 space-y-4 divide-y divide-gray-100">
+        <!-- Dynamic items will be injected here via JavaScript -->
+      </div>
+
+      <!-- Empty Wishlist State -->
+      <div id="wishlist-empty-state" class="hidden flex-1 flex-col items-center justify-center p-6 text-center">
+        <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center text-gray-300 mb-4">
+          <svg class="w-8 h-8 fill-current" viewBox="0 0 24 24">
+            <path d="M12,21.35l-1.45-1.32C5.4,15.36,2,12.28,2,8.5C2,5.42,4.42,3,7.5,3c1.74,0,3.41,0.81,4.5,2.09C13.09,3.81,14.76,3,16.5,3 C19.58,3,22,5.42,22,8.5c0,3.78-3.4,6.86-8.55,11.54L12,21.35z"/>
+          </svg>
+        </div>
+        <p class="text-gray-900 font-medium text-base mb-1">Wishlist Anda Masih Kosong</p>
+        <p class="text-gray-500 text-sm mb-6">Klik ikon hati pada produk untuk menyimpannya di sini.</p>
+        <button id="wishlist-continue-shopping-btn" class="bg-black text-white px-6 py-2.5 text-xs uppercase tracking-wider font-medium hover:bg-gray-800 transition-colors">
+          Jelajahi Produk
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  // Script untuk Wishlist Management di Client
+  (function () {
+    const STORAGE_KEY = 'nordic_wishlist_items';
+
+    function getWishlist() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveWishlist(items) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+      window.dispatchEvent(new CustomEvent('nordic:wishlist-updated', { detail: { items } }));
+    }
+
+    function formatIDR(amount) {
+      return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0,
+      }).format(amount);
+    }
+
+    window.NordicWishlist = {
+      getItems: getWishlist,
+      hasItem: function (id) {
+        return getWishlist().some((item) => item.id === id);
+      },
+      toggleItem: function (product) {
+        let items = getWishlist();
+        const exists = items.some((item) => item.id === product.id);
+
+        if (exists) {
+          items = items.filter((item) => item.id !== product.id);
+          saveWishlist(items);
+          window.NordicToast?.show(`"${product.name}" dihapus dari wishlist.`);
+          return false;
+        } else {
+          items.push({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            image: product.image_url || product.image,
+            slug: product.slug,
+            stock: product.stock || 99,
+          });
+          saveWishlist(items);
+          window.NordicToast?.show(`"${product.name}" ditambahkan ke wishlist.`);
+          return true;
+        }
+      },
+      removeItem: function (id) {
+        const items = getWishlist().filter((item) => item.id !== id);
+        saveWishlist(items);
+      },
+      open: function () {
+        const drawer = document.getElementById('wishlist-drawer');
+        const backdrop = document.getElementById('wishlist-backdrop');
+        const panel = document.getElementById('wishlist-panel');
+        if (drawer && backdrop && panel) {
+          drawer.classList.remove('invisible', 'opacity-0');
+          drawer.classList.add('opacity-100');
+          backdrop.classList.remove('opacity-0');
+          backdrop.classList.add('opacity-100');
+          panel.classList.remove('translate-x-full');
+          document.body.style.overflow = 'hidden';
+        }
+      },
+      close: function () {
+        const drawer = document.getElementById('wishlist-drawer');
+        const backdrop = document.getElementById('wishlist-backdrop');
+        const panel = document.getElementById('wishlist-panel');
+        if (drawer && backdrop && panel) {
+          panel.classList.add('translate-x-full');
+          backdrop.classList.remove('opacity-100');
+          backdrop.classList.add('opacity-0');
+          setTimeout(() => {
+            drawer.classList.add('invisible', 'opacity-0');
+            drawer.classList.remove('opacity-100');
+            document.body.style.overflow = '';
+          }, 300);
+        }
+      },
+    };
+
+    function renderWishlistUI() {
+      const items = getWishlist();
+      const container = document.getElementById('wishlist-items-container');
+      const emptyState = document.getElementById('wishlist-empty-state');
+      const badgeCounts = document.querySelectorAll('.wishlist-badge-counter, #wishlist-badge-count');
+
+      badgeCounts.forEach((el) => {
+        el.textContent = items.length;
+        if (el.classList.contains('wishlist-nav-badge')) {
+          el.classList.toggle('hidden', items.length === 0);
+        }
+      });
+
+      // Update active state of heart icons across page
+      document.querySelectorAll('.wishlist-toggle-btn').forEach((btn) => {
+        const id = btn.getAttribute('data-product-id');
+        const isFavorited = items.some((item) => item.id === id);
+        const icon = btn.querySelector('svg');
+        if (icon) {
+          if (isFavorited) {
+            icon.classList.add('text-red-500', 'fill-current');
+            icon.classList.remove('text-gray-500');
+          } else {
+            icon.classList.remove('text-red-500');
+            icon.classList.add('text-gray-500');
+          }
+        }
+      });
+
+      if (!container || !emptyState) return;
+
+      if (items.length === 0) {
+        container.innerHTML = '';
+        container.classList.add('hidden');
+        emptyState.classList.remove('hidden');
+        emptyState.classList.add('flex');
+        return;
+      }
+
+      container.classList.remove('hidden');
+      emptyState.classList.add('hidden');
+      emptyState.classList.remove('flex');
+
+      container.innerHTML = items
+        .map((item) => {
+          return `
+          <div class="flex items-center space-x-4 pt-4 first:pt-0">
+            <a href="/products/${item.slug || ''}" class="w-16 h-16 bg-gray-100 shrink-0 overflow-hidden rounded">
+              <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover" />
+            </a>
+            <div class="flex-1 min-w-0">
+              <a href="/products/${item.slug || ''}" class="text-sm font-medium text-gray-900 truncate block hover:underline">
+                ${item.name}
+              </a>
+              <p class="text-xs text-gray-500 mt-0.5">${formatIDR(item.price)}</p>
+              <div class="flex items-center space-x-3 mt-2">
+                <button type="button" class="wishlist-move-to-cart-btn text-xs bg-black text-white px-2.5 py-1 uppercase tracking-wider font-medium hover:bg-gray-800" data-id="${item.id}">
+                  + Keranjang
+                </button>
+                <button type="button" class="wishlist-remove-btn text-xs text-gray-400 hover:text-red-500 underline" data-id="${item.id}">
+                  Hapus
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+        })
+        .join('');
+
+      container.querySelectorAll('.wishlist-move-to-cart-btn').forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const id = btn.getAttribute('data-id');
+          const product = items.find((p) => p.id === id);
+          if (product) {
+            window.NordicCart?.addItem(product, 1);
+            window.NordicWishlist.removeItem(id);
+            window.NordicWishlist.close();
+          }
+        });
+      });
+
+      container.querySelectorAll('.wishlist-remove-btn').forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const id = btn.getAttribute('data-id');
+          window.NordicWishlist.removeItem(id);
+        });
+      });
+    }
+
+    // Attach DOM Events
+    document.addEventListener('DOMContentLoaded', () => {
+      renderWishlistUI();
+
+      const closeBtn = document.getElementById('close-wishlist-btn');
+      const backdrop = document.getElementById('wishlist-backdrop');
+      const continueBtn = document.getElementById('wishlist-continue-shopping-btn');
+
+      if (closeBtn) closeBtn.addEventListener('click', () => window.NordicWishlist.close());
+      if (backdrop) backdrop.addEventListener('click', () => window.NordicWishlist.close());
+      if (continueBtn) continueBtn.addEventListener('click', () => window.NordicWishlist.close());
+
+      window.addEventListener('nordic:wishlist-updated', renderWishlistUI);
+    });
+  })();
+</script>

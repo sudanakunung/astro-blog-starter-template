@@ -200,3 +200,13 @@ dist
 
 ### Astro ###
 .astro/
+# Wrangler (JANGAN DI-COMMIT)
+.wrangler/
+# File Environment Variables & Secrets (Kredensial API asli)
+.env
+.env.local
+.dev.vars
+.dev.vars.local
+
+dist/
+seed.sql

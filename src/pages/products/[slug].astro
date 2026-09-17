@@ -1,0 +1,256 @@
+---
+export const prerender = false;
+
+import ShopLayout from '../../layouts/ShopLayout.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import { getProductBySlug, getActiveProducts } from '../../lib/db/productRepo';
+import { formatRupiah } from '../../lib/utils/currency';
+import type { D1Product, Store } from '../../types/d1';
+
+const { slug } = Astro.params;
+
+// 1. Dapatkan tenant store
+const store: Store = Astro.locals.store || {
+  id: 'navanusa',
+  name: 'Navanusa Store',
+  domain: 'localhost',
+  status: 'active',
+  created_at: 0,
+  updated_at: 0,
+};
+
+// 2. Ambil data produk berdasarkan slug dari D1
+const db = Astro.locals.runtime?.env?.DB;
+let product: D1Product | null = null;
+let relatedProducts: D1Product[] = [];
+
+if (db && slug) {
+  product = await getProductBySlug(db, store.id, slug);
+  const allProducts = await getActiveProducts(db, store.id);
+  relatedProducts = allProducts.filter((p) => p.slug !== slug).slice(0, 4);
+}
+
+const fallbackImage = 'https://images.unsplash.com/photo-1555982105-d25af4182e4e?auto=format&fit=crop&w=800&q=80';
+---
+
+<ShopLayout
+  title={product ? `${product.name} - ${store.name}` : `Produk Tidak Ditemukan - ${store.name}`}
+  description={product?.description || `Beli ${product?.name} di ${store.name}`}
+  storeName={store.name}
+>
+  {product ? (
+    <div class="container mx-auto px-6 py-8">
+      <!-- Breadcrumb -->
+      <nav class="text-sm text-gray-500 mb-8">
+        <a href="/" class="hover:text-black hover:underline">Home</a>
+        <span class="mx-2">/</span>
+        <a href="/#store" class="hover:text-black hover:underline">Products</a>
+        <span class="mx-2">/</span>
+        <span class="text-gray-900 font-medium">{product.name}</span>
+      </nav>
+
+      <!-- Main Product Detail -->
+      <div class="flex flex-wrap lg:flex-nowrap gap-12 items-start mb-16">
+        <!-- Product Image Gallery -->
+        <div class="w-full lg:w-1/2">
+          <div class="bg-gray-100 overflow-hidden shadow-sm aspect-square flex items-center justify-center relative">
+            <img
+              src={product.image_url || fallbackImage}
+              alt={product.name}
+              class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+            />
+            <button
+              type="button"
+              id="detail-wishlist-btn"
+              class="wishlist-toggle-btn absolute top-4 right-4 p-3 bg-white/90 hover:bg-white rounded-full shadow-md text-gray-500 hover:text-red-500 transition-all focus:outline-none"
+              data-product-id={product.id}
+              data-product-name={product.name}
+              data-product-price={product.price}
+              data-product-image={product.image_url || fallbackImage}
+              data-product-slug={product.slug}
+              data-product-stock={product.stock}
+              aria-label="Tambah ke Wishlist"
+            >
+              <svg class="h-6 w-6 fill-none stroke-current" viewBox="0 0 24 24" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Product Information & Actions -->
+        <div class="w-full lg:w-1/2 flex flex-col">
+          <h1 class="text-3xl lg:text-4xl font-normal text-gray-900 tracking-tight mb-3">
+            {product.name}
+          </h1>
+
+          <div class="flex items-center space-x-4 mb-6">
+            <span class="text-2xl font-semibold text-gray-900">
+              {formatRupiah(product.price)}
+            </span>
+            {product.stock > 0 ? (
+              <span class="px-2.5 py-0.5 text-xs font-medium bg-green-100 text-green-800 rounded">
+                Tersedia ({product.stock} unit)
+              </span>
+            ) : (
+              <span class="px-2.5 py-0.5 text-xs font-medium bg-red-100 text-red-800 rounded">
+                Stok Habis
+              </span>
+            )}
+          </div>
+
+          <!-- Description -->
+          <div class="border-t border-b border-gray-200 py-6 mb-6">
+            <h2 class="text-sm font-semibold uppercase tracking-wider text-gray-900 mb-2">Deskripsi</h2>
+            <p class="text-gray-600 leading-relaxed">
+              {product.description || 'Tidak ada deskripsi tambahan untuk produk ini.'}
+            </p>
+            {product.weight_gram && (
+              <p class="text-xs text-gray-500 mt-4">
+                Berat Pengiriman: <span class="font-medium text-gray-700">{product.weight_gram} gram</span>
+              </p>
+            )}
+          </div>
+
+          <!-- Quantity and Add to Cart Form -->
+          <div class="space-y-4 mb-8">
+            <div class="flex items-center space-x-4">
+              <label for="detail-qty" class="text-sm font-medium text-gray-700">Jumlah:</label>
+              <div class="inline-flex items-center border border-gray-300 rounded">
+                <button type="button" id="qty-minus" class="px-3 py-2 text-gray-600 hover:bg-gray-100">-</button>
+                <input
+                  type="number"
+                  id="detail-qty"
+                  min="1"
+                  max={product.stock}
+                  value="1"
+                  class="w-16 border-0 text-center text-gray-900 font-semibold focus:ring-0 focus:outline-none"
+                />
+                <button type="button" id="qty-plus" class="px-3 py-2 text-gray-600 hover:bg-gray-100">+</button>
+              </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-3 pt-2">
+              <button
+                type="button"
+                id="detail-add-cart-btn"
+                class="w-full sm:w-1/2 bg-black text-white px-6 py-3.5 text-sm uppercase tracking-wider font-semibold hover:bg-gray-800 transition-colors shadow-sm"
+              >
+                + Tambah ke Keranjang
+              </button>
+              <button
+                type="button"
+                id="detail-buy-now-btn"
+                class="w-full sm:w-1/2 border border-black text-black px-6 py-3.5 text-sm uppercase tracking-wider font-semibold hover:bg-black hover:text-white transition-colors"
+              >
+                Beli Sekarang
+              </button>
+            </div>
+          </div>
+
+          <!-- Store Benefits -->
+          <div class="bg-gray-50 p-4 rounded text-xs text-gray-600 space-y-2 border border-gray-100">
+            <div class="flex items-center space-x-2">
+              <svg class="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              <span>100% Produk Original Berkualitas Nordik</span>
+            </div>
+            <div class="flex items-center space-x-2">
+              <svg class="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <span>Pengiriman Otomatis ke Seluruh Indonesia via Biteship</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Related Products Section -->
+      {relatedProducts.length > 0 && (
+        <section class="border-t border-gray-200 pt-12 mt-12">
+          <h2 class="text-2xl font-normal text-gray-900 mb-8 uppercase tracking-wide">
+            Produk Terkait
+          </h2>
+          <div class="flex flex-wrap -mx-6">
+            {relatedProducts.map((item) => (
+              <ProductCard product={item} />
+            ))}
+          </div>
+        </section>
+      )}
+    </div>
+  ) : (
+    <!-- 404 Product Not Found State -->
+    <div class="container mx-auto px-6 py-24 text-center">
+      <h1 class="text-4xl font-light text-gray-900 mb-4">Produk Tidak Ditemukan</h1>
+      <p class="text-gray-600 mb-8">
+        Maaf, produk yang Anda cari tidak tersedia atau sudah tidak aktif.
+      </p>
+      <a
+        href="/"
+        class="inline-block bg-black text-white px-8 py-3 text-sm uppercase tracking-wider font-medium hover:bg-gray-800 transition-colors"
+      >
+        Kembali ke Katalog
+      </a>
+    </div>
+  )}
+</ShopLayout>
+
+<script is:inline define:vars={{ currentProduct: product, fallbackImage }}>
+  document.addEventListener('DOMContentLoaded', () => {
+    if (!currentProduct) return;
+
+    const qtyInput = document.getElementById('detail-qty');
+    const minusBtn = document.getElementById('qty-minus');
+    const plusBtn = document.getElementById('qty-plus');
+    const addCartBtn = document.getElementById('detail-add-cart-btn');
+    const buyNowBtn = document.getElementById('detail-buy-now-btn');
+
+    if (minusBtn && qtyInput) {
+      minusBtn.addEventListener('click', () => {
+        let val = parseInt(qtyInput.value || '1', 10);
+        if (val > 1) qtyInput.value = val - 1;
+      });
+    }
+
+    if (plusBtn && qtyInput) {
+      plusBtn.addEventListener('click', () => {
+        let val = parseInt(qtyInput.value || '1', 10);
+        const max = parseInt(qtyInput.getAttribute('max') || '999', 10);
+        if (val < max) qtyInput.value = val + 1;
+      });
+    }
+
+    if (addCartBtn && qtyInput) {
+      addCartBtn.addEventListener('click', () => {
+        const qty = parseInt(qtyInput.value || '1', 10);
+        const item = {
+          id: currentProduct.id,
+          name: currentProduct.name,
+          price: currentProduct.price,
+          image: currentProduct.image_url || fallbackImage,
+          slug: currentProduct.slug,
+          stock: currentProduct.stock,
+        };
+        window.NordicCart?.addItem(item, qty);
+      });
+    }
+
+    if (buyNowBtn && qtyInput) {
+      buyNowBtn.addEventListener('click', () => {
+        const qty = parseInt(qtyInput.value || '1', 10);
+        const item = {
+          id: currentProduct.id,
+          name: currentProduct.name,
+          price: currentProduct.price,
+          image: currentProduct.image_url || fallbackImage,
+          slug: currentProduct.slug,
+          stock: currentProduct.stock,
+        };
+        window.NordicCart?.addItem(item, qty);
+        window.location.href = '/checkout';
+      });
+    }
+  });
+</script>

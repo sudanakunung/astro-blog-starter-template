@@ -1,0 +1,276 @@
+---
+---
+
+<!-- Cart Slide-Over Drawer -->
+<div id="cart-drawer" class="fixed inset-0 z-50 overflow-hidden pointer-events-none transition-all duration-300 opacity-0 invisible" aria-labelledby="cart-title" role="dialog" aria-modal="true">
+  <!-- Backdrop -->
+  <div id="cart-backdrop" class="fixed inset-0 bg-black/50 backdrop-blur-xs transition-opacity duration-300 opacity-0"></div>
+
+  <div class="fixed inset-y-0 right-0 max-w-full flex pl-10">
+    <div id="cart-panel" class="w-screen max-w-md bg-white shadow-2xl flex flex-col pointer-events-auto transform translate-x-full transition-transform duration-300 ease-in-out">
+      
+      <!-- Drawer Header -->
+      <div class="p-6 border-b border-gray-100 flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <svg class="w-5 h-5 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+          </svg>
+          <h2 id="cart-title" class="text-lg font-medium text-gray-900 tracking-wide uppercase">
+            Keranjang Belanja
+          </h2>
+          <span id="cart-badge-count" class="bg-gray-100 text-gray-800 text-xs px-2 py-0.5 rounded-full font-semibold">
+            0
+          </span>
+        </div>
+        <button id="close-cart-btn" type="button" class="p-2 text-gray-400 hover:text-gray-900 transition-colors focus:outline-none" aria-label="Tutup keranjang">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Drawer Body: Cart Items List -->
+      <div id="cart-items-container" class="flex-1 overflow-y-auto p-6 space-y-4 divide-y divide-gray-100">
+        <!-- Dynamic items will be injected here via JavaScript -->
+      </div>
+
+      <!-- Empty Cart State -->
+      <div id="cart-empty-state" class="hidden flex-1 flex-col items-center justify-center p-6 text-center">
+        <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center text-gray-400 mb-4">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+          </svg>
+        </div>
+        <p class="text-gray-900 font-medium text-base mb-1">Keranjang Masih Kosong</p>
+        <p class="text-gray-500 text-sm mb-6">Temukan produk favorit Anda dan tambahkan ke keranjang.</p>
+        <button id="cart-continue-shopping-btn" class="bg-black text-white px-6 py-2.5 text-xs uppercase tracking-wider font-medium hover:bg-gray-800 transition-colors">
+          Mulai Belanja
+        </button>
+      </div>
+
+      <!-- Drawer Footer -->
+      <div id="cart-footer" class="p-6 border-t border-gray-100 bg-gray-50/50 space-y-4">
+        <div class="flex items-center justify-between text-base font-medium text-gray-900">
+          <span>Subtotal</span>
+          <span id="cart-subtotal" class="text-lg font-bold">Rp 0</span>
+        </div>
+        <p class="text-xs text-gray-500">Biaya pengiriman dan pajak dihitung saat checkout.</p>
+        <div class="space-y-2">
+          <a href="/checkout" class="block w-full bg-black text-white text-center py-3.5 text-sm uppercase tracking-wider font-semibold hover:bg-gray-800 transition-colors shadow-sm">
+            Lanjut ke Checkout
+          </a>
+          <button id="clear-cart-btn" class="w-full text-center text-xs text-gray-400 hover:text-red-600 transition-colors py-1">
+            Kosongkan Keranjang
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  // Script untuk Cart Management di Client
+  (function () {
+    const STORAGE_KEY = 'nordic_cart_items';
+
+    function getCart() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveCart(items) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+      window.dispatchEvent(new CustomEvent('nordic:cart-updated', { detail: { items } }));
+    }
+
+    function formatIDR(amount) {
+      return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0,
+      }).format(amount);
+    }
+
+    window.NordicCart = {
+      getItems: getCart,
+      addItem: function (product, qty = 1) {
+        const items = getCart();
+        const existingIdx = items.findIndex((item) => item.id === product.id);
+
+        if (existingIdx > -1) {
+          const maxStock = product.stock || 999;
+          items[existingIdx].qty = Math.min(items[existingIdx].qty + qty, maxStock);
+        } else {
+          items.push({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            image: product.image_url || product.image,
+            slug: product.slug,
+            qty: qty,
+            stock: product.stock || 99,
+          });
+        }
+        saveCart(items);
+        window.NordicCart.open();
+        window.NordicToast?.show(`"${product.name}" ditambahkan ke keranjang.`);
+      },
+      updateQty: function (id, delta) {
+        let items = getCart();
+        items = items
+          .map((item) => {
+            if (item.id === id) {
+              const newQty = item.qty + delta;
+              return newQty > 0 ? { ...item, qty: newQty } : null;
+            }
+            return item;
+          })
+          .filter(Boolean);
+        saveCart(items);
+      },
+      removeItem: function (id) {
+        const items = getCart().filter((item) => item.id !== id);
+        saveCart(items);
+      },
+      clear: function () {
+        saveCart([]);
+      },
+      open: function () {
+        const drawer = document.getElementById('cart-drawer');
+        const backdrop = document.getElementById('cart-backdrop');
+        const panel = document.getElementById('cart-panel');
+        if (drawer && backdrop && panel) {
+          drawer.classList.remove('invisible', 'opacity-0');
+          drawer.classList.add('opacity-100');
+          backdrop.classList.remove('opacity-0');
+          backdrop.classList.add('opacity-100');
+          panel.classList.remove('translate-x-full');
+          document.body.style.overflow = 'hidden';
+        }
+      },
+      close: function () {
+        const drawer = document.getElementById('cart-drawer');
+        const backdrop = document.getElementById('cart-backdrop');
+        const panel = document.getElementById('cart-panel');
+        if (drawer && backdrop && panel) {
+          panel.classList.add('translate-x-full');
+          backdrop.classList.remove('opacity-100');
+          backdrop.classList.add('opacity-0');
+          setTimeout(() => {
+            drawer.classList.add('invisible', 'opacity-0');
+            drawer.classList.remove('opacity-100');
+            document.body.style.overflow = '';
+          }, 300);
+        }
+      },
+    };
+
+    function renderCartUI() {
+      const items = getCart();
+      const container = document.getElementById('cart-items-container');
+      const emptyState = document.getElementById('cart-empty-state');
+      const footer = document.getElementById('cart-footer');
+      const subtotalEl = document.getElementById('cart-subtotal');
+      const badgeCounts = document.querySelectorAll('.cart-badge-counter, #cart-badge-count');
+
+      const totalQty = items.reduce((sum, item) => sum + item.qty, 0);
+      badgeCounts.forEach((el) => {
+        el.textContent = totalQty;
+        if (el.classList.contains('cart-nav-badge')) {
+          el.classList.toggle('hidden', totalQty === 0);
+        }
+      });
+
+      if (!container || !emptyState || !footer || !subtotalEl) return;
+
+      if (items.length === 0) {
+        container.innerHTML = '';
+        container.classList.add('hidden');
+        emptyState.classList.remove('hidden');
+        emptyState.classList.add('flex');
+        footer.classList.add('hidden');
+        return;
+      }
+
+      container.classList.remove('hidden');
+      emptyState.classList.add('hidden');
+      emptyState.classList.remove('flex');
+      footer.classList.remove('hidden');
+
+      let subtotal = 0;
+      container.innerHTML = items
+        .map((item) => {
+          const itemTotal = item.price * item.qty;
+          subtotal += itemTotal;
+          return `
+          <div class="flex items-center space-x-4 pt-4 first:pt-0">
+            <a href="/products/${item.slug || ''}" class="w-16 h-16 bg-gray-100 shrink-0 overflow-hidden rounded">
+              <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover" />
+            </a>
+            <div class="flex-1 min-w-0">
+              <a href="/products/${item.slug || ''}" class="text-sm font-medium text-gray-900 truncate block hover:underline">
+                ${item.name}
+              </a>
+              <p class="text-xs text-gray-500 mt-0.5">${formatIDR(item.price)}</p>
+              <div class="flex items-center space-x-3 mt-2">
+                <div class="inline-flex items-center border border-gray-200 rounded">
+                  <button type="button" class="cart-qty-btn px-2 py-0.5 text-gray-500 hover:text-black hover:bg-gray-50" data-id="${item.id}" data-delta="-1">-</button>
+                  <span class="px-2 text-xs font-semibold text-gray-800">${item.qty}</span>
+                  <button type="button" class="cart-qty-btn px-2 py-0.5 text-gray-500 hover:text-black hover:bg-gray-50" data-id="${item.id}" data-delta="1">+</button>
+                </div>
+                <button type="button" class="cart-remove-btn text-xs text-red-500 hover:text-red-700 underline" data-id="${item.id}">
+                  Hapus
+                </button>
+              </div>
+            </div>
+            <div class="text-sm font-semibold text-gray-900">
+              ${formatIDR(itemTotal)}
+            </div>
+          </div>
+        `;
+        })
+        .join('');
+
+      subtotalEl.textContent = formatIDR(subtotal);
+
+      // Event delegation for items
+      container.querySelectorAll('.cart-qty-btn').forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const id = btn.getAttribute('data-id');
+          const delta = parseInt(btn.getAttribute('data-delta') || '0', 10);
+          window.NordicCart.updateQty(id, delta);
+        });
+      });
+
+      container.querySelectorAll('.cart-remove-btn').forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const id = btn.getAttribute('data-id');
+          window.NordicCart.removeItem(id);
+        });
+      });
+    }
+
+    // Attach DOM Events
+    document.addEventListener('DOMContentLoaded', () => {
+      renderCartUI();
+
+      const closeBtn = document.getElementById('close-cart-btn');
+      const backdrop = document.getElementById('cart-backdrop');
+      const clearBtn = document.getElementById('clear-cart-btn');
+      const continueBtn = document.getElementById('cart-continue-shopping-btn');
+
+      if (closeBtn) closeBtn.addEventListener('click', () => window.NordicCart.close());
+      if (backdrop) backdrop.addEventListener('click', () => window.NordicCart.close());
+      if (clearBtn) clearBtn.addEventListener('click', () => window.NordicCart.clear());
+      if (continueBtn) continueBtn.addEventListener('click', () => window.NordicCart.close());
+
+      window.addEventListener('nordic:cart-updated', renderCartUI);
+    });
+  })();
+</script>
