@@ -8,9 +8,8 @@ export const prerender = false;
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Dashboard - Astro & D1 Product Sync</title>
+  <title>Admin Dashboard - Astro, D1 Sync & Integrasi</title>
   <style>
-    /* Pure self-contained CSS - No external CDN dependency */
     *, *::before, *::after {
       box-sizing: border-box;
       margin: 0;
@@ -87,7 +86,8 @@ export const prerender = false;
     .nav-actions {
       display: flex;
       align-items: center;
-      gap: 0.625rem;
+      gap: 0.5rem;
+      flex-wrap: wrap;
     }
 
     /* Layout */
@@ -257,6 +257,15 @@ export const prerender = false;
     }
     .btn-dark:hover:not(:disabled) {
       background-color: #1e293b;
+    }
+
+    .btn-emerald {
+      background-color: #ecfdf5;
+      border-color: #a7f3d0;
+      color: #065f46;
+    }
+    .btn-emerald:hover:not(:disabled) {
+      background-color: #d1fae5;
     }
 
     .btn-text {
@@ -463,10 +472,12 @@ export const prerender = false;
       background-color: #ffffff;
       border-radius: 1rem;
       box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
-      max-width: 32rem;
+      max-width: 34rem;
       width: 100%;
       padding: 1.5rem;
       border: 1px solid #f1f5f9;
+      max-height: 90vh;
+      overflow-y: auto;
     }
 
     .modal-header {
@@ -502,6 +513,17 @@ export const prerender = false;
       padding-top: 1rem;
       border-top: 1px solid #f1f5f9;
       margin-top: 1rem;
+    }
+
+    .status-box {
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      font-size: 0.75rem;
+      border: 1px solid #e2e8f0;
+      background-color: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      gap: 0.375rem;
     }
 
     /* Toast */
@@ -580,6 +602,11 @@ export const prerender = false;
         <span class="badge-dot"></span>
         <span id="badge-store-name">Store: navanusa</span>
       </div>
+
+      <button id="btn-integrations-open" class="btn btn-emerald" title="Kredensial Mayar & Biteship">
+        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+        <span>Kunci API Mayar & Biteship</span>
+      </button>
 
       <button id="btn-refresh" class="btn btn-secondary">
         <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
@@ -727,12 +754,12 @@ export const prerender = false;
     </section>
   </main>
 
-  <!-- Settings Modal -->
+  <!-- Modal 1: Settings Modal (Store ID, Token, Hook) -->
   <div id="settings-modal" class="modal-overlay hidden">
     <div class="modal-card">
       <div class="modal-header">
         <div>
-          <h3 style="font-size: 1rem; font-weight: 700; color: #0f172a;">Pengaturan Sinkronisasi & API</h3>
+          <h3 style="font-size: 1rem; font-weight: 700; color: #0f172a;">Pengaturan Target & Deploy Hook</h3>
           <p style="font-size: 0.75rem; color: #64748b;">Konfigurasi endpoint dan token Cloudflare</p>
         </div>
         <button id="btn-settings-close" type="button" class="modal-close">&times;</button>
@@ -771,6 +798,71 @@ export const prerender = false;
         <div class="modal-footer">
           <button type="button" id="btn-settings-cancel" class="btn btn-secondary">Batal</button>
           <button type="submit" class="btn btn-primary">Simpan Pengaturan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal 2: Payment & Logistics Credentials (Mayar & Biteship Encrypted) -->
+  <div id="integrations-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <h3 style="font-size: 1rem; font-weight: 700; color: #0f172a;">Integrasi Mayar & Biteship</h3>
+          <p style="font-size: 0.75rem; color: #64748b;">Kredensial dienkripsi AES-256 sebelum disimpan ke D1</p>
+        </div>
+        <button id="btn-integrations-close" type="button" class="modal-close">&times;</button>
+      </div>
+
+      <!-- Current Saved Status Display -->
+      <div id="integrations-status-box" class="status-box" style="margin-top: 1rem;">
+        <div style="font-weight: 700; color: #0f172a; margin-bottom: 0.25rem;">Status Kredensial di D1:</div>
+        <div id="status-mayar-key" style="color: #64748b;">Mayar API Key: <span class="status-pill status-inactive">Belum diset</span></div>
+        <div id="status-mayar-webhook" style="color: #64748b;">Mayar Webhook Secret: <span class="status-pill status-inactive">Belum diset</span></div>
+        <div id="status-biteship-key" style="color: #64748b;">Biteship API Key: <span class="status-pill status-inactive">Belum diset</span></div>
+      </div>
+
+      <form id="integrations-form" style="display: flex; flex-direction: column; gap: 0.875rem; padding-top: 1rem;">
+        <!-- Mayar Section -->
+        <div style="padding: 0.75rem; background-color: #faf5ff; border: 1px solid #f3e8ff; border-radius: 0.75rem; display: flex; flex-direction: column; gap: 0.625rem;">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <span style="font-weight: 700; font-size: 0.8125rem; color: #6b21a8;">1. Mayar Payment Gateway</span>
+            <button type="button" id="btn-test-mayar" class="btn btn-secondary" style="font-size: 0.6875rem; padding: 0.25rem 0.5rem;">
+              Test Koneksi Mayar
+            </button>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Mayar API Key</label>
+            <input type="password" id="input-mayar-key" placeholder="Masukkan API Key Mayar baru (atau biarkan kosong jika tidak diubah)" class="input-field input-mono" style="font-size: 0.75rem;" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Mayar Webhook Secret</label>
+            <input type="password" id="input-mayar-secret" placeholder="Webhook Secret Mayar" class="input-field input-mono" style="font-size: 0.75rem;" />
+          </div>
+        </div>
+
+        <!-- Biteship Section -->
+        <div style="padding: 0.75rem; background-color: #f0fdf4; border: 1px solid #dcfce7; border-radius: 0.75rem; display: flex; flex-direction: column; gap: 0.625rem;">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <span style="font-weight: 700; font-size: 0.8125rem; color: #15803d;">2. Biteship Logistics (Ongkir & Resi)</span>
+            <button type="button" id="btn-test-biteship" class="btn btn-secondary" style="font-size: 0.6875rem; padding: 0.25rem 0.5rem;">
+              Test Koneksi Biteship
+            </button>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Biteship API Key</label>
+            <input type="password" id="input-biteship-key" placeholder="biteship_live_..." class="input-field input-mono" style="font-size: 0.75rem;" />
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" id="btn-integrations-cancel" class="btn btn-secondary">Batal</button>
+          <button type="submit" id="btn-integrations-submit" class="btn btn-primary">
+            Simpan Kredensial Terenkripsi
+          </button>
         </div>
       </form>
     </div>
@@ -833,6 +925,21 @@ export const prerender = false;
     const cfgToken = document.getElementById('cfg-token');
     const cfgDeployHook = document.getElementById('cfg-deploy-hook');
     const toastContainer = document.getElementById('toast-container');
+
+    // Integrations Modal Elements
+    const integrationsModal = document.getElementById('integrations-modal');
+    const btnIntegrationsOpen = document.getElementById('btn-integrations-open');
+    const btnIntegrationsClose = document.getElementById('btn-integrations-close');
+    const btnIntegrationsCancel = document.getElementById('btn-integrations-cancel');
+    const integrationsForm = document.getElementById('integrations-form');
+    const inputMayarKey = document.getElementById('input-mayar-key');
+    const inputMayarSecret = document.getElementById('input-mayar-secret');
+    const inputBiteshipKey = document.getElementById('input-biteship-key');
+    const btnTestMayar = document.getElementById('btn-test-mayar');
+    const btnTestBiteship = document.getElementById('btn-test-biteship');
+    const statusMayarKey = document.getElementById('status-mayar-key');
+    const statusMayarWebhook = document.getElementById('status-mayar-webhook');
+    const statusBiteshipKey = document.getElementById('status-biteship-key');
 
     function showToast(message, type = 'success') {
       const toast = document.createElement('div');
@@ -968,6 +1075,23 @@ export const prerender = false;
       }).join('');
     }
 
+    async function loadStoreIntegrations() {
+      try {
+        const base = (currentConfig.worker_url || window.location.origin).replace(/\/+$/, '');
+        const res = await fetch(`${base}/api/store/settings?store_id=${encodeURIComponent(currentConfig.store_id || 'navanusa')}`);
+        if (!res.ok) return;
+
+        const data = await res.json();
+        if (data.ok) {
+          statusMayarKey.innerHTML = `Mayar API Key: ${data.has_mayar_key ? `<span class="status-pill status-active">Aktif (${data.mayar_key_preview})</span>` : `<span class="status-pill status-inactive">Belum diset</span>`}`;
+          statusMayarWebhook.innerHTML = `Mayar Webhook: ${data.has_mayar_webhook ? `<span class="status-pill status-active">Tersimpan</span>` : `<span class="status-pill status-inactive">Belum diset</span>`}`;
+          statusBiteshipKey.innerHTML = `Biteship API Key: ${data.has_biteship_key ? `<span class="status-pill status-active">Aktif (${data.biteship_key_preview})</span>` : `<span class="status-pill status-inactive">Belum diset</span>`}`;
+        }
+      } catch (e) {
+        console.warn('Gagal memuat status integrasi:', e);
+      }
+    }
+
     window.editProduct = function(id) {
       const p = productsList.find(item => item.id === id);
       if (!p) return;
@@ -1023,6 +1147,15 @@ export const prerender = false;
       settingsModal.classList.add('hidden');
     }
 
+    function openIntegrations() {
+      loadStoreIntegrations();
+      integrationsModal.classList.remove('hidden');
+    }
+
+    function closeIntegrations() {
+      integrationsModal.classList.add('hidden');
+    }
+
     function setupEventListeners() {
       pName.addEventListener('input', () => {
         if (!pId.value) {
@@ -1043,7 +1176,8 @@ export const prerender = false;
       btnResetForm.addEventListener('click', resetForm);
       btnRefresh.addEventListener('click', () => {
         loadProducts();
-        showToast('Data produk diperbarui', 'success');
+        loadStoreIntegrations();
+        showToast('Data produk & integrasi diperbarui', 'success');
       });
 
       // Manual Rebuild Trigger
@@ -1092,8 +1226,20 @@ export const prerender = false;
       settingsModal.addEventListener('click', (e) => {
         if (e.target === settingsModal) closeSettings();
       });
+
+      // Integrations Modal
+      btnIntegrationsOpen.addEventListener('click', openIntegrations);
+      btnIntegrationsClose.addEventListener('click', closeIntegrations);
+      btnIntegrationsCancel.addEventListener('click', closeIntegrations);
+      integrationsModal.addEventListener('click', (e) => {
+        if (e.target === integrationsModal) closeIntegrations();
+      });
+
       window.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && !settingsModal.classList.contains('hidden')) closeSettings();
+        if (e.key === 'Escape') {
+          closeSettings();
+          closeIntegrations();
+        }
       });
 
       settingsForm.addEventListener('submit', (e) => {
@@ -1109,6 +1255,118 @@ export const prerender = false;
         closeSettings();
         showToast('Pengaturan berhasil disimpan!', 'success');
         loadProducts();
+      });
+
+      // Test Mayar Connection
+      btnTestMayar.addEventListener('click', async () => {
+        const key = inputMayarKey.value.trim();
+        if (!key) {
+          showToast('Ketik API Key Mayar terlebih dahulu untuk ditest', 'error');
+          return;
+        }
+
+        btnTestMayar.disabled = true;
+        btnTestMayar.textContent = 'Testing...';
+
+        try {
+          const base = (currentConfig.worker_url || window.location.origin).replace(/\/+$/, '');
+          const res = await fetch(`${base}/api/store/test-connection`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ service: 'mayar', api_key: key }),
+          });
+          const data = await res.json();
+          if (data.ok) {
+            showToast(data.message || 'Koneksi Mayar Berhasil!', 'success');
+          } else {
+            showToast(data.error || 'Koneksi Mayar Gagal', 'error');
+          }
+        } catch (err) {
+          showToast('Error: ' + err.message, 'error');
+        }
+
+        btnTestMayar.disabled = false;
+        btnTestMayar.textContent = 'Test Koneksi Mayar';
+      });
+
+      // Test Biteship Connection
+      btnTestBiteship.addEventListener('click', async () => {
+        const key = inputBiteshipKey.value.trim();
+        if (!key) {
+          showToast('Ketik API Key Biteship terlebih dahulu untuk ditest', 'error');
+          return;
+        }
+
+        btnTestBiteship.disabled = true;
+        btnTestBiteship.textContent = 'Testing...';
+
+        try {
+          const base = (currentConfig.worker_url || window.location.origin).replace(/\/+$/, '');
+          const res = await fetch(`${base}/api/store/test-connection`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ service: 'biteship', api_key: key }),
+          });
+          const data = await res.json();
+          if (data.ok) {
+            showToast(data.message || 'Koneksi Biteship Berhasil!', 'success');
+          } else {
+            showToast(data.error || 'Koneksi Biteship Gagal', 'error');
+          }
+        } catch (err) {
+          showToast('Error: ' + err.message, 'error');
+        }
+
+        btnTestBiteship.disabled = false;
+        btnTestBiteship.textContent = 'Test Koneksi Biteship';
+      });
+
+      // Submit Integrations Form (Encrypted Save)
+      integrationsForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const payload = {
+          store_id: currentConfig.store_id || 'navanusa',
+          name: currentConfig.store_name || '',
+          mayar_api_key: inputMayarKey.value.trim(),
+          mayar_webhook_secret: inputMayarSecret.value.trim(),
+          biteship_api_key: inputBiteshipKey.value.trim(),
+        };
+
+        const submitBtn = document.getElementById('btn-integrations-submit');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Mengenkripsi & Menyimpan...';
+
+        try {
+          const base = (currentConfig.worker_url || window.location.origin).replace(/\/+$/, '');
+          const headers = { 'Content-Type': 'application/json' };
+          if (currentConfig.internal_token) {
+            headers['Authorization'] = `Bearer ${currentConfig.internal_token}`;
+          }
+
+          const res = await fetch(`${base}/api/store/settings`, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify(payload),
+          });
+
+          const data = await res.json();
+          if (res.ok && data.ok) {
+            showToast('Kredensial berhasil dienkripsi & disimpan ke D1!', 'success');
+            inputMayarKey.value = '';
+            inputMayarSecret.value = '';
+            inputBiteshipKey.value = '';
+            await loadStoreIntegrations();
+            closeIntegrations();
+          } else {
+            showToast(data.error || 'Gagal menyimpan kredensial', 'error');
+          }
+        } catch (err) {
+          showToast('Error: ' + err.message, 'error');
+        }
+
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Simpan Kredensial Terenkripsi';
       });
 
       // Product Form Submission (2-Step Sync)
@@ -1215,6 +1473,7 @@ export const prerender = false;
     document.addEventListener('DOMContentLoaded', () => {
       loadConfig();
       loadProducts();
+      loadStoreIntegrations();
       setupEventListeners();
     });
   </script>
