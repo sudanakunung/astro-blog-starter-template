@@ -1,3 +1,4 @@
+/// <reference path="../worker-configuration.d.ts" />
 /// <reference types="@cloudflare/workers-types" />
 
 type Runtime = import("@astrojs/cloudflare").Runtime<Env>;

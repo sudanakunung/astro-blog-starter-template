@@ -2,7 +2,6 @@
 export const prerender = false;
 
 import ShopLayout from '../../layouts/ShopLayout.astro';
-import ProductCard from '../../components/ProductCard.astro';
 import { getProductBySlug, getActiveProducts } from '../../lib/db/productRepo';
 import { formatRupiah } from '../../lib/utils/currency';
 import type { D1Product, Store } from '../../types/d1';
@@ -167,14 +166,53 @@ const fallbackImage = 'https://images.unsplash.com/photo-1555982105-d25af4182e4e
       </div>
 
       <!-- Related Products Section -->
+      <!-- Related Products Section (Compact & Horizontal) -->
       {relatedProducts.length > 0 && (
-        <section class="border-t border-gray-200 pt-12 mt-12">
-          <h2 class="text-2xl font-normal text-gray-900 mb-8 uppercase tracking-wide">
-            Produk Terkait
-          </h2>
-          <div class="flex flex-wrap -mx-6">
+        <section class="border-t border-gray-100 pt-8 mt-10">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-base sm:text-lg font-medium text-gray-900 uppercase tracking-wider">
+              Produk Terkait
+            </h2>
+            <span class="text-xs text-gray-400">{relatedProducts.length} pilihan</span>
+          </div>
+
+          <!-- Horizontal layout: scrollable horizontally on mobile, 2/4-columns grid on desktop -->
+          <div class="flex overflow-x-auto pb-3 gap-3 md:grid md:grid-cols-2 lg:grid-cols-4 snap-x snap-mandatory">
             {relatedProducts.map((item) => (
-              <ProductCard product={item} />
+              <a
+                href={`/products/${item.slug}`}
+                class="flex items-center gap-3 p-2.5 bg-white hover:bg-gray-50 border border-gray-100 hover:border-gray-200 rounded-xl transition-all duration-200 min-w-[240px] md:min-w-0 snap-start group shadow-sm"
+              >
+                <!-- Compact Thumbnail (64x64 px) -->
+                <div class="w-16 h-16 rounded-lg overflow-hidden bg-gray-50 flex-shrink-0 border border-gray-100 relative">
+                  <img
+                    src={item.image_url || fallbackImage}
+                    alt={item.name}
+                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    loading="lazy"
+                  />
+                </div>
+
+                <!-- Product Information -->
+                <div class="flex-1 min-w-0 py-0.5">
+                  <h3 class="text-xs sm:text-sm font-medium text-gray-800 group-hover:text-black truncate transition-colors" title={item.name}>
+                    {item.name}
+                  </h3>
+                  <p class="text-xs sm:text-sm font-bold text-gray-900 mt-1">
+                    {formatRupiah(item.price)}
+                  </p>
+                  <span class="text-[10px] text-gray-400 block mt-0.5">
+                    Stok: {item.stock}
+                  </span>
+                </div>
+
+                <!-- Navigation Arrow -->
+                <div class="text-gray-300 group-hover:text-gray-600 transition-colors pr-1 flex-shrink-0">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
+              </a>
             ))}
           </div>
         </section>
