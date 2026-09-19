@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { encryptSecret, decryptSecret, maskKey } from '../../../lib/utils/crypto';
+import { initDatabase } from '../../../lib/db/initDb';
 
 export const prerender = false;
 
@@ -37,6 +38,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
         { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
       );
     }
+
+    await initDatabase(db);
 
     const body = await request.json();
     const {
@@ -127,6 +130,8 @@ export const GET: APIRoute = async ({ request, locals }) => {
         { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
       );
     }
+
+    await initDatabase(db);
 
     const url = new URL(request.url);
     const storeId = url.searchParams.get('store_id') || locals.store?.id || 'navanusa';

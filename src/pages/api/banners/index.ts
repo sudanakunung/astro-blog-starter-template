@@ -1,5 +1,7 @@
 import type { APIRoute } from 'astro';
 
+import { initDatabase } from '../../../lib/db/initDb';
+
 export const prerender = false;
 
 const corsHeaders = {
@@ -15,24 +17,6 @@ export const OPTIONS: APIRoute = async () => {
   });
 };
 
-async function ensureBannerTable(db: D1Database) {
-  await db.exec(`
-    CREATE TABLE IF NOT EXISTS banners (
-      id TEXT PRIMARY KEY,
-      store_id TEXT NOT NULL,
-      title TEXT NOT NULL,
-      image_url TEXT NOT NULL,
-      link_url TEXT NOT NULL DEFAULT '#',
-      link_text TEXT NOT NULL DEFAULT 'view product',
-      order_num INTEGER NOT NULL DEFAULT 0,
-      is_active INTEGER NOT NULL DEFAULT 1,
-      created_at INTEGER NOT NULL DEFAULT (unixepoch()),
-      updated_at INTEGER NOT NULL DEFAULT (unixepoch())
-    );
-    CREATE INDEX IF NOT EXISTS idx_banners_store ON banners(store_id);
-  `);
-}
-
 export const GET: APIRoute = async ({ request, locals }) => {
   try {
     const env = locals.runtime?.env as any;
@@ -44,7 +28,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
       );
     }
 
-    await ensureBannerTable(db);
+    await initDatabase(db);
 
     const url = new URL(request.url);
     const storeId = url.searchParams.get('store_id') || locals.store?.id || 'navanusa';
@@ -97,7 +81,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       );
     }
 
-    await ensureBannerTable(db);
+    await initDatabase(db);
 
     // 2. Baca payload
     const body = await request.json();

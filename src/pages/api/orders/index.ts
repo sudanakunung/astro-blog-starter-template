@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { createOrder } from '../../../lib/db/orderRepo';
+import { initDatabase } from '../../../lib/db/initDb';
 
 export const prerender = false;
 
@@ -53,6 +54,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       : String(shipping_address || '');
 
     if (db) {
+      await initDatabase(db);
       const orderParams = {
         id: orderId,
         store_id,
