@@ -658,6 +658,9 @@ export const prerender = false;
           method: paymentMethod,
           phone: addr.phone,
         });
+        if (data.payment_url) {
+          params.set('payment_url', data.payment_url);
+        }
         window.location.href = `/checkout/success?${params.toString()}`;
       } catch (err) {
         alert('Gagal memproses pesanan: ' + err.message);

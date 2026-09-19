@@ -1,6 +1,8 @@
 import type { APIRoute } from 'astro';
 import { createOrder } from '../../../lib/db/orderRepo';
 import { initDatabase } from '../../../lib/db/initDb';
+import { decryptSecret } from '../../../lib/utils/crypto';
+import { createMayarPayment } from '../../../lib/services/mayar';
 
 export const prerender = false;
 
@@ -20,7 +22,7 @@ export const OPTIONS: APIRoute = async () => {
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
     const env = locals.runtime?.env as any;
-    const db = env?.DB;
+    const db = env?.DB as D1Database;
     const body = await request.json();
 
     const {
@@ -56,8 +58,58 @@ export const POST: APIRoute = async ({ request, locals }) => {
       ? JSON.stringify(shipping_address) 
       : String(shipping_address || '');
 
+    let paymentUrl: string | undefined;
+    let mayarTransactionId: string | undefined;
+
     if (db) {
       await initDatabase(db);
+
+      // Jika metode pembayaran QRIS / Mayar, buat invoice / payment request ke Mayar
+      if (payment_method === 'qris') {
+        try {
+          const storeRow = await db
+            .prepare('SELECT mayar_api_key FROM stores WHERE id = ?')
+            .bind(store_id)
+            .first<{ mayar_api_key?: string }>();
+
+          if (storeRow?.mayar_api_key) {
+            const encryptionKey = env?.ENCRYPTION_KEY || process.env.ENCRYPTION_KEY;
+            let decryptedKey = storeRow.mayar_api_key;
+            try {
+              const decrypted = await decryptSecret(storeRow.mayar_api_key, encryptionKey);
+              if (decrypted) decryptedKey = decrypted;
+            } catch {
+              // Gunakan as-is jika tidak dienkripsi
+            }
+
+            if (decryptedKey) {
+              const originUrl = new URL(request.url).origin;
+              const redirectUrl = `${originUrl}/checkout/success?order_id=${orderId}&total=${calculatedTotal}&method=${payment_method}&name=${encodeURIComponent(customer_name)}&phone=${encodeURIComponent(customer_phone)}`;
+
+              const mayarRes = await createMayarPayment({
+                apiKey: decryptedKey,
+                orderId,
+                amount: calculatedTotal,
+                customerName: customer_name,
+                customerEmail: customer_email,
+                customerPhone: customer_phone,
+                description: `Pesanan #${orderId} di Navanusa`,
+                redirectUrl,
+              });
+
+              if (mayarRes.success && mayarRes.paymentUrl) {
+                paymentUrl = mayarRes.paymentUrl;
+                mayarTransactionId = mayarRes.transactionId;
+              } else if (mayarRes.error) {
+                console.warn('Mayar payment creation warning:', mayarRes.error);
+              }
+            }
+          }
+        } catch (mayarErr: any) {
+          console.error('Error generating Mayar payment link:', mayarErr.message);
+        }
+      }
+
       const orderParams = {
         id: orderId,
         store_id,
@@ -70,6 +122,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         shipping_cost: calculatedShipping,
         shipping_courier: shipping_courier || undefined,
         shipping_service: shipping_service || undefined,
+        mayar_transaction_id: mayarTransactionId,
         items: items.map((it: any) => ({
           product_id: it.id || it.product_id,
           product_name: it.name || it.product_name,
@@ -95,6 +148,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
         total_amount: calculatedTotal,
         shipping_cost: calculatedShipping,
         payment_method,
+        payment_url: paymentUrl,
+        mayar_transaction_id: mayarTransactionId,
         status: 'pending',
         message: 'Pesanan berhasil dibuat!',
       }),

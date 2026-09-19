@@ -9,6 +9,7 @@ const total = url.searchParams.get('total') || '0';
 const name = url.searchParams.get('name') || 'Pelanggan Setia';
 const method = url.searchParams.get('method') || 'qris';
 const phone = url.searchParams.get('phone') || '';
+const paymentUrl = url.searchParams.get('payment_url') || '';
 
 function formatIDR(amount: number) {
   return new Intl.NumberFormat('id-ID', {
@@ -73,8 +74,34 @@ const paymentInstruction: Record<string, string> = {
           </div>
         </div>
 
-        <!-- Payment Instructions / QRIS Mock -->
-        {method === 'qris' && (
+        <!-- Payment Instructions / Mayar Real or QRIS Mock -->
+        {method === 'qris' && paymentUrl && (
+          <div class="bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-xl p-6 mb-8 text-center shadow-sm">
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-800 mb-3">
+              ⚡ Pembayaran Online Mayar.id
+            </span>
+            <h3 class="text-base font-bold text-gray-900 mb-2">Selesaikan Pembayaran Sekarang</h3>
+            <p class="text-xs text-gray-600 max-w-md mx-auto mb-5">
+              Klik tombol di bawah untuk membuka halaman pembayaran resmi Mayar dan membayar via QRIS, GoPay, OVO, Dana, atau ShopeePay.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-3 justify-center">
+              <a
+                href={paymentUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center justify-center space-x-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold text-sm px-8 py-3.5 rounded-lg shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5"
+              >
+                <span>Bayar Sekarang via Mayar</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </a>
+            </div>
+            <p class="text-[11px] text-gray-400 mt-3">Status pesanan Anda akan otomatis diperbarui begitu pembayaran selesai diverifikasi.</p>
+          </div>
+        )}
+
+        {method === 'qris' && !paymentUrl && (
           <div class="bg-white border-2 border-dashed border-gray-300 rounded-lg p-6 mb-8 text-center">
             <h3 class="text-xs uppercase tracking-wider font-bold text-gray-800 mb-3">Scan QRIS untuk Membayar</h3>
             <div class="w-48 h-48 bg-gray-100 border border-gray-200 rounded-lg mx-auto flex items-center justify-center p-3 shadow-inner">

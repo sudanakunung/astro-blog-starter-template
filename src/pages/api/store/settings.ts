@@ -31,7 +31,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       );
     }
 
-    const db = env?.DB;
+    const db = env?.DB as D1Database;
     if (!db) {
       return new Response(
         JSON.stringify({ ok: false, error: 'Database binding (D1) not available' }),
@@ -130,7 +130,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
 export const GET: APIRoute = async ({ request, locals }) => {
   try {
     const env = locals.runtime?.env as any;
-    const db = env?.DB;
+    const db = env?.DB as D1Database;
     if (!db) {
       return new Response(
         JSON.stringify({ ok: false, error: 'Database binding (D1) not available' }),

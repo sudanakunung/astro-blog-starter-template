@@ -25,7 +25,7 @@ export const OPTIONS: APIRoute = async () => {
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
     const env = locals.runtime?.env as any;
-    const db = env?.DB;
+    const db = env?.DB as D1Database;
     if (!db) {
       return new Response(
         JSON.stringify({ ok: false, error: 'Database tidak tersedia' }),
@@ -52,12 +52,17 @@ export const POST: APIRoute = async ({ request, locals }) => {
       );
     }
 
+    interface StoreConfig {
+      biteship_api_key?: string;
+      origin_postal_code?: string;
+    }
+
     // Get store config (biteship_api_key + origin_postal_code)
     const storeId = 'navanusa';
     const store = await db
       .prepare('SELECT biteship_api_key, origin_postal_code FROM stores WHERE id = ?')
       .bind(storeId)
-      .first<any>();
+      .first<StoreConfig>();
 
     if (!store || !store.biteship_api_key) {
       return new Response(
