@@ -17,7 +17,14 @@ export async function getStoreByDomainOrId(db: D1Database, hostOrId: string): Pr
       .bind(cleanId)
       .first<Store>();
 
-    return byId ?? null;
+    if (byId) return byId;
+
+    // 3. Fallback default ke store pertama yang aktif (misal akses dari workers.dev atau domain preview)
+    const defaultStore = await db
+      .prepare("SELECT * FROM stores WHERE status = 'active' ORDER BY id = 'navanusa' DESC, created_at ASC LIMIT 1")
+      .first<Store>();
+
+    return defaultStore ?? null;
   } catch (error) {
     console.error('Error fetching store from D1:', error);
     return null;

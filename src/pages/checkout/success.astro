@@ -102,15 +102,24 @@ const paymentInstruction: Record<string, string> = {
         )}
 
         {method === 'qris' && !paymentUrl && (
-          <div class="bg-white border-2 border-dashed border-gray-300 rounded-lg p-6 mb-8 text-center">
-            <h3 class="text-xs uppercase tracking-wider font-bold text-gray-800 mb-3">Scan QRIS untuk Membayar</h3>
-            <div class="w-48 h-48 bg-gray-100 border border-gray-200 rounded-lg mx-auto flex items-center justify-center p-3 shadow-inner">
-              <!-- SVG QR Code Dummy -->
-              <svg class="w-full h-full text-gray-800" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M2 2h8v8H2V2zm2 2v4h4V4H4zm10-2h8v8h-8V2zm2 2v4h4V4h-4zM2 14h8v8H2v-8zm2 2v4h4v-4H4zm10 0h2v2h-2v-2zm4 0h4v2h-4v-2zm-4 4h4v2h-4v-2zm4 2h4v2h-4v-2zm-2-4h2v2h-2v-2zM5 5h2v2H5V5zm12 0h2v2h-2V5zM5 17h2v2H5v-2z"/>
-              </svg>
+          <div class="bg-amber-50 border border-amber-200 rounded-xl p-6 mb-8 text-center shadow-sm">
+            <div class="w-12 h-12 bg-amber-100 text-amber-700 rounded-full flex items-center justify-center mx-auto mb-3 text-xl">
+              💳
             </div>
-            <p class="text-xs text-gray-500 mt-3">{paymentInstruction[method]}</p>
+            <h3 class="text-sm font-bold text-gray-900 mb-1">Menunggu QRIS / Tautan Pembayaran Resmi</h3>
+            <p class="text-xs text-gray-600 max-w-md mx-auto mb-4 leading-relaxed">
+              Pesanan Anda telah berhasil dibuat dengan status <span class="font-semibold text-amber-800">Menunggu Pembayaran</span>. Silakan klik tombol di bawah untuk meminta kode QRIS resmi atau informasi rekening ke admin toko.
+            </p>
+            <div class="flex justify-center">
+              <a
+                href={`https://wa.me/6281234567890?text=Halo%20Admin,%20saya%20sudah%20checkout%20Order%20ID%20${orderId}%20sebesar%20${encodeURIComponent(formattedTotal)}.%20Mohon%20kirimkan%20QRIS%20resmi%20pembayaran.`}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center justify-center space-x-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs uppercase tracking-wider font-bold px-6 py-3 rounded-lg shadow transition-colors"
+              >
+                <span>Konfirmasi & Minta QRIS via WhatsApp</span>
+              </a>
+            </div>
           </div>
         )}
 
