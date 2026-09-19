@@ -130,3 +130,43 @@ CREATE TABLE IF NOT EXISTS banners (
 CREATE INDEX IF NOT EXISTS idx_banners_store ON banners(store_id);
 CREATE INDEX IF NOT EXISTS idx_banners_order ON banners(store_id, order_num);
 
+-- ------------------------------------------------------------
+-- 7. CUSTOMERS
+-- Akun pelanggan untuk login & checkout.
+-- Password disimpan sebagai SHA-256 hash + salt.
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS customers (
+  id TEXT PRIMARY KEY,
+  store_id TEXT NOT NULL REFERENCES stores(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  phone TEXT,
+  password_hash TEXT NOT NULL,       -- format: salt:hash (SHA-256)
+  created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+  updated_at INTEGER NOT NULL DEFAULT (unixepoch()),
+  UNIQUE (store_id, email)
+);
+
+CREATE INDEX IF NOT EXISTS idx_customers_store ON customers(store_id);
+CREATE INDEX IF NOT EXISTS idx_customers_email ON customers(store_id, email);
+
+-- ------------------------------------------------------------
+-- 8. CUSTOMER_ADDRESSES
+-- Buku alamat pelanggan. Minimal 1 alamat untuk bisa checkout.
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS customer_addresses (
+  id TEXT PRIMARY KEY,
+  customer_id TEXT NOT NULL REFERENCES customers(id) ON DELETE CASCADE,
+  label TEXT NOT NULL DEFAULT 'Rumah',       -- "Rumah", "Kantor", dll.
+  recipient_name TEXT NOT NULL,
+  phone TEXT NOT NULL,
+  address TEXT NOT NULL,                     -- Jalan, RT/RW, patokan, dll.
+  province TEXT NOT NULL,
+  city TEXT NOT NULL,
+  district TEXT,
+  postal_code TEXT NOT NULL,
+  is_default INTEGER NOT NULL DEFAULT 0,     -- 1 = alamat utama
+  created_at INTEGER NOT NULL DEFAULT (unixepoch())
+);
+
+CREATE INDEX IF NOT EXISTS idx_addresses_customer ON customer_addresses(customer_id);

@@ -1,5 +1,6 @@
 export async function initDatabase(db: D1Database): Promise<{ success: boolean; message: string }> {
   const statements = [
+    // 1. STORES
     `CREATE TABLE IF NOT EXISTS stores (
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL,
@@ -7,10 +8,12 @@ export async function initDatabase(db: D1Database): Promise<{ success: boolean; 
       mayar_api_key TEXT,
       mayar_webhook_secret TEXT,
       biteship_api_key TEXT,
+      origin_postal_code TEXT DEFAULT '80361',
       status TEXT NOT NULL DEFAULT 'active',
       created_at INTEGER NOT NULL DEFAULT (unixepoch()),
       updated_at INTEGER NOT NULL DEFAULT (unixepoch())
     )`,
+    // 2. PRODUCTS
     `CREATE TABLE IF NOT EXISTS products (
       id TEXT PRIMARY KEY,
       store_id TEXT NOT NULL,
@@ -26,9 +29,11 @@ export async function initDatabase(db: D1Database): Promise<{ success: boolean; 
       updated_at INTEGER NOT NULL DEFAULT (unixepoch())
     )`,
     `CREATE INDEX IF NOT EXISTS idx_products_store ON products(store_id)`,
+    // 3. ORDERS
     `CREATE TABLE IF NOT EXISTS orders (
       id TEXT PRIMARY KEY,
       store_id TEXT NOT NULL,
+      customer_id TEXT,
       customer_name TEXT NOT NULL,
       customer_phone TEXT NOT NULL,
       customer_email TEXT,
@@ -36,6 +41,8 @@ export async function initDatabase(db: D1Database): Promise<{ success: boolean; 
       status TEXT NOT NULL DEFAULT 'pending',
       total_amount INTEGER NOT NULL,
       shipping_cost INTEGER NOT NULL DEFAULT 0,
+      shipping_courier TEXT,
+      shipping_service TEXT,
       mayar_transaction_id TEXT,
       biteship_order_id TEXT,
       tracking_number TEXT,
@@ -43,6 +50,7 @@ export async function initDatabase(db: D1Database): Promise<{ success: boolean; 
       updated_at INTEGER NOT NULL DEFAULT (unixepoch())
     )`,
     `CREATE INDEX IF NOT EXISTS idx_orders_store ON orders(store_id)`,
+    // 4. ORDER_ITEMS
     `CREATE TABLE IF NOT EXISTS order_items (
       id TEXT PRIMARY KEY,
       order_id TEXT NOT NULL,
@@ -53,6 +61,7 @@ export async function initDatabase(db: D1Database): Promise<{ success: boolean; 
       subtotal INTEGER NOT NULL
     )`,
     `CREATE INDEX IF NOT EXISTS idx_order_items_order ON order_items(order_id)`,
+    // 5. STOCK_RESERVATIONS
     `CREATE TABLE IF NOT EXISTS stock_reservations (
       id TEXT PRIMARY KEY,
       product_id TEXT NOT NULL,
@@ -62,6 +71,7 @@ export async function initDatabase(db: D1Database): Promise<{ success: boolean; 
       expires_at INTEGER NOT NULL,
       created_at INTEGER NOT NULL DEFAULT (unixepoch())
     )`,
+    // 6. BANNERS
     `CREATE TABLE IF NOT EXISTS banners (
       id TEXT PRIMARY KEY,
       store_id TEXT NOT NULL,
@@ -75,22 +85,73 @@ export async function initDatabase(db: D1Database): Promise<{ success: boolean; 
       updated_at INTEGER NOT NULL DEFAULT (unixepoch())
     )`,
     `CREATE INDEX IF NOT EXISTS idx_banners_store ON banners(store_id)`,
-    `CREATE INDEX IF NOT EXISTS idx_banners_order ON banners(store_id, order_num)`
+    `CREATE INDEX IF NOT EXISTS idx_banners_order ON banners(store_id, order_num)`,
+    // 7. CUSTOMERS
+    `CREATE TABLE IF NOT EXISTS customers (
+      id TEXT PRIMARY KEY,
+      store_id TEXT NOT NULL,
+      name TEXT NOT NULL,
+      email TEXT NOT NULL,
+      phone TEXT,
+      password_hash TEXT NOT NULL,
+      created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+      updated_at INTEGER NOT NULL DEFAULT (unixepoch())
+    )`,
+    `CREATE INDEX IF NOT EXISTS idx_customers_store ON customers(store_id)`,
+    // 8. CUSTOMER_ADDRESSES
+    `CREATE TABLE IF NOT EXISTS customer_addresses (
+      id TEXT PRIMARY KEY,
+      customer_id TEXT NOT NULL,
+      label TEXT NOT NULL DEFAULT 'Rumah',
+      recipient_name TEXT NOT NULL,
+      phone TEXT NOT NULL,
+      address TEXT NOT NULL,
+      province TEXT NOT NULL,
+      city TEXT NOT NULL,
+      district TEXT,
+      postal_code TEXT NOT NULL,
+      is_default INTEGER NOT NULL DEFAULT 0,
+      created_at INTEGER NOT NULL DEFAULT (unixepoch())
+    )`,
+    `CREATE INDEX IF NOT EXISTS idx_addresses_customer ON customer_addresses(customer_id)`
   ];
 
   for (const sql of statements) {
     try {
       await db.prepare(sql).run();
     } catch (err: any) {
-      console.warn(`[initDatabase] Table migration warning:`, err?.message);
+      console.warn(`[initDatabase] Migration warning:`, err?.message);
     }
   }
 
-  // Pastikan default store 'navanusa' ada
+  // Add origin_postal_code column to stores if missing (safe ALTER)
+  try {
+    await db.prepare(`ALTER TABLE stores ADD COLUMN origin_postal_code TEXT DEFAULT '80361'`).run();
+  } catch (e) {
+    // Column already exists — safe to ignore
+  }
+
+  // Add customer_id column to orders if missing
+  try {
+    await db.prepare(`ALTER TABLE orders ADD COLUMN customer_id TEXT`).run();
+  } catch (e) {}
+  try {
+    await db.prepare(`ALTER TABLE orders ADD COLUMN shipping_courier TEXT`).run();
+  } catch (e) {}
+  try {
+    await db.prepare(`ALTER TABLE orders ADD COLUMN shipping_service TEXT`).run();
+  } catch (e) {}
+
+  // Unique index on customers(store_id, email) — safe create
+  try {
+    await db.prepare(`CREATE UNIQUE INDEX IF NOT EXISTS idx_customers_email ON customers(store_id, email)`).run();
+  } catch (e) {}
+
+  // Ensure default store 'navanusa' exists
   try {
     await db.prepare(`
-      INSERT OR IGNORE INTO stores (id, name, status, created_at, updated_at) 
-      VALUES ('navanusa', 'Navanusa Store', 'active', unixepoch(), unixepoch())
+      INSERT OR IGNORE INTO stores (id, name, status, origin_postal_code, created_at, updated_at) 
+      VALUES ('navanusa', 'Navanusa Store', 'active', '80361', unixepoch(), unixepoch())
     `).run();
   } catch (e) {}
 

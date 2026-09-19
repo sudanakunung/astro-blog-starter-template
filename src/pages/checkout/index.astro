@@ -1,6 +1,5 @@
 ---
 import ShopLayout from '../../layouts/ShopLayout.astro';
-
 export const prerender = false;
 ---
 
@@ -8,371 +7,236 @@ export const prerender = false;
   <div class="bg-gray-50 min-h-[calc(100vh-140px)] py-8 md:py-12">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
       
-      <!-- Breadcrumb Navigation -->
+      <!-- Breadcrumb -->
       <nav class="flex items-center text-xs text-gray-500 uppercase tracking-wider mb-6 space-x-2">
         <a href="/" class="hover:text-black transition-colors">Beranda</a>
-        <span>/</span>
-        <span class="text-gray-400">Keranjang</span>
         <span>/</span>
         <span class="text-black font-semibold">Checkout</span>
       </nav>
 
-      <!-- Page Heading -->
       <div class="mb-8">
-        <h1 class="text-2xl md:text-3xl font-bold uppercase tracking-wider text-gray-900">
-          Checkout & Pengiriman
-        </h1>
-        <p class="text-sm text-gray-500 mt-1">
-          Lengkapi detail pengiriman dan selesaikan pembayaran Anda secara aman.
-        </p>
+        <h1 class="text-2xl md:text-3xl font-bold uppercase tracking-wider text-gray-900">Checkout & Pengiriman</h1>
+        <p class="text-sm text-gray-500 mt-1">Pilih alamat, kurir, dan metode pembayaran.</p>
       </div>
 
-      <!-- Empty Cart Alert (Shown if cart is empty) -->
+      <!-- LOGIN GATE (shown if not logged in) -->
+      <div id="login-gate" class="hidden bg-white rounded-lg border border-gray-200 p-12 text-center shadow-sm">
+        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+        </div>
+        <h2 class="text-lg font-bold text-gray-900 mb-2">Login Diperlukan</h2>
+        <p class="text-sm text-gray-500 mb-6">Anda harus login terlebih dahulu untuk melanjutkan ke pembayaran.</p>
+        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+          <a href="/account/login?redirect=/checkout" class="bg-black text-white px-8 py-3 text-xs uppercase tracking-wider font-semibold hover:bg-gray-800 transition-colors rounded">Masuk / Login</a>
+          <a href="/account/register?redirect=/checkout" class="border border-gray-300 text-gray-800 px-8 py-3 text-xs uppercase tracking-wider font-semibold hover:bg-gray-50 transition-colors rounded">Daftar Akun Baru</a>
+        </div>
+      </div>
+
+      <!-- EMPTY CART -->
       <div id="checkout-empty-state" class="hidden bg-white rounded-lg border border-gray-200 p-12 text-center shadow-sm">
         <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400">
-          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-          </svg>
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
         </div>
-        <h2 class="text-lg font-bold text-gray-900 mb-2">Keranjang Belanja Anda Kosong</h2>
-        <p class="text-sm text-gray-500 mb-6">Tambahkan setidaknya 1 produk ke keranjang untuk melanjutkan ke pembayaran.</p>
-        <a href="/" class="inline-block bg-black text-white px-8 py-3 text-xs uppercase tracking-wider font-semibold hover:bg-gray-800 transition-colors">
-          Mulai Belanja Sekarang
-        </a>
+        <h2 class="text-lg font-bold text-gray-900 mb-2">Keranjang Belanja Kosong</h2>
+        <p class="text-sm text-gray-500 mb-6">Tambahkan produk ke keranjang untuk melanjutkan.</p>
+        <a href="/" class="inline-block bg-black text-white px-8 py-3 text-xs uppercase tracking-wider font-semibold hover:bg-gray-800 transition-colors rounded">Mulai Belanja</a>
       </div>
 
-      <!-- Main Checkout Grid -->
-      <form id="checkout-form" class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <!-- MAIN CHECKOUT (hidden until auth + cart verified) -->
+      <form id="checkout-form" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
-        <!-- Left: Form Details (8 Cols) -->
+        <!-- Left Column -->
         <div class="lg:col-span-7 space-y-6">
           
-          <!-- 1. Customer Information Card -->
+          <!-- 1. Customer Info (auto-filled) -->
           <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-            <div class="flex items-center space-x-3 mb-5 border-b border-gray-100 pb-3">
+            <div class="flex items-center space-x-3 mb-4 border-b border-gray-100 pb-3">
               <span class="flex items-center justify-center w-7 h-7 rounded-full bg-black text-white text-xs font-bold">1</span>
-              <h2 class="text-base font-bold uppercase tracking-wider text-gray-900">
-                Informasi Pelanggan
-              </h2>
+              <h2 class="text-base font-bold uppercase tracking-wider text-gray-900">Informasi Pelanggan</h2>
+            </div>
+            <div class="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg border border-gray-100">
+              <div class="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center text-sm font-bold" id="customer-avatar">?</div>
+              <div>
+                <p id="customer-name-display" class="text-sm font-semibold text-gray-900">—</p>
+                <p id="customer-email-display" class="text-xs text-gray-500">—</p>
+              </div>
+              <button type="button" id="btn-logout" class="ml-auto text-xs text-red-500 hover:text-red-700 underline">Logout</button>
+            </div>
+          </div>
+
+          <!-- 2. Address Picker -->
+          <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+            <div class="flex items-center justify-between mb-4 border-b border-gray-100 pb-3">
+              <div class="flex items-center space-x-3">
+                <span class="flex items-center justify-center w-7 h-7 rounded-full bg-black text-white text-xs font-bold">2</span>
+                <h2 class="text-base font-bold uppercase tracking-wider text-gray-900">Alamat Pengiriman</h2>
+              </div>
+              <button type="button" id="btn-add-address" class="text-xs font-semibold text-black hover:underline uppercase tracking-wider">+ Tambah Alamat</button>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div class="sm:col-span-2">
-                <label for="cust-name" class="block text-xs font-semibold uppercase tracking-wider text-gray-700 mb-1">
-                  Nama Lengkap <span class="text-red-500">*</span>
-                </label>
-                <input 
-                  type="text" 
-                  id="cust-name" 
-                  name="customer_name" 
-                  required 
-                  placeholder="Contoh: Budi Pratama"
-                  class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-300 rounded text-sm text-gray-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-all"
-                />
-              </div>
+            <!-- No Address Warning -->
+            <div id="no-address-warning" class="hidden bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg p-4 text-sm">
+              <p class="font-semibold mb-1">Belum ada alamat tersimpan</p>
+              <p class="text-xs">Anda harus menambahkan minimal 1 alamat pengiriman untuk melanjutkan checkout.</p>
+            </div>
 
-              <div>
-                <label for="cust-phone" class="block text-xs font-semibold uppercase tracking-wider text-gray-700 mb-1">
-                  Nomor WhatsApp / HP <span class="text-red-500">*</span>
-                </label>
-                <input 
-                  type="tel" 
-                  id="cust-phone" 
-                  name="customer_phone" 
-                  required 
-                  placeholder="081234567890"
-                  class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-300 rounded text-sm text-gray-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-all"
-                />
-              </div>
+            <!-- Address List (radio select) -->
+            <div id="address-list" class="space-y-3"></div>
 
-              <div>
-                <label for="cust-email" class="block text-xs font-semibold uppercase tracking-wider text-gray-700 mb-1">
-                  Email (Opsional untuk bukti bayar)
-                </label>
-                <input 
-                  type="email" 
-                  id="cust-email" 
-                  name="customer_email" 
-                  placeholder="nama@email.com"
-                  class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-300 rounded text-sm text-gray-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-all"
-                />
+            <!-- Add Address Form (initially hidden) -->
+            <div id="address-form-wrapper" class="hidden mt-4 border-t border-gray-100 pt-4">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-gray-700 mb-3">Tambah Alamat Baru</h3>
+              <div class="space-y-3">
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Label</label>
+                    <select id="addr-label" class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-black">
+                      <option value="Rumah">Rumah</option>
+                      <option value="Kantor">Kantor</option>
+                      <option value="Lainnya">Lainnya</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Nama Penerima *</label>
+                    <input type="text" id="addr-recipient" required placeholder="Nama penerima" class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-black" />
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-gray-600 mb-1">No. HP Penerima *</label>
+                  <input type="tel" id="addr-phone" required placeholder="08xxxxxxxxxx" class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-black" />
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-gray-600 mb-1">Alamat Lengkap *</label>
+                  <textarea id="addr-detail" rows="2" required placeholder="Jl. Sunset Road No. 88, Kuta" class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-black"></textarea>
+                </div>
+                <div class="grid grid-cols-3 gap-3">
+                  <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Provinsi *</label>
+                    <input type="text" id="addr-province" required placeholder="Bali" class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-black" />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Kota *</label>
+                    <input type="text" id="addr-city" required placeholder="Denpasar" class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-black" />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Kode Pos *</label>
+                    <input type="text" id="addr-postal" required placeholder="80361" class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-black" />
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <input type="checkbox" id="addr-default" class="h-4 w-4 text-black focus:ring-black rounded" />
+                  <label for="addr-default" class="text-xs text-gray-600">Jadikan alamat utama</label>
+                </div>
+                <div class="flex gap-2">
+                  <button type="button" id="btn-save-address" class="bg-black text-white px-5 py-2 text-xs uppercase tracking-wider font-semibold rounded hover:bg-gray-800 transition-colors">Simpan Alamat</button>
+                  <button type="button" id="btn-cancel-address" class="border border-gray-300 text-gray-600 px-5 py-2 text-xs uppercase tracking-wider font-semibold rounded hover:bg-gray-50 transition-colors">Batal</button>
+                </div>
               </div>
             </div>
           </div>
 
-          <!-- 2. Shipping Address Card -->
+          <!-- 3. Courier Selection (Biteship Dynamic) -->
           <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-            <div class="flex items-center space-x-3 mb-5 border-b border-gray-100 pb-3">
-              <span class="flex items-center justify-center w-7 h-7 rounded-full bg-black text-white text-xs font-bold">2</span>
-              <h2 class="text-base font-bold uppercase tracking-wider text-gray-900">
-                Alamat Pengiriman
-              </h2>
-            </div>
-
-            <div class="space-y-4">
-              <div>
-                <label for="ship-address" class="block text-xs font-semibold uppercase tracking-wider text-gray-700 mb-1">
-                  Alamat Lengkap (Jalan, No. Rumah, RT/RW, Patokan) <span class="text-red-500">*</span>
-                </label>
-                <textarea 
-                  id="ship-address" 
-                  name="address_detail" 
-                  rows="2" 
-                  required 
-                  placeholder="Jl. Sunset Road No. 88, Kuta, Bali"
-                  class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-300 rounded text-sm text-gray-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-all"
-                ></textarea>
-              </div>
-
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div>
-                  <label for="ship-province" class="block text-xs font-semibold uppercase tracking-wider text-gray-700 mb-1">
-                    Provinsi <span class="text-red-500">*</span>
-                  </label>
-                  <input 
-                    type="text" 
-                    id="ship-province" 
-                    name="province" 
-                    required 
-                    placeholder="Bali / DKI Jakarta"
-                    class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-300 rounded text-sm text-gray-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label for="ship-city" class="block text-xs font-semibold uppercase tracking-wider text-gray-700 mb-1">
-                    Kota / Kabupaten <span class="text-red-500">*</span>
-                  </label>
-                  <input 
-                    type="text" 
-                    id="ship-city" 
-                    name="city" 
-                    required 
-                    placeholder="Denpasar / Badung"
-                    class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-300 rounded text-sm text-gray-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label for="ship-postal" class="block text-xs font-semibold uppercase tracking-wider text-gray-700 mb-1">
-                    Kode Pos <span class="text-red-500">*</span>
-                  </label>
-                  <input 
-                    type="text" 
-                    id="ship-postal" 
-                    name="postal_code" 
-                    required 
-                    placeholder="80361"
-                    class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-300 rounded text-sm text-gray-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-all"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label for="ship-notes" class="block text-xs font-semibold uppercase tracking-wider text-gray-700 mb-1">
-                  Catatan untuk Kurir (Opsional)
-                </label>
-                <input 
-                  type="text" 
-                  id="ship-notes" 
-                  name="shipping_notes" 
-                  placeholder="Misal: Titipkan di satpam atau telepon sebelum antar"
-                  class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-300 rounded text-sm text-gray-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-all"
-                />
-              </div>
-            </div>
-          </div>
-
-          <!-- 3. Shipping Courier Option -->
-          <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-            <div class="flex items-center space-x-3 mb-5 border-b border-gray-100 pb-3">
+            <div class="flex items-center space-x-3 mb-4 border-b border-gray-100 pb-3">
               <span class="flex items-center justify-center w-7 h-7 rounded-full bg-black text-white text-xs font-bold">3</span>
-              <h2 class="text-base font-bold uppercase tracking-wider text-gray-900">
-                Pilih Layanan Pengiriman
-              </h2>
+              <h2 class="text-base font-bold uppercase tracking-wider text-gray-900">Pilih Kurir & Ongkir</h2>
             </div>
 
-            <div class="space-y-3" id="courier-options">
-              <label class="flex items-center justify-between p-3.5 border border-black bg-gray-50 rounded-lg cursor-pointer transition-all hover:bg-gray-100 courier-label">
-                <div class="flex items-center space-x-3">
-                  <input type="radio" name="shipping_service" value="18000" data-name="Reguler (JNE / SiCepat - 2-3 Hari)" checked class="h-4 w-4 text-black focus:ring-black" />
-                  <div>
-                    <span class="block text-sm font-semibold text-gray-900">Reguler (JNE / SiCepat / J&T)</span>
-                    <span class="block text-xs text-gray-500">Estimasi tiba 2 - 3 hari kerja</span>
-                  </div>
-                </div>
-                <span class="text-sm font-bold text-gray-900">Rp 18.000</span>
-              </label>
-
-              <label class="flex items-center justify-between p-3.5 border border-gray-200 rounded-lg cursor-pointer transition-all hover:bg-gray-50 courier-label">
-                <div class="flex items-center space-x-3">
-                  <input type="radio" name="shipping_service" value="28000" data-name="Next Day Express (1 Hari Sampai)" class="h-4 w-4 text-black focus:ring-black" />
-                  <div>
-                    <span class="block text-sm font-semibold text-gray-900">Next Day Express</span>
-                    <span class="block text-xs text-gray-500">Estimasi tiba 1 hari sampai (Biteship verified)</span>
-                  </div>
-                </div>
-                <span class="text-sm font-bold text-gray-900">Rp 28.000</span>
-              </label>
-
-              <label class="flex items-center justify-between p-3.5 border border-gray-200 rounded-lg cursor-pointer transition-all hover:bg-gray-50 courier-label">
-                <div class="flex items-center space-x-3">
-                  <input type="radio" name="shipping_service" value="35000" data-name="Instant / Sameday" class="h-4 w-4 text-black focus:ring-black" />
-                  <div>
-                    <span class="block text-sm font-semibold text-gray-900">Instant / Sameday Courier</span>
-                    <span class="block text-xs text-gray-500">Tiba di hari yang sama (Area Denpasar & Kuta)</span>
-                  </div>
-                </div>
-                <span class="text-sm font-bold text-gray-900">Rp 35.000</span>
-              </label>
+            <div id="courier-loading" class="hidden text-center py-6 text-gray-500 text-sm">
+              <svg class="animate-spin h-6 w-6 mx-auto mb-2 text-gray-400" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+              Menghitung ongkir dari Biteship...
             </div>
+
+            <div id="courier-prompt" class="text-center py-6 text-gray-400 text-sm">
+              <p>Pilih alamat pengiriman terlebih dahulu untuk melihat pilihan kurir dan tarif ongkir.</p>
+            </div>
+
+            <div id="courier-error" class="hidden bg-red-50 border border-red-200 text-red-700 rounded-lg p-3 text-sm"></div>
+
+            <div id="courier-options" class="space-y-2 hidden"></div>
           </div>
 
-          <!-- 4. Payment Method Selection -->
+          <!-- 4. Payment Method -->
           <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-            <div class="flex items-center space-x-3 mb-5 border-b border-gray-100 pb-3">
+            <div class="flex items-center space-x-3 mb-4 border-b border-gray-100 pb-3">
               <span class="flex items-center justify-center w-7 h-7 rounded-full bg-black text-white text-xs font-bold">4</span>
-              <h2 class="text-base font-bold uppercase tracking-wider text-gray-900">
-                Metode Pembayaran
-              </h2>
+              <h2 class="text-base font-bold uppercase tracking-wider text-gray-900">Metode Pembayaran</h2>
             </div>
-
-            <div class="space-y-3" id="payment-options">
-              <!-- QRIS / Mayar Gateway -->
-              <label class="flex items-center justify-between p-3.5 border border-black bg-gray-50 rounded-lg cursor-pointer transition-all hover:bg-gray-100 payment-label">
+            <div class="space-y-2">
+              <label class="flex items-center justify-between p-3 border border-black bg-gray-50 rounded-lg cursor-pointer payment-label">
                 <div class="flex items-center space-x-3">
                   <input type="radio" name="payment_method" value="qris" checked class="h-4 w-4 text-black focus:ring-black" />
                   <div>
-                    <span class="block text-sm font-semibold text-gray-900 flex items-center gap-2">
-                      QRIS / E-Wallet (Mayar Gateway)
-                      <span class="bg-green-100 text-green-800 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">Instan</span>
-                    </span>
-                    <span class="block text-xs text-gray-500">BCA, Mandiri, GoPay, OVO, Dana, ShopeePay</span>
+                    <span class="block text-sm font-semibold text-gray-900">QRIS / E-Wallet (Mayar)</span>
+                    <span class="block text-xs text-gray-500">GoPay, OVO, Dana, ShopeePay</span>
                   </div>
                 </div>
-                <span class="text-xs text-gray-400 font-mono">Bebas Biaya</span>
               </label>
-
-              <!-- Virtual Account -->
-              <label class="flex items-center justify-between p-3.5 border border-gray-200 rounded-lg cursor-pointer transition-all hover:bg-gray-50 payment-label">
+              <label class="flex items-center justify-between p-3 border border-gray-200 rounded-lg cursor-pointer payment-label">
                 <div class="flex items-center space-x-3">
                   <input type="radio" name="payment_method" value="va" class="h-4 w-4 text-black focus:ring-black" />
                   <div>
                     <span class="block text-sm font-semibold text-gray-900">Virtual Account (Bank Transfer)</span>
-                    <span class="block text-xs text-gray-500">BCA, BRI, BNI, Mandiri VA Otomatis</span>
+                    <span class="block text-xs text-gray-500">BCA, BRI, BNI, Mandiri</span>
                   </div>
                 </div>
-                <span class="text-xs text-gray-400 font-mono">Verifikasi Otomatis</span>
               </label>
-
-              <!-- Cash On Delivery (COD) -->
-              <label class="flex items-center justify-between p-3.5 border border-gray-200 rounded-lg cursor-pointer transition-all hover:bg-gray-50 payment-label">
+              <label class="flex items-center justify-between p-3 border border-gray-200 rounded-lg cursor-pointer payment-label">
                 <div class="flex items-center space-x-3">
                   <input type="radio" name="payment_method" value="cod" class="h-4 w-4 text-black focus:ring-black" />
                   <div>
                     <span class="block text-sm font-semibold text-gray-900">Cash On Delivery (COD)</span>
-                    <span class="block text-xs text-gray-500">Bayar tunai kepada kurir saat pesanan sampai</span>
+                    <span class="block text-xs text-gray-500">Bayar tunai saat paket tiba</span>
                   </div>
                 </div>
-                <span class="text-xs text-gray-400 font-mono">Tunai</span>
               </label>
             </div>
           </div>
-
         </div>
 
-        <!-- Right: Sticky Order Summary (5 Cols) -->
-        <div class="lg:col-span-5 sticky top-24 space-y-4">
-          
+        <!-- Right: Sticky Order Summary -->
+        <div class="lg:col-span-5 sticky top-24">
           <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
             <h2 class="text-base font-bold uppercase tracking-wider text-gray-900 pb-3 border-b border-gray-100 flex items-center justify-between">
               <span>Ringkasan Pesanan</span>
               <span id="summary-items-count" class="text-xs font-normal bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full">0 Produk</span>
             </h2>
 
-            <!-- Items List in Summary -->
-            <div id="summary-items-list" class="divide-y divide-gray-100 max-h-72 overflow-y-auto my-4 space-y-3 pr-1">
-              <!-- Rendered via JS -->
-            </div>
+            <div id="summary-items-list" class="divide-y divide-gray-100 max-h-56 overflow-y-auto my-4 space-y-2 pr-1"></div>
 
-            <!-- Promo Code Accordion/Input -->
-            <div class="pt-3 border-t border-gray-100">
-              <div class="flex gap-2">
-                <input 
-                  type="text" 
-                  id="promo-input" 
-                  placeholder="Kode Kupon / Voucher" 
-                  class="flex-1 uppercase px-3 py-2 text-xs bg-gray-50 border border-gray-300 rounded focus:bg-white focus:outline-none focus:border-black tracking-wider"
-                />
-                <button 
-                  type="button" 
-                  id="promo-apply-btn" 
-                  class="bg-gray-800 text-white px-4 py-2 text-xs font-semibold uppercase tracking-wider rounded hover:bg-black transition-colors"
-                >
-                  Terapkan
-                </button>
-              </div>
-              <p id="promo-msg" class="text-xs mt-1.5 hidden"></p>
-            </div>
-
-            <!-- Price Breakdown Calculation -->
-            <div class="border-t border-gray-100 pt-4 mt-4 space-y-2 text-sm">
+            <div class="border-t border-gray-100 pt-4 space-y-2 text-sm">
               <div class="flex justify-between text-gray-600">
                 <span>Subtotal Produk</span>
                 <span id="summary-subtotal" class="font-medium text-gray-900">Rp 0</span>
               </div>
               <div class="flex justify-between text-gray-600">
-                <span>Biaya Pengiriman</span>
-                <span id="summary-shipping" class="font-medium text-gray-900">Rp 18.000</span>
+                <span>Berat Total</span>
+                <span id="summary-weight" class="font-medium text-gray-900">0 g</span>
               </div>
-              <div id="summary-discount-row" class="hidden flex justify-between text-green-600 font-medium">
-                <span>Potongan Diskon</span>
-                <span id="summary-discount">-Rp 0</span>
+              <div class="flex justify-between text-gray-600">
+                <span>Ongkir (<span id="summary-courier-name">—</span>)</span>
+                <span id="summary-shipping" class="font-medium text-gray-900">Rp 0</span>
               </div>
               <div class="border-t border-gray-200 pt-3 flex justify-between items-baseline">
-                <div>
-                  <span class="text-base font-bold text-gray-900 block">Total Tagihan</span>
-                  <span class="text-[11px] text-gray-400">Termasuk PPN & Asuransi</span>
-                </div>
-                <span id="summary-grand-total" class="text-xl font-extrabold text-black">
-                  Rp 0
-                </span>
+                <span class="text-base font-bold text-gray-900">Total</span>
+                <span id="summary-grand-total" class="text-xl font-extrabold text-black">Rp 0</span>
               </div>
             </div>
 
-            <!-- Place Order Button -->
             <div class="mt-6">
-              <button 
-                type="submit" 
-                id="submit-order-btn" 
-                class="w-full bg-black text-white text-center py-4 px-6 text-sm uppercase tracking-wider font-bold rounded hover:bg-gray-800 focus:ring-4 focus:ring-gray-300 transition-all shadow-md flex items-center justify-center space-x-2"
-              >
-                <span id="btn-text">Bayar & Selesaikan Pesanan</span>
-                <svg id="btn-spinner" class="hidden animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-                </svg>
+              <button type="submit" id="submit-order-btn" disabled
+                class="w-full bg-black text-white py-4 text-sm uppercase tracking-wider font-bold rounded hover:bg-gray-800 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center space-x-2">
+                <span id="btn-text">Pilih Alamat & Kurir Dulu</span>
+                <svg id="btn-spinner" class="hidden animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
               </button>
             </div>
 
-            <!-- Security & Guarantee Badge -->
-            <div class="mt-4 pt-4 border-t border-gray-100 flex items-center justify-center space-x-4 text-gray-400 text-xs text-center">
-              <div class="flex items-center space-x-1">
-                <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
-                <span class="text-gray-600">256-Bit SSL Enkripsi</span>
-              </div>
-              <span>•</span>
-              <div class="flex items-center space-x-1">
-                <span class="text-gray-600">100% Produk Original</span>
-              </div>
+            <div class="mt-3 flex items-center justify-center space-x-3 text-gray-400 text-xs">
+              <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+              <span class="text-gray-600">Transaksi Aman & Terenkripsi</span>
             </div>
-
           </div>
-
         </div>
-
       </form>
 
     </div>
@@ -380,265 +244,428 @@ export const prerender = false;
 </ShopLayout>
 
 <script is:inline>
-  (function () {
-    const STORAGE_KEY = 'nordic_cart_items';
-    let discountAmount = 0;
+(function () {
+  const CART_KEY = 'nordic_cart_items';
+  const TOKEN_KEY = 'nordic_auth_token';
+  const CUSTOMER_KEY = 'nordic_customer';
 
-    function getCart() {
-      try {
-        return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-      } catch (e) {
-        return [];
-      }
+  let customerData = null;
+  let addressesData = [];
+  let selectedAddressId = null;
+  let selectedShippingCost = 0;
+  let selectedCourierName = '';
+
+  function getCart() {
+    try { return JSON.parse(localStorage.getItem(CART_KEY) || '[]'); } catch { return []; }
+  }
+
+  function formatIDR(n) {
+    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(n);
+  }
+
+  function getToken() {
+    return localStorage.getItem(TOKEN_KEY);
+  }
+
+  // ─── INIT ──────────────────────────────────────────────────
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    const loginGate = document.getElementById('login-gate');
+    const emptyState = document.getElementById('checkout-empty-state');
+    const checkoutForm = document.getElementById('checkout-form');
+
+    const items = getCart();
+    const token = getToken();
+
+    // 1. Check login
+    if (!token) {
+      loginGate.classList.remove('hidden');
+      return;
     }
 
-    function formatIDR(amount) {
-      return new Intl.NumberFormat('id-ID', {
-        style: 'currency',
-        currency: 'IDR',
-        minimumFractionDigits: 0,
-      }).format(amount);
+    // 2. Verify token
+    try {
+      const res = await fetch('/api/auth/me', { headers: { Authorization: `Bearer ${token}` } });
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error);
+      customerData = data.customer;
+      addressesData = data.addresses || [];
+    } catch {
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(CUSTOMER_KEY);
+      loginGate.classList.remove('hidden');
+      return;
     }
 
-    function getSelectedShippingCost() {
-      const selected = document.querySelector('input[name="shipping_service"]:checked');
-      return selected ? parseInt(selected.value, 10) : 18000;
+    // 3. Check cart
+    if (!items.length) {
+      emptyState.classList.remove('hidden');
+      return;
     }
 
-    function renderCheckoutSummary() {
-      const items = getCart();
-      const emptyState = document.getElementById('checkout-empty-state');
-      const checkoutForm = document.getElementById('checkout-form');
-      const itemsContainer = document.getElementById('summary-items-list');
-      const itemsCountEl = document.getElementById('summary-items-count');
-      const subtotalEl = document.getElementById('summary-subtotal');
-      const shippingEl = document.getElementById('summary-shipping');
-      const discountRow = document.getElementById('summary-discount-row');
-      const discountEl = document.getElementById('summary-discount');
-      const grandTotalEl = document.getElementById('summary-grand-total');
+    // 4. Show checkout
+    checkoutForm.classList.remove('hidden');
+    renderCustomerInfo();
+    renderAddresses();
+    renderSummary();
+    setupPaymentRadios();
+    setupAddressForm();
+    setupLogout();
+    setupOrderSubmit();
+  });
 
-      if (!items || items.length === 0) {
-        if (emptyState) emptyState.classList.remove('hidden');
-        if (checkoutForm) checkoutForm.classList.add('hidden');
+  // ─── RENDER CUSTOMER INFO ─────────────────────────────────
+
+  function renderCustomerInfo() {
+    document.getElementById('customer-name-display').textContent = customerData.name;
+    document.getElementById('customer-email-display').textContent = customerData.email;
+    document.getElementById('customer-avatar').textContent = (customerData.name || '?')[0].toUpperCase();
+  }
+
+  // ─── RENDER ADDRESSES ─────────────────────────────────────
+
+  function renderAddresses() {
+    const list = document.getElementById('address-list');
+    const warning = document.getElementById('no-address-warning');
+
+    if (!addressesData.length) {
+      list.innerHTML = '';
+      warning.classList.remove('hidden');
+      return;
+    }
+
+    warning.classList.add('hidden');
+    const defaultAddr = addressesData.find(a => a.is_default) || addressesData[0];
+    selectedAddressId = defaultAddr.id;
+
+    list.innerHTML = addressesData.map(addr => `
+      <label class="flex items-start p-3 border rounded-lg cursor-pointer transition-all addr-label ${addr.id === selectedAddressId ? 'border-black bg-gray-50' : 'border-gray-200 hover:bg-gray-50'}" data-addr-id="${addr.id}">
+        <input type="radio" name="selected_address" value="${addr.id}" ${addr.id === selectedAddressId ? 'checked' : ''} class="mt-1 h-4 w-4 text-black focus:ring-black" />
+        <div class="ml-3 flex-1 min-w-0">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold uppercase tracking-wider text-gray-800">${addr.label}</span>
+            ${addr.is_default ? '<span class="bg-black text-white text-[10px] px-1.5 py-0.5 rounded font-bold">UTAMA</span>' : ''}
+          </div>
+          <p class="text-sm font-semibold text-gray-900 mt-0.5">${addr.recipient_name} <span class="font-normal text-gray-500">· ${addr.phone}</span></p>
+          <p class="text-xs text-gray-500 mt-0.5 truncate">${addr.address}, ${addr.city}, ${addr.province} ${addr.postal_code}</p>
+        </div>
+      </label>
+    `).join('');
+
+    // Bind address radio changes
+    list.querySelectorAll('input[name="selected_address"]').forEach(radio => {
+      radio.addEventListener('change', () => {
+        selectedAddressId = radio.value;
+        // Update styles
+        list.querySelectorAll('.addr-label').forEach(lbl => {
+          lbl.classList.remove('border-black', 'bg-gray-50');
+          lbl.classList.add('border-gray-200');
+        });
+        radio.closest('.addr-label').classList.add('border-black', 'bg-gray-50');
+        radio.closest('.addr-label').classList.remove('border-gray-200');
+        // Fetch shipping rates
+        fetchShippingRates();
+      });
+    });
+
+    // Auto-fetch rates for default address
+    fetchShippingRates();
+  }
+
+  // ─── FETCH SHIPPING RATES (BITESHIP) ──────────────────────
+
+  async function fetchShippingRates() {
+    const addr = addressesData.find(a => a.id === selectedAddressId);
+    if (!addr) return;
+
+    const courierLoading = document.getElementById('courier-loading');
+    const courierPrompt = document.getElementById('courier-prompt');
+    const courierError = document.getElementById('courier-error');
+    const courierOptions = document.getElementById('courier-options');
+
+    courierPrompt.classList.add('hidden');
+    courierError.classList.add('hidden');
+    courierOptions.classList.add('hidden');
+    courierLoading.classList.remove('hidden');
+
+    selectedShippingCost = 0;
+    selectedCourierName = '';
+    updateSummaryTotals();
+
+    const items = getCart();
+    const biteshipItems = items.map(it => ({
+      name: it.name,
+      value: it.price,
+      weight: it.weight_gram || it.weight || 500,
+      quantity: it.qty,
+    }));
+
+    try {
+      const res = await fetch('/api/shipping/rates', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          destination_postal_code: addr.postal_code,
+          items: biteshipItems,
+        }),
+      });
+
+      const data = await res.json();
+      courierLoading.classList.add('hidden');
+
+      if (!data.ok || !data.couriers || !data.couriers.length) {
+        courierError.textContent = data.error || 'Tidak ada kurir tersedia untuk alamat ini.';
+        courierError.classList.remove('hidden');
         return;
       }
 
-      if (emptyState) emptyState.classList.add('hidden');
-      if (checkoutForm) checkoutForm.classList.remove('hidden');
+      // Render courier options
+      courierOptions.innerHTML = data.couriers.map((c, i) => `
+        <label class="flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-all courier-label ${i === 0 ? 'border-black bg-gray-50' : 'border-gray-200 hover:bg-gray-50'}">
+          <div class="flex items-center space-x-3">
+            <input type="radio" name="courier" value="${c.price}" data-code="${c.courier_code}" data-service="${c.courier_service_name}" data-name="${c.courier_name} - ${c.courier_service_name}" ${i === 0 ? 'checked' : ''} class="h-4 w-4 text-black focus:ring-black" />
+            <div>
+              <span class="block text-sm font-semibold text-gray-900">${c.courier_name} — ${c.courier_service_name}</span>
+              <span class="block text-xs text-gray-500">Estimasi ${c.duration || c.shipment_duration_range || '?'} ${c.shipment_duration_unit || 'hari'}</span>
+            </div>
+          </div>
+          <span class="text-sm font-bold text-gray-900">${formatIDR(c.price)}</span>
+        </label>
+      `).join('');
 
-      const totalQty = items.reduce((sum, it) => sum + it.qty, 0);
-      if (itemsCountEl) itemsCountEl.textContent = `${totalQty} Produk`;
+      courierOptions.classList.remove('hidden');
 
-      let subtotal = 0;
-      if (itemsContainer) {
-        itemsContainer.innerHTML = items
-          .map((item) => {
-            const itemTotal = item.price * item.qty;
-            subtotal += itemTotal;
-            return `
-              <div class="flex items-center space-x-3 py-2">
-                <div class="w-12 h-12 bg-gray-100 rounded overflow-hidden flex-shrink-0 border border-gray-100">
-                  <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover" />
-                </div>
-                <div class="flex-1 min-w-0">
-                  <p class="text-xs font-semibold text-gray-900 truncate">${item.name}</p>
-                  <p class="text-[11px] text-gray-500">${item.qty} x ${formatIDR(item.price)}</p>
-                </div>
-                <div class="text-xs font-bold text-gray-900">
-                  ${formatIDR(itemTotal)}
-                </div>
-              </div>
-            `;
-          })
-          .join('');
-      }
+      // Select first courier by default
+      const firstCourier = data.couriers[0];
+      selectedShippingCost = firstCourier.price;
+      selectedCourierName = `${firstCourier.courier_name} - ${firstCourier.courier_service_name}`;
+      updateSummaryTotals();
+      enableSubmitButton();
 
-      const shippingCost = getSelectedShippingCost();
-      const grandTotal = Math.max(0, subtotal + shippingCost - discountAmount);
-
-      if (subtotalEl) subtotalEl.textContent = formatIDR(subtotal);
-      if (shippingEl) shippingEl.textContent = formatIDR(shippingCost);
-      if (grandTotalEl) grandTotalEl.textContent = formatIDR(grandTotal);
-
-      if (discountAmount > 0 && discountRow && discountEl) {
-        discountRow.classList.remove('hidden');
-        discountEl.textContent = `-${formatIDR(discountAmount)}`;
-      } else if (discountRow) {
-        discountRow.classList.add('hidden');
-      }
-    }
-
-    // Courier selection styling
-    function setupRadioStyling() {
-      const courierRadios = document.querySelectorAll('input[name="shipping_service"]');
-      courierRadios.forEach((radio) => {
+      // Bind courier radio changes
+      courierOptions.querySelectorAll('input[name="courier"]').forEach(radio => {
         radio.addEventListener('change', () => {
-          document.querySelectorAll('.courier-label').forEach((lbl) => {
+          selectedShippingCost = parseInt(radio.value, 10);
+          selectedCourierName = radio.dataset.name;
+          // Update styles
+          courierOptions.querySelectorAll('.courier-label').forEach(lbl => {
             lbl.classList.remove('border-black', 'bg-gray-50');
             lbl.classList.add('border-gray-200');
           });
-          const parent = radio.closest('.courier-label');
-          if (parent) {
-            parent.classList.add('border-black', 'bg-gray-50');
-            parent.classList.remove('border-gray-200');
-          }
-          renderCheckoutSummary();
+          radio.closest('.courier-label').classList.add('border-black', 'bg-gray-50');
+          radio.closest('.courier-label').classList.remove('border-gray-200');
+          updateSummaryTotals();
         });
       });
-
-      const paymentRadios = document.querySelectorAll('input[name="payment_method"]');
-      paymentRadios.forEach((radio) => {
-        radio.addEventListener('change', () => {
-          document.querySelectorAll('.payment-label').forEach((lbl) => {
-            lbl.classList.remove('border-black', 'bg-gray-50');
-            lbl.classList.add('border-gray-200');
-          });
-          const parent = radio.closest('.payment-label');
-          if (parent) {
-            parent.classList.add('border-black', 'bg-gray-50');
-            parent.classList.remove('border-gray-200');
-          }
-        });
-      });
+    } catch (err) {
+      courierLoading.classList.add('hidden');
+      courierError.textContent = 'Gagal menghubungi server ongkir: ' + (err.message || '');
+      courierError.classList.remove('hidden');
     }
+  }
 
-    // Promo Code Handler
-    function setupPromo() {
-      const promoBtn = document.getElementById('promo-apply-btn');
-      const promoInput = document.getElementById('promo-input');
-      const promoMsg = document.getElementById('promo-msg');
+  // ─── RENDER ORDER SUMMARY ─────────────────────────────────
 
-      if (!promoBtn || !promoInput) return;
+  function renderSummary() {
+    const items = getCart();
+    const listEl = document.getElementById('summary-items-list');
+    const countEl = document.getElementById('summary-items-count');
 
-      promoBtn.addEventListener('click', () => {
-        const code = promoInput.value.trim().toUpperCase();
-        if (!code) return;
+    const totalQty = items.reduce((s, it) => s + it.qty, 0);
+    countEl.textContent = `${totalQty} Produk`;
 
-        if (code === 'DISKON10' || code === 'NORDIC10') {
-          const items = getCart();
-          const subtotal = items.reduce((sum, it) => sum + it.price * it.qty, 0);
-          discountAmount = Math.round(subtotal * 0.1); // 10% discount
-          if (promoMsg) {
-            promoMsg.className = 'text-xs mt-1.5 text-green-600 font-semibold';
-            promoMsg.textContent = 'Kupon 10% Diskon berhasil diterapkan!';
-            promoMsg.classList.remove('hidden');
-          }
-        } else if (code === 'FREESHIP' || code === 'ONGKIR') {
-          discountAmount = getSelectedShippingCost();
-          if (promoMsg) {
-            promoMsg.className = 'text-xs mt-1.5 text-green-600 font-semibold';
-            promoMsg.textContent = 'Kupon Gratis Ongkir berhasil diterapkan!';
-            promoMsg.classList.remove('hidden');
-          }
-        } else {
-          discountAmount = 0;
-          if (promoMsg) {
-            promoMsg.className = 'text-xs mt-1.5 text-red-500 font-medium';
-            promoMsg.textContent = 'Kode kupon tidak valid atau sudah kedaluwarsa.';
-            promoMsg.classList.remove('hidden');
-          }
+    listEl.innerHTML = items.map(item => {
+      const total = item.price * item.qty;
+      return `
+        <div class="flex items-center space-x-3 py-2">
+          <div class="w-10 h-10 bg-gray-100 rounded overflow-hidden flex-shrink-0"><img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover" /></div>
+          <div class="flex-1 min-w-0">
+            <p class="text-xs font-semibold text-gray-900 truncate">${item.name}</p>
+            <p class="text-[11px] text-gray-500">${item.qty}x ${formatIDR(item.price)}</p>
+          </div>
+          <div class="text-xs font-bold text-gray-900">${formatIDR(total)}</div>
+        </div>
+      `;
+    }).join('');
+
+    updateSummaryTotals();
+  }
+
+  function updateSummaryTotals() {
+    const items = getCart();
+    const subtotal = items.reduce((s, it) => s + it.price * it.qty, 0);
+    const totalWeight = items.reduce((s, it) => s + (it.weight_gram || it.weight || 500) * it.qty, 0);
+    const grandTotal = subtotal + selectedShippingCost;
+
+    document.getElementById('summary-subtotal').textContent = formatIDR(subtotal);
+    document.getElementById('summary-weight').textContent = `${totalWeight.toLocaleString('id-ID')} g`;
+    document.getElementById('summary-shipping').textContent = selectedShippingCost ? formatIDR(selectedShippingCost) : 'Rp 0';
+    document.getElementById('summary-courier-name').textContent = selectedCourierName || '—';
+    document.getElementById('summary-grand-total').textContent = formatIDR(grandTotal);
+  }
+
+  function enableSubmitButton() {
+    const btn = document.getElementById('submit-order-btn');
+    btn.disabled = false;
+    document.getElementById('btn-text').textContent = 'Bayar & Selesaikan Pesanan';
+  }
+
+  // ─── ADDRESS FORM ─────────────────────────────────────────
+
+  function setupAddressForm() {
+    const btnAdd = document.getElementById('btn-add-address');
+    const btnCancel = document.getElementById('btn-cancel-address');
+    const btnSave = document.getElementById('btn-save-address');
+    const wrapper = document.getElementById('address-form-wrapper');
+
+    btnAdd.addEventListener('click', () => wrapper.classList.remove('hidden'));
+    btnCancel.addEventListener('click', () => wrapper.classList.add('hidden'));
+
+    btnSave.addEventListener('click', async () => {
+      const token = getToken();
+      const body = {
+        label: document.getElementById('addr-label').value,
+        recipient_name: document.getElementById('addr-recipient').value.trim(),
+        phone: document.getElementById('addr-phone').value.trim(),
+        address: document.getElementById('addr-detail').value.trim(),
+        province: document.getElementById('addr-province').value.trim(),
+        city: document.getElementById('addr-city').value.trim(),
+        postal_code: document.getElementById('addr-postal').value.trim(),
+        is_default: document.getElementById('addr-default').checked ? 1 : 0,
+      };
+
+      if (!body.recipient_name || !body.phone || !body.address || !body.province || !body.city || !body.postal_code) {
+        alert('Semua field alamat wajib diisi.');
+        return;
+      }
+
+      btnSave.disabled = true;
+      btnSave.textContent = 'Menyimpan...';
+
+      try {
+        const res = await fetch('/api/addresses', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify(body),
+        });
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error);
+
+        // Reload addresses
+        const meRes = await fetch('/api/auth/me', { headers: { Authorization: `Bearer ${token}` } });
+        const meData = await meRes.json();
+        if (meData.ok) {
+          addressesData = meData.addresses || [];
+          renderAddresses();
         }
-        renderCheckoutSummary();
-      });
-    }
+        wrapper.classList.add('hidden');
+      } catch (err) {
+        alert('Gagal menyimpan alamat: ' + err.message);
+      } finally {
+        btnSave.disabled = false;
+        btnSave.textContent = 'Simpan Alamat';
+      }
+    });
+  }
 
-    // Form Submission
-    function setupCheckoutForm() {
-      const form = document.getElementById('checkout-form');
+  // ─── PAYMENT RADIOS ───────────────────────────────────────
+
+  function setupPaymentRadios() {
+    document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
+      radio.addEventListener('change', () => {
+        document.querySelectorAll('.payment-label').forEach(lbl => {
+          lbl.classList.remove('border-black', 'bg-gray-50');
+          lbl.classList.add('border-gray-200');
+        });
+        radio.closest('.payment-label').classList.add('border-black', 'bg-gray-50');
+        radio.closest('.payment-label').classList.remove('border-gray-200');
+      });
+    });
+  }
+
+  // ─── LOGOUT ───────────────────────────────────────────────
+
+  function setupLogout() {
+    document.getElementById('btn-logout').addEventListener('click', () => {
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(CUSTOMER_KEY);
+      window.location.reload();
+    });
+  }
+
+  // ─── ORDER SUBMISSION ─────────────────────────────────────
+
+  function setupOrderSubmit() {
+    const form = document.getElementById('checkout-form');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const items = getCart();
+      if (!items.length) { alert('Keranjang kosong.'); return; }
+      if (!selectedAddressId) { alert('Pilih alamat pengiriman.'); return; }
+      if (!selectedShippingCost) { alert('Pilih kurir pengiriman.'); return; }
+
+      const addr = addressesData.find(a => a.id === selectedAddressId);
+      const paymentMethod = document.querySelector('input[name="payment_method"]:checked')?.value || 'qris';
+      const courierRadio = document.querySelector('input[name="courier"]:checked');
+
+      const subtotal = items.reduce((s, it) => s + it.price * it.qty, 0);
+      const totalAmount = subtotal + selectedShippingCost;
+
       const submitBtn = document.getElementById('submit-order-btn');
       const btnText = document.getElementById('btn-text');
       const btnSpinner = document.getElementById('btn-spinner');
 
-      if (!form) return;
+      submitBtn.disabled = true;
+      btnText.textContent = 'Memproses Pesanan...';
+      btnSpinner.classList.remove('hidden');
 
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const items = getCart();
-        if (items.length === 0) {
-          alert('Keranjang belanja kosong.');
-          return;
-        }
+      try {
+        const res = await fetch('/api/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getToken()}` },
+          body: JSON.stringify({
+            customer_id: customerData.id,
+            customer_name: addr.recipient_name,
+            customer_phone: addr.phone,
+            customer_email: customerData.email,
+            shipping_address: {
+              address: addr.address,
+              city: addr.city,
+              province: addr.province,
+              postal_code: addr.postal_code,
+            },
+            shipping_cost: selectedShippingCost,
+            shipping_courier: courierRadio?.dataset?.code || '',
+            shipping_service: courierRadio?.dataset?.service || '',
+            total_amount: totalAmount,
+            payment_method: paymentMethod,
+            items,
+          }),
+        });
 
-        const formData = new FormData(form);
-        const customer_name = formData.get('customer_name');
-        const customer_phone = formData.get('customer_phone');
-        const customer_email = formData.get('customer_email');
-        const address_detail = formData.get('address_detail');
-        const province = formData.get('province');
-        const city = formData.get('city');
-        const postal_code = formData.get('postal_code');
-        const shipping_notes = formData.get('shipping_notes');
-        const shipping_service = formData.get('shipping_service');
-        const payment_method = formData.get('payment_method');
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error);
 
-        const shipping_cost = parseInt(shipping_service || '18000', 10);
-        const subtotal = items.reduce((sum, it) => sum + it.price * it.qty, 0);
-        const total_amount = Math.max(0, subtotal + shipping_cost - discountAmount);
+        // Clear cart
+        localStorage.removeItem(CART_KEY);
+        window.dispatchEvent(new CustomEvent('nordic:cart-updated', { detail: { items: [] } }));
 
-        const shippingAddressObj = {
-          address: address_detail,
-          city: city,
-          province: province,
-          postal_code: postal_code,
-          notes: shipping_notes,
-        };
-
-        // Loading state
-        if (submitBtn) submitBtn.disabled = true;
-        if (btnText) btnText.textContent = 'Memproses Pesanan...';
-        if (btnSpinner) btnSpinner.classList.remove('hidden');
-
-        try {
-          const res = await fetch('/api/orders', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              customer_name,
-              customer_phone,
-              customer_email,
-              shipping_address: shippingAddressObj,
-              shipping_cost,
-              total_amount,
-              payment_method,
-              items,
-            }),
-          });
-
-          const data = await res.json();
-
-          if (!res.ok || !data.ok) {
-            throw new Error(data.error || 'Gagal membuat pesanan');
-          }
-
-          // Clear local cart
-          localStorage.removeItem(STORAGE_KEY);
-          window.dispatchEvent(new CustomEvent('nordic:cart-updated', { detail: { items: [] } }));
-
-          // Redirect to success confirmation page
-          const params = new URLSearchParams({
-            order_id: data.order_id,
-            total: total_amount.toString(),
-            name: customer_name.toString(),
-            method: payment_method.toString(),
-            phone: customer_phone.toString(),
-          });
-
-          window.location.href = `/checkout/success?${params.toString()}`;
-        } catch (err) {
-          console.error('Checkout error:', err);
-          alert('Terjadi kesalahan saat memproses pesanan: ' + (err.message || 'Coba lagi beberapa saat lagi.'));
-          if (submitBtn) submitBtn.disabled = false;
-          if (btnText) btnText.textContent = 'Bayar & Selesaikan Pesanan';
-          if (btnSpinner) btnSpinner.classList.add('hidden');
-        }
-      });
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      renderCheckoutSummary();
-      setupRadioStyling();
-      setupPromo();
-      setupCheckoutForm();
+        const params = new URLSearchParams({
+          order_id: data.order_id,
+          total: totalAmount.toString(),
+          name: addr.recipient_name,
+          method: paymentMethod,
+          phone: addr.phone,
+        });
+        window.location.href = `/checkout/success?${params.toString()}`;
+      } catch (err) {
+        alert('Gagal memproses pesanan: ' + err.message);
+        submitBtn.disabled = false;
+        btnText.textContent = 'Bayar & Selesaikan Pesanan';
+        btnSpinner.classList.add('hidden');
+      }
     });
-  })();
+  }
+})();
 </script>

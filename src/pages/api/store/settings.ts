@@ -48,6 +48,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       mayar_api_key = '',
       mayar_webhook_secret = '',
       biteship_api_key = '',
+      origin_postal_code = '',
     } = body;
 
     if (!store_id) {
@@ -61,7 +62,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     // 2. Ambil data store yang ada jika ada field yang tidak diisi (supaya tidak menimpa key lama jika tidak diubah)
     const existingStore = await db
-      .prepare('SELECT mayar_api_key, mayar_webhook_secret, biteship_api_key, name FROM stores WHERE id = ?')
+      .prepare('SELECT mayar_api_key, mayar_webhook_secret, biteship_api_key, origin_postal_code, name FROM stores WHERE id = ?')
       .bind(store_id)
       .first<any>();
 
@@ -80,18 +81,23 @@ export const POST: APIRoute = async ({ request, locals }) => {
       encryptedBiteshipKey = await encryptSecret(biteship_api_key, encryptionKey);
     }
 
+    const postalCode = origin_postal_code && origin_postal_code.trim() !== ''
+      ? origin_postal_code.trim()
+      : (existingStore?.origin_postal_code || '80361');
+
     const storeName = name || existingStore?.name || 'Store ' + store_id;
 
     // 3. Upsert (First-time setup / update aman)
     await db
       .prepare(
-        `INSERT INTO stores (id, name, mayar_api_key, mayar_webhook_secret, biteship_api_key, status, updated_at)
-         VALUES (?, ?, ?, ?, ?, 'active', unixepoch())
+        `INSERT INTO stores (id, name, mayar_api_key, mayar_webhook_secret, biteship_api_key, origin_postal_code, status, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, 'active', unixepoch())
          ON CONFLICT(id) DO UPDATE SET
            name = excluded.name,
            mayar_api_key = excluded.mayar_api_key,
            mayar_webhook_secret = excluded.mayar_webhook_secret,
            biteship_api_key = excluded.biteship_api_key,
+           origin_postal_code = excluded.origin_postal_code,
            updated_at = unixepoch()`
       )
       .bind(
@@ -99,7 +105,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
         storeName,
         encryptedMayarKey,
         encryptedWebhookSecret,
-        encryptedBiteshipKey
+        encryptedBiteshipKey,
+        postalCode
       )
       .run();
 
@@ -138,7 +145,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
     const encryptionKey = env?.ENCRYPTION_KEY || process.env.ENCRYPTION_KEY;
 
     const store = await db
-      .prepare('SELECT id, name, domain, mayar_api_key, mayar_webhook_secret, biteship_api_key, status FROM stores WHERE id = ?')
+      .prepare('SELECT id, name, domain, mayar_api_key, mayar_webhook_secret, biteship_api_key, origin_postal_code, status FROM stores WHERE id = ?')
       .bind(storeId)
       .first<any>();
 
@@ -148,6 +155,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
           ok: true,
           store_id: storeId,
           name: '',
+          origin_postal_code: '80361',
           has_mayar_key: false,
           mayar_key_preview: '',
           has_mayar_webhook: false,
@@ -185,6 +193,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
         store_id: store.id,
         name: store.name,
         domain: store.domain,
+        origin_postal_code: store.origin_postal_code || '80361',
         status: store.status,
         has_mayar_key: Boolean(store.mayar_api_key && store.mayar_api_key !== ''),
         mayar_key_preview: mayarPreview,

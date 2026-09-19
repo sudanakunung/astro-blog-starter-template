@@ -25,11 +25,14 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     const {
       store_id = locals.store?.id || 'navanusa',
+      customer_id,
       customer_name,
       customer_phone,
       customer_email,
       shipping_address,
       shipping_cost = 0,
+      shipping_courier,
+      shipping_service,
       total_amount,
       payment_method = 'qris',
       items = [],
@@ -58,12 +61,15 @@ export const POST: APIRoute = async ({ request, locals }) => {
       const orderParams = {
         id: orderId,
         store_id,
+        customer_id: customer_id || undefined,
         customer_name,
         customer_phone,
         customer_email: customer_email || undefined,
         shipping_address: addressString,
         total_amount: calculatedTotal,
         shipping_cost: calculatedShipping,
+        shipping_courier: shipping_courier || undefined,
+        shipping_service: shipping_service || undefined,
         items: items.map((it: any) => ({
           product_id: it.id || it.product_id,
           product_name: it.name || it.product_name,

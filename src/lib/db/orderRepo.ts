@@ -3,12 +3,15 @@ import type { Order, OrderItem } from '../../types/d1';
 export interface CreateOrderParams {
   id: string;
   store_id: string;
+  customer_id?: string;
   customer_name: string;
   customer_phone: string;
   customer_email?: string;
   shipping_address: string;
   total_amount: number;
   shipping_cost: number;
+  shipping_courier?: string;
+  shipping_service?: string;
   items: Array<{
     product_id: string;
     product_name: string;
@@ -25,17 +28,20 @@ export async function createOrder(db: D1Database, params: CreateOrderParams): Pr
     // 1. Insert main order
     statements.push(
       db.prepare(
-        `INSERT INTO orders (id, store_id, customer_name, customer_phone, customer_email, shipping_address, status, total_amount, shipping_cost, created_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?, 'pending', ?, ?, unixepoch(), unixepoch())`
+        `INSERT INTO orders (id, store_id, customer_id, customer_name, customer_phone, customer_email, shipping_address, status, total_amount, shipping_cost, shipping_courier, shipping_service, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?, ?, unixepoch(), unixepoch())`
       ).bind(
         params.id,
         params.store_id,
+        params.customer_id || null,
         params.customer_name,
         params.customer_phone,
         params.customer_email || null,
         params.shipping_address,
         Math.round(params.total_amount),
-        Math.round(params.shipping_cost)
+        Math.round(params.shipping_cost),
+        params.shipping_courier || null,
+        params.shipping_service || null
       )
     );
 
