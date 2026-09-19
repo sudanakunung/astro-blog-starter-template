@@ -82,6 +82,45 @@ func (a *App) TriggerRebuild() (string, error) {
 	return a.syncService.TriggerRebuild(cfg)
 }
 
+// SyncBanner mengirim data banner ke D1
+func (a *App) SyncBanner(banner models.Banner) (models.SyncResult, error) {
+	cfg, err := a.configStorage.Load()
+	if err != nil {
+		return models.SyncResult{
+			Success: false,
+			Message: "Gagal membaca konfigurasi toko",
+		}, err
+	}
+
+	if banner.ID == "" {
+		banner.ID = uuid.NewString()
+	}
+	if banner.StoreID == "" {
+		banner.StoreID = cfg.StoreID
+	}
+
+	return a.syncService.SyncBanner(banner, cfg)
+}
+
+// FetchBanners mengambil semua banner dari D1
+func (a *App) FetchBanners() ([]models.Banner, error) {
+	cfg, err := a.configStorage.Load()
+	if err != nil {
+		return nil, err
+	}
+	return a.syncService.FetchRemoteBanners(cfg)
+}
+
+// DeleteBanner menghapus banner dari D1
+func (a *App) DeleteBanner(bannerID string) error {
+	cfg, err := a.configStorage.Load()
+	if err != nil {
+		return err
+	}
+	return a.syncService.DeleteRemoteBanner(bannerID, cfg)
+}
+
+
 // SaveStoreSettings mengirim kredensial Mayar & Biteship ke D1 via Worker (dienkripsi di server)
 func (a *App) SaveStoreSettings(settings models.StoreSettings) error {
 	cfg, err := a.configStorage.Load()

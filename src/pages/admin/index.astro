@@ -10,6 +10,28 @@ export const prerender = false;
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Dashboard - Astro, D1 Sync & Integrasi</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --primary-light: #eef2ff;
+      --primary-border: #e0e7ff;
+      --bg-app: #f8fafc;
+      --bg-card: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --text-subtle: #94a3b8;
+      --border-color: #e2e8f0;
+      --border-hover: #cbd5e1;
+      --radius-lg: 16px;
+      --radius-md: 10px;
+      --radius-sm: 6px;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+      --shadow-lg: 0 10px 25px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+    }
+
     *, *::before, *::after {
       box-sizing: border-box;
       margin: 0;
@@ -17,53 +39,62 @@ export const prerender = false;
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background-color: #f8fafc;
-      color: #1e293b;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-app);
+      color: var(--text-main);
       line-height: 1.5;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    input, textarea, select {
+      font-family: inherit;
     }
 
     /* Top Navbar */
     .navbar {
-      background-color: #ffffff;
-      border-bottom: 1px solid #e2e8f0;
-      padding: 0.875rem 1.5rem;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.75rem 1.75rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
       position: sticky;
       top: 0;
-      z-index: 30;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      z-index: 40;
+      box-shadow: var(--shadow-sm);
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 0.875rem;
     }
 
     .brand-icon {
-      width: 2.25rem;
-      height: 2.25rem;
-      border-radius: 0.625rem;
-      background-color: #4f46e5;
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
       color: #ffffff;
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 800;
-      font-size: 1.125rem;
-      box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.25);
+      font-size: 1.25rem;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
     }
 
     .brand-title {
-      font-size: 1rem;
-      font-weight: 700;
-      color: #0f172a;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--text-main);
+      letter-spacing: -0.02em;
       display: flex;
       align-items: center;
       gap: 0.5rem;
@@ -71,49 +102,90 @@ export const prerender = false;
 
     .brand-sub {
       font-size: 0.75rem;
-      color: #64748b;
+      color: var(--text-muted);
+      font-weight: 500;
     }
 
     .badge-web {
-      font-size: 0.625rem;
+      font-size: 0.65rem;
       font-weight: 700;
       background-color: #e0e7ff;
       color: #4338ca;
-      padding: 0.125rem 0.5rem;
+      padding: 0.15rem 0.5rem;
       border-radius: 9999px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
 
     .nav-actions {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.625rem;
       flex-wrap: wrap;
+    }
+
+    /* Tabs Bar */
+    .tabs-bar {
+      background-color: #ffffff;
+      border-bottom: 1px solid var(--border-color);
+      padding: 0 1.75rem;
+      display: flex;
+      gap: 2rem;
+    }
+
+    .tab-btn {
+      padding: 0.9rem 0.25rem;
+      border: none;
+      background: none;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-bottom: 2.5px solid transparent;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .tab-btn:hover {
+      color: var(--text-main);
+    }
+
+    .tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+      font-weight: 700;
     }
 
     /* Layout */
     .container {
-      max-width: 1280px;
+      max-width: 1440px;
       width: 100%;
       margin: 0 auto;
-      padding: 1.5rem;
+      padding: 1.5rem 1.75rem;
       flex: 1;
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 1.5rem;
     }
 
-    @media (min-width: 1024px) {
-      .container {
-        grid-template-columns: 5fr 7fr;
+    .tab-pane-grid {
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    @media (max-width: 960px) {
+      .tab-pane-grid {
+        grid-template-columns: 1fr;
       }
     }
 
     .card {
-      background-color: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 1rem;
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
       padding: 1.5rem;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+      box-shadow: var(--shadow-sm);
       display: flex;
       flex-direction: column;
     }
@@ -122,27 +194,29 @@ export const prerender = false;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding-bottom: 0.75rem;
-      margin-bottom: 1rem;
-      border-bottom: 1px solid #f1f5f9;
+      padding-bottom: 1rem;
+      margin-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border-color);
     }
 
     .card-title {
-      font-size: 1rem;
-      font-weight: 700;
-      color: #0f172a;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--text-main);
+      letter-spacing: -0.01em;
     }
 
     .card-sub {
-      font-size: 0.75rem;
-      color: #64748b;
+      font-size: 0.775rem;
+      color: var(--text-muted);
+      margin-top: 0.15rem;
     }
 
     /* Forms */
     .form-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 0.875rem;
+      gap: 1rem;
     }
 
     .col-span-2 {
@@ -155,31 +229,40 @@ export const prerender = false;
     }
 
     .form-label {
-      font-size: 0.75rem;
-      font-weight: 600;
+      font-size: 0.775rem;
+      font-weight: 700;
       color: #334155;
-      margin-bottom: 0.25rem;
+      margin-bottom: 0.375rem;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
     }
 
     .input-field {
       width: 100%;
-      padding: 0.5rem 0.75rem;
-      border-radius: 0.5rem;
-      border: 1px solid #cbd5e1;
+      padding: 0.625rem 0.875rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
       background-color: #ffffff;
-      color: #0f172a;
+      color: var(--text-main);
       font-size: 0.875rem;
+      font-weight: 500;
       outline: none;
-      transition: all 0.15s ease-in-out;
+      transition: all 0.18s ease;
+    }
+
+    .input-field:hover {
+      border-color: var(--border-hover);
     }
 
     .input-field:focus {
-      border-color: #4f46e5;
-      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+      background-color: #ffffff;
     }
 
     .input-mono {
-      font-family: ui-monospace, Menlo, Consolas, monospace;
+      font-family: 'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace;
     }
 
     .currency-wrap {
@@ -188,17 +271,17 @@ export const prerender = false;
 
     .currency-prefix {
       position: absolute;
-      left: 0.75rem;
+      left: 0.875rem;
       top: 50%;
       transform: translateY(-50%);
-      font-size: 0.75rem;
+      font-size: 0.8rem;
       font-weight: 700;
-      color: #64748b;
+      color: var(--text-muted);
     }
 
     .input-currency {
-      padding-left: 2.25rem;
-      font-family: ui-monospace, Menlo, monospace;
+      padding-left: 2.5rem;
+      font-family: 'JetBrains Mono', monospace;
       font-weight: 700;
     }
 
@@ -207,15 +290,15 @@ export const prerender = false;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 0.375rem;
-      padding: 0.5rem 0.875rem;
-      border-radius: 0.5rem;
-      font-weight: 600;
+      gap: 0.45rem;
+      padding: 0.55rem 0.95rem;
+      border-radius: var(--radius-md);
+      font-weight: 700;
       font-size: 0.8125rem;
       text-decoration: none;
       border: 1px solid transparent;
       cursor: pointer;
-      transition: all 0.15s ease-in-out;
+      transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .btn:disabled {
@@ -224,22 +307,36 @@ export const prerender = false;
     }
 
     .btn-primary {
-      background-color: #4f46e5;
+      background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
       color: #ffffff;
-      box-shadow: 0 2px 4px rgba(79, 70, 229, 0.2);
+      box-shadow: 0 2px 8px rgba(79, 70, 229, 0.25);
     }
     .btn-primary:hover:not(:disabled) {
-      background-color: #4338ca;
+      background: linear-gradient(135deg, #4338ca 0%, #4f46e5 100%);
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
+      transform: translateY(-1px);
+    }
+
+    .btn-danger {
+      background-color: #fef2f2;
+      border-color: #fecaca;
+      color: #dc2626;
+    }
+    .btn-danger:hover:not(:disabled) {
+      background-color: #fee2e2;
+      border-color: #fca5a5;
     }
 
     .btn-secondary {
       background-color: #ffffff;
-      border-color: #e2e8f0;
+      border-color: var(--border-color);
       color: #334155;
+      box-shadow: var(--shadow-sm);
     }
     .btn-secondary:hover:not(:disabled) {
       background-color: #f8fafc;
-      border-color: #cbd5e1;
+      border-color: var(--border-hover);
+      color: var(--text-main);
     }
 
     .btn-warning {
@@ -271,35 +368,36 @@ export const prerender = false;
     .btn-text {
       background: none;
       border: none;
-      color: #4f46e5;
-      font-size: 0.75rem;
-      font-weight: 600;
-      padding: 0.25rem 0.5rem;
+      color: var(--primary);
+      font-size: 0.775rem;
+      font-weight: 700;
+      padding: 0.3rem 0.6rem;
       cursor: pointer;
-      border-radius: 0.375rem;
+      border-radius: var(--radius-sm);
+      transition: all 0.15s ease;
     }
     .btn-text:hover {
-      background-color: #eef2ff;
+      background-color: var(--primary-light);
     }
 
     .btn-sync-large {
       width: 100%;
-      padding: 0.75rem;
-      font-size: 0.875rem;
+      padding: 0.85rem;
+      font-size: 0.9rem;
     }
 
     /* Badge */
     .badge {
       display: inline-flex;
       align-items: center;
-      gap: 0.375rem;
-      padding: 0.25rem 0.625rem;
+      gap: 0.4rem;
+      padding: 0.35rem 0.75rem;
       border-radius: 9999px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      background-color: #eef2ff;
-      border: 1px solid #e0e7ff;
-      color: #4338ca;
+      font-size: 0.775rem;
+      font-weight: 700;
+      background-color: var(--primary-light);
+      border: 1px solid var(--primary-border);
+      color: var(--primary);
     }
 
     .badge-dot {
@@ -309,71 +407,28 @@ export const prerender = false;
       background-color: #10b981;
     }
 
-    /* Sync Timeline Log */
-    .sync-log-box {
-      margin-top: 0.75rem;
-      padding: 0.875rem;
-      background-color: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 0.75rem;
-      font-size: 0.75rem;
-    }
-
-    .sync-log-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+    .status-pill {
+      font-size: 0.675rem;
       font-weight: 700;
-      color: #1e293b;
-      padding-bottom: 0.375rem;
-      border-bottom: 1px solid #e2e8f0;
-      margin-bottom: 0.5rem;
-    }
-
-    .step-row {
-      display: flex;
-      align-items: flex-start;
-      gap: 0.625rem;
-      margin-top: 0.5rem;
-    }
-
-    .step-indicator {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 1.35rem;
-      height: 1.35rem;
+      padding: 0.15rem 0.5rem;
       border-radius: 9999px;
-      background-color: #e2e8f0;
-      color: #475569;
-      font-size: 0.6875rem;
-      font-weight: 700;
-      flex-shrink: 0;
+    }
+    .status-active {
+      background-color: #d1fae5;
+      color: #047857;
+    }
+    .status-inactive {
+      background-color: #f1f5f9;
+      color: #64748b;
     }
 
-    .step-success {
-      background-color: #10b981 !important;
-      color: #ffffff !important;
-    }
-
-    .step-error {
-      background-color: #ef4444 !important;
-      color: #ffffff !important;
-    }
-
-    .step-loading {
-      background-color: #3b82f6 !important;
-      color: #ffffff !important;
-      animation: pulse 1.5s infinite;
-    }
-
-    /* Product Item List */
+    /* Product & Banner List */
     .product-list-container {
       display: flex;
       flex-direction: column;
-      gap: 0.75rem;
+      gap: 0.875rem;
       overflow-y: auto;
-      max-height: calc(100vh - 220px);
+      max-height: calc(100vh - 250px);
       padding-right: 0.25rem;
     }
 
@@ -381,23 +436,33 @@ export const prerender = false;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 0.75rem;
-      padding: 0.875rem;
+      gap: 1rem;
+      padding: 1rem;
       background-color: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 0.75rem;
-      transition: all 0.15s ease;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      transition: all 0.18s ease;
     }
 
     .product-item:hover {
-      border-color: #cbd5e1;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+      border-color: var(--border-hover);
+      box-shadow: var(--shadow-sm);
+      transform: translateY(-1px);
     }
 
     .product-thumb {
-      width: 3.5rem;
-      height: 3.5rem;
-      border-radius: 0.5rem;
+      width: 4rem;
+      height: 4rem;
+      border-radius: var(--radius-md);
+      object-fit: cover;
+      border: 1px solid #f1f5f9;
+      flex-shrink: 0;
+    }
+
+    .banner-thumb {
+      width: 6.5rem;
+      height: 3.75rem;
+      border-radius: var(--radius-md);
       object-fit: cover;
       border: 1px solid #f1f5f9;
       flex-shrink: 0;
@@ -412,70 +477,58 @@ export const prerender = false;
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      flex-wrap: wrap;
     }
 
     .product-name {
-      font-size: 0.8125rem;
+      font-size: 0.875rem;
       font-weight: 700;
-      color: #0f172a;
+      color: var(--text-main);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
     .product-price {
-      font-family: ui-monospace, Menlo, monospace;
-      font-size: 0.8125rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.875rem;
       font-weight: 800;
-      color: #4f46e5;
-      margin-top: 0.125rem;
+      color: var(--primary);
+      margin-top: 0.15rem;
     }
 
     .product-meta {
-      font-size: 0.6875rem;
-      color: #64748b;
+      font-size: 0.725rem;
+      color: var(--text-muted);
       display: flex;
       align-items: center;
-      gap: 0.375rem;
-      margin-top: 0.125rem;
+      gap: 0.4rem;
+      margin-top: 0.15rem;
+      flex-wrap: wrap;
     }
 
-    .status-pill {
-      font-size: 0.625rem;
-      font-weight: 700;
-      padding: 0.125rem 0.375rem;
-      border-radius: 9999px;
-    }
-    .status-active {
-      background-color: #d1fae5;
-      color: #047857;
-    }
-    .status-inactive {
-      background-color: #f1f5f9;
-      color: #64748b;
-    }
-
-    /* Modal Overlay */
+    /* Modals */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background-color: rgba(15, 23, 42, 0.6);
-      backdrop-filter: blur(4px);
-      z-index: 50;
+      background-color: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      z-index: 60;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 1rem;
+      padding: 1.25rem;
     }
 
     .modal-card {
       background-color: #ffffff;
-      border-radius: 1rem;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
-      max-width: 34rem;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      max-width: 36rem;
       width: 100%;
-      padding: 1.5rem;
-      border: 1px solid #f1f5f9;
+      padding: 1.75rem;
+      border: 1px solid var(--border-color);
       max-height: 90vh;
       overflow-y: auto;
     }
@@ -484,71 +537,72 @@ export const prerender = false;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding-bottom: 0.75rem;
-      border-bottom: 1px solid #f1f5f9;
+      padding-bottom: 0.875rem;
+      border-bottom: 1px solid var(--border-color);
     }
 
     .modal-close {
       width: 2rem;
       height: 2rem;
-      border-radius: 0.5rem;
+      border-radius: var(--radius-sm);
       border: none;
       background: none;
-      color: #94a3b8;
-      font-size: 1.25rem;
+      color: var(--text-subtle);
+      font-size: 1.35rem;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
+      transition: all 0.15s ease;
     }
     .modal-close:hover {
       background-color: #f1f5f9;
-      color: #334155;
+      color: var(--text-main);
     }
 
     .modal-footer {
       display: flex;
       justify-content: flex-end;
-      gap: 0.5rem;
-      padding-top: 1rem;
-      border-top: 1px solid #f1f5f9;
-      margin-top: 1rem;
+      gap: 0.625rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--border-color);
+      margin-top: 1.25rem;
     }
 
     .status-box {
-      padding: 0.75rem;
-      border-radius: 0.5rem;
-      font-size: 0.75rem;
-      border: 1px solid #e2e8f0;
+      padding: 0.875rem;
+      border-radius: var(--radius-md);
+      font-size: 0.775rem;
+      border: 1px solid var(--border-color);
       background-color: #f8fafc;
       display: flex;
       flex-direction: column;
-      gap: 0.375rem;
+      gap: 0.4rem;
     }
 
     /* Toast */
     .toast-container {
       position: fixed;
-      bottom: 1.25rem;
-      right: 1.25rem;
-      z-index: 60;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 70;
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
+      gap: 0.625rem;
       pointer-events: none;
     }
 
     .toast-item {
-      padding: 0.625rem 1rem;
-      border-radius: 0.75rem;
-      font-size: 0.75rem;
+      padding: 0.75rem 1.15rem;
+      border-radius: var(--radius-md);
+      font-size: 0.8125rem;
       font-weight: 700;
       color: #ffffff;
       background-color: #0f172a;
-      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+      box-shadow: var(--shadow-lg);
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.625rem;
       transition: all 0.3s ease;
     }
 
@@ -625,133 +679,239 @@ export const prerender = false;
     </div>
   </header>
 
+  <!-- Tabs Navigation -->
+  <nav class="tabs-bar">
+    <button id="tab-btn-products" class="tab-btn active">
+      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+      <span>Katalog Produk</span>
+    </button>
+    <button id="tab-btn-banners" class="tab-btn">
+      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+      <span>Hero Carousel (Banner)</span>
+    </button>
+  </nav>
+
   <!-- Main Content Layout -->
   <main class="container">
-    <!-- Left Column: Product Form & 2-Step Sync -->
-    <section class="card">
-      <div class="card-header">
-        <div>
-          <h2 id="form-title" class="card-title">Tambah / Edit Produk</h2>
-          <p class="card-sub">Otomatis update ke D1 & memicu rebuild Astro</p>
-        </div>
-        <button id="btn-reset-form" type="button" class="btn-text">
-          + Form Baru
-        </button>
-      </div>
-
-      <form id="product-form" style="display: flex; flex-direction: column; gap: 0.875rem;">
-        <input type="hidden" id="p-id" />
-
-        <div class="form-grid">
-          <div class="form-group col-span-2">
-            <label class="form-label">Nama Produk <span style="color: #ef4444;">*</span></label>
-            <input type="text" id="p-name" required placeholder="Contoh: Premium Linen Shirt" class="input-field" />
+    <!-- ======================================================== -->
+    <!-- TAB 1: PRODUCT CATALOG -->
+    <!-- ======================================================== -->
+    <div id="tab-products-content" class="tab-pane-grid">
+      <!-- Left Column: Product Form & 2-Step Sync -->
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <h2 id="form-title" class="card-title">Tambah / Edit Produk</h2>
+            <p class="card-sub">Otomatis update ke D1 & memicu rebuild Astro</p>
           </div>
-
-          <div class="form-group">
-            <label class="form-label">URL Slug (Auto) <span style="color: #ef4444;">*</span></label>
-            <input type="text" id="p-slug" required placeholder="premium-linen-shirt" class="input-field input-mono" style="font-size: 0.75rem;" />
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Status Produk</label>
-            <select id="p-status" class="input-field">
-              <option value="1">Aktif (Tampil di Toko)</option>
-              <option value="0">Nonaktif (Sembunyikan)</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Harga (Rupiah) <span style="color: #ef4444;">*</span></label>
-            <div class="currency-wrap">
-              <span class="currency-prefix">Rp</span>
-              <input type="number" id="p-price" required min="0" placeholder="150000" class="input-field input-currency" />
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Stok Tersedia <span style="color: #ef4444;">*</span></label>
-            <input type="number" id="p-stock" required min="0" placeholder="50" class="input-field input-mono" style="font-weight: 700;" />
-          </div>
-
-          <div class="form-group col-span-2">
-            <label class="form-label">Berat (Gram) - Ongkir Biteship</label>
-            <input type="number" id="p-weight" min="0" placeholder="250" class="input-field input-mono" />
-          </div>
-
-          <div class="form-group col-span-2">
-            <label class="form-label">URL Foto Produk</label>
-            <input type="url" id="p-image" placeholder="https://images.unsplash.com/..." class="input-field input-mono" style="font-size: 0.75rem;" />
-            <div id="image-preview-container" class="hidden" style="margin-top: 0.5rem; display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem; background-color: #f8fafc; border-radius: 0.5rem; border: 1px solid #e2e8f0;">
-              <img id="image-preview" src="" alt="Preview" style="width: 3.5rem; height: 3.5rem; object-fit: cover; border-radius: 0.375rem; border: 1px solid #cbd5e1;" />
-              <div style="font-size: 0.75rem; color: #64748b;">Preview Foto Produk</div>
-            </div>
-          </div>
-
-          <div class="form-group col-span-2">
-            <label class="form-label">Deskripsi Produk</label>
-            <textarea id="p-desc" rows="3" placeholder="Deskripsi lengkap bahan, varian, ukuran..." class="input-field" style="font-size: 0.75rem; resize: vertical;"></textarea>
-          </div>
-        </div>
-
-        <!-- Sync Button -->
-        <div style="padding-top: 0.5rem; border-top: 1px solid #f1f5f9;">
-          <button type="submit" id="btn-sync" class="btn btn-primary btn-sync-large">
-            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-            <span>Sync ke D1 & Rebuild Astro</span>
+          <button id="btn-reset-form" type="button" class="btn-text">
+            + Form Baru
           </button>
+        </div>
 
-          <!-- Sync Progress Timeline Box -->
-          <div id="sync-log-box" class="sync-log-box hidden">
-            <div class="sync-log-header">
-              <span style="display: flex; align-items: center; gap: 0.375rem;">
-                <span class="badge-dot" style="background-color: #4f46e5;"></span>
-                <span>Alur Sinkronisasi 2-Langkah:</span>
-              </span>
-              <span id="sync-timer" style="color: #64748b; font-family: monospace;">0.0s</span>
+        <form id="product-form" style="display: flex; flex-direction: column; gap: 0.875rem;">
+          <input type="hidden" id="p-id" />
+
+          <div class="form-grid">
+            <div class="form-group col-span-2">
+              <label class="form-label">Nama Produk <span style="color: #ef4444;">*</span></label>
+              <input type="text" id="p-name" required placeholder="Contoh: Premium Linen Shirt" class="input-field" />
             </div>
 
-            <!-- Step 1 -->
-            <div id="step-d1" class="step-row">
-              <span class="step-indicator">1</span>
-              <div>
-                <div style="font-weight: 700; color: #0f172a;">Langkah 1: Simpan ke Cloudflare D1</div>
-                <div id="step-d1-status" style="color: #64748b; font-size: 0.6875rem; margin-top: 0.125rem;">Menunggu...</div>
+            <div class="form-group">
+              <label class="form-label">URL Slug (Auto) <span style="color: #ef4444;">*</span></label>
+              <input type="text" id="p-slug" required placeholder="premium-linen-shirt" class="input-field input-mono" style="font-size: 0.75rem;" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Status Produk</label>
+              <select id="p-status" class="input-field">
+                <option value="1">Aktif (Tampil di Toko)</option>
+                <option value="0">Nonaktif (Sembunyikan)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Harga (Rupiah) <span style="color: #ef4444;">*</span></label>
+              <div class="currency-wrap">
+                <span class="currency-prefix">Rp</span>
+                <input type="number" id="p-price" required min="0" placeholder="150000" class="input-field input-currency" />
               </div>
             </div>
 
-            <!-- Step 2 -->
-            <div id="step-hook" class="step-row">
-              <span class="step-indicator">2</span>
-              <div>
-                <div style="font-weight: 700; color: #0f172a;">Langkah 2: Trigger Deploy Hook Astro</div>
-                <div id="step-hook-status" style="color: #64748b; font-size: 0.6875rem; margin-top: 0.125rem;">Menunggu...</div>
+            <div class="form-group">
+              <label class="form-label">Stok Tersedia <span style="color: #ef4444;">*</span></label>
+              <input type="number" id="p-stock" required min="0" placeholder="50" class="input-field input-mono" style="font-weight: 700;" />
+            </div>
+
+            <div class="form-group col-span-2">
+              <label class="form-label">Berat (Gram) - Ongkir Biteship</label>
+              <input type="number" id="p-weight" min="0" placeholder="250" class="input-field input-mono" />
+            </div>
+
+            <div class="form-group col-span-2">
+              <label class="form-label">URL Foto Produk</label>
+              <input type="url" id="p-image" placeholder="https://images.unsplash.com/..." class="input-field input-mono" style="font-size: 0.75rem;" />
+              <div id="image-preview-container" class="hidden" style="margin-top: 0.5rem; display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem; background-color: #f8fafc; border-radius: 0.5rem; border: 1px solid #e2e8f0;">
+                <img id="image-preview" src="" alt="Preview" style="width: 3.5rem; height: 3.5rem; object-fit: cover; border-radius: 0.375rem; border: 1px solid #cbd5e1;" />
+                <div style="font-size: 0.75rem; color: #64748b;">Preview Foto Produk</div>
+              </div>
+            </div>
+
+            <div class="form-group col-span-2">
+              <label class="form-label">Deskripsi Produk</label>
+              <textarea id="p-desc" rows="3" placeholder="Deskripsi lengkap bahan, varian, ukuran..." class="input-field" style="font-size: 0.75rem; resize: vertical;"></textarea>
+            </div>
+          </div>
+
+          <!-- Sync Button -->
+          <div style="padding-top: 0.5rem; border-top: 1px solid #f1f5f9;">
+            <button type="submit" id="btn-sync" class="btn btn-primary btn-sync-large">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+              <span>Sync ke D1 & Rebuild Astro</span>
+            </button>
+
+            <!-- Sync Progress Timeline Box -->
+            <div id="sync-log-box" class="sync-log-box hidden">
+              <div class="sync-log-header">
+                <span style="display: flex; align-items: center; gap: 0.375rem;">
+                  <span class="badge-dot" style="background-color: #4f46e5;"></span>
+                  <span>Alur Sinkronisasi 2-Langkah:</span>
+                </span>
+                <span id="sync-timer" style="color: #64748b; font-family: monospace;">0.0s</span>
+              </div>
+
+              <!-- Step 1 -->
+              <div id="step-d1" class="step-row">
+                <span class="step-indicator">1</span>
+                <div>
+                  <div style="font-weight: 700; color: #0f172a;">Langkah 1: Simpan ke Cloudflare D1</div>
+                  <div id="step-d1-status" style="color: #64748b; font-size: 0.6875rem; margin-top: 0.125rem;">Menunggu...</div>
+                </div>
+              </div>
+
+              <!-- Step 2 -->
+              <div id="step-hook" class="step-row">
+                <span class="step-indicator">2</span>
+                <div>
+                  <div style="font-weight: 700; color: #0f172a;">Langkah 2: Trigger Deploy Hook Astro</div>
+                  <div id="step-hook-status" style="color: #64748b; font-size: 0.6875rem; margin-top: 0.125rem;">Menunggu...</div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </form>
-    </section>
+        </form>
+      </section>
 
-    <!-- Right Column: Database Products List -->
-    <section class="card">
-      <div class="card-header">
-        <div>
-          <h2 class="card-title">Produk di Database (Cloudflare D1)</h2>
-          <p class="card-sub">Data live produk yang tersimpan di database</p>
+      <!-- Right Column: Database Products List -->
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">Produk di Database (Cloudflare D1)</h2>
+            <p class="card-sub">Data live produk yang tersimpan di database</p>
+          </div>
+          <span id="product-count" class="badge">
+            0 Produk
+          </span>
         </div>
-        <span id="product-count" class="badge">
-          0 Produk
-        </span>
-      </div>
 
-      <div id="product-list" class="product-list-container">
-        <div style="padding: 2.5rem; text-align: center; color: #94a3b8; font-size: 0.75rem; background-color: #f8fafc; border-radius: 0.75rem; border: 1px dashed #cbd5e1;">
-          <div class="spin" style="width: 1.25rem; height: 1.25rem; border: 2px solid #4f46e5; border-top-color: transparent; border-radius: 9999px; margin-bottom: 0.5rem;"></div>
-          <div>Memuat data produk dari database...</div>
+        <div id="product-list" class="product-list-container">
+          <div style="padding: 2.5rem; text-align: center; color: #94a3b8; font-size: 0.75rem; background-color: #f8fafc; border-radius: 0.75rem; border: 1px dashed #cbd5e1;">
+            <div class="spin" style="width: 1.25rem; height: 1.25rem; border: 2px solid #4f46e5; border-top-color: transparent; border-radius: 9999px; margin-bottom: 0.5rem;"></div>
+            <div>Memuat data produk dari database...</div>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 2: HERO CAROUSEL BANNERS -->
+    <!-- ======================================================== -->
+    <div id="tab-banners-content" class="tab-pane-grid hidden">
+      <!-- Left Column: Banner Form -->
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <h2 id="banner-form-title" class="card-title">Tambah / Edit Slide Banner</h2>
+            <p class="card-sub">Atur gambar, judul, dan link tombol carousel storefront</p>
+          </div>
+          <button id="btn-reset-banner-form" type="button" class="btn-text">
+            + Banner Baru
+          </button>
+        </div>
+
+        <form id="banner-form" style="display: flex; flex-direction: column; gap: 0.875rem;">
+          <input type="hidden" id="b-id" />
+
+          <div class="form-grid">
+            <div class="form-group col-span-2">
+              <label class="form-label">Judul Banner / Slogan <span style="color: #ef4444;">*</span></label>
+              <input type="text" id="b-title" required placeholder="Contoh: Stripy Zig Zag Jigsaw Pillow and Duvet Set" class="input-field" />
+            </div>
+
+            <div class="form-group col-span-2">
+              <label class="form-label">URL Foto Banner (Landscape 1600x800) <span style="color: #ef4444;">*</span></label>
+              <input type="url" id="b-image" required placeholder="https://images.unsplash.com/..." class="input-field input-mono" style="font-size: 0.75rem;" />
+              <div id="banner-image-preview-container" class="hidden" style="margin-top: 0.5rem; display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem; background-color: #f8fafc; border-radius: 0.5rem; border: 1px solid #e2e8f0;">
+                <img id="banner-image-preview" src="" alt="Banner Preview" style="width: 6rem; height: 3.5rem; object-fit: cover; border-radius: 0.375rem; border: 1px solid #cbd5e1;" />
+                <div style="font-size: 0.75rem; color: #64748b;">Preview Foto Banner Carousel</div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Link Tujuan (URL / Hash)</label>
+              <input type="text" id="b-link" placeholder="# atau /products/slug" value="#" class="input-field input-mono" style="font-size: 0.75rem;" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Teks Tombol Link</label>
+              <input type="text" id="b-link-text" placeholder="view product" value="view product" class="input-field" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Urutan Tampil (0 = Paling Awal)</label>
+              <input type="number" id="b-order" min="0" value="0" placeholder="0" class="input-field input-mono" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Status Banner</label>
+              <select id="b-status" class="input-field">
+                <option value="1">Aktif (Tampil di Storefront)</option>
+                <option value="0">Nonaktif (Sembunyikan)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Submit Banner Button -->
+          <div style="padding-top: 0.5rem; border-top: 1px solid #f1f5f9;">
+            <button type="submit" id="btn-sync-banner" class="btn btn-primary btn-sync-large">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+              <span>Simpan Banner ke D1</span>
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Right Column: Database Banners List -->
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">Daftar Slide Banner (Cloudflare D1)</h2>
+            <p class="card-sub">Slide carousel yang aktif ditampilkan di homepage</p>
+          </div>
+          <span id="banner-count" class="badge">
+            0 Banner
+          </span>
+        </div>
+
+        <div id="banner-list" class="product-list-container">
+          <div style="padding: 2.5rem; text-align: center; color: #94a3b8; font-size: 0.75rem; background-color: #f8fafc; border-radius: 0.75rem; border: 1px dashed #cbd5e1;">
+            <div class="spin" style="width: 1.25rem; height: 1.25rem; border: 2px solid #4f46e5; border-top-color: transparent; border-radius: 9999px; margin-bottom: 0.5rem;"></div>
+            <div>Memuat data banner dari database...</div>
+          </div>
+        </div>
+      </section>
+    </div>
   </main>
 
   <!-- Modal 1: Settings Modal (Store ID, Token, Hook) -->
@@ -880,8 +1040,15 @@ export const prerender = false;
     };
 
     let productsList = [];
+    let bannersList = [];
 
-    // DOM Elements
+    // DOM Elements - Tab Switching
+    const tabBtnProducts = document.getElementById('tab-btn-products');
+    const tabBtnBanners = document.getElementById('tab-btn-banners');
+    const tabProductsContent = document.getElementById('tab-products-content');
+    const tabBannersContent = document.getElementById('tab-banners-content');
+
+    // DOM Elements - Products
     const form = document.getElementById('product-form');
     const pId = document.getElementById('p-id');
     const pName = document.getElementById('p-name');
@@ -912,6 +1079,23 @@ export const prerender = false;
     const productCountBadge = document.getElementById('product-count');
     const badgeStoreName = document.getElementById('badge-store-name');
     const storeBadge = document.getElementById('store-badge');
+
+    // DOM Elements - Banners
+    const bannerForm = document.getElementById('banner-form');
+    const bId = document.getElementById('b-id');
+    const bTitle = document.getElementById('b-title');
+    const bImage = document.getElementById('b-image');
+    const bLink = document.getElementById('b-link');
+    const bLinkText = document.getElementById('b-link-text');
+    const bOrder = document.getElementById('b-order');
+    const bStatus = document.getElementById('b-status');
+    const bannerImagePreview = document.getElementById('banner-image-preview');
+    const bannerImagePreviewContainer = document.getElementById('banner-image-preview-container');
+    const btnResetBannerForm = document.getElementById('btn-reset-banner-form');
+    const bannerFormTitle = document.getElementById('banner-form-title');
+    const bannerListEl = document.getElementById('banner-list');
+    const bannerCountBadge = document.getElementById('banner-count');
+    const btnSyncBanner = document.getElementById('btn-sync-banner');
 
     // Settings Modal Elements
     const settingsModal = document.getElementById('settings-modal');
@@ -994,6 +1178,9 @@ export const prerender = false;
       badgeStoreName.textContent = `Store: ${currentConfig.store_id || 'navanusa'}`;
     }
 
+    // ==========================================
+    // PRODUCTS MANAGEMENT
+    // ==========================================
     async function loadProducts() {
       productListEl.innerHTML = `
         <div style="padding: 2rem; text-align: center; color: #94a3b8; font-size: 0.75rem; background-color: #f8fafc; border-radius: 0.75rem; border: 1px dashed #cbd5e1;">
@@ -1016,10 +1203,15 @@ export const prerender = false;
         renderProducts();
       } catch (err) {
         productListEl.innerHTML = `
-          <div style="padding: 1.5rem; text-align: center; color: #92400e; font-size: 0.75rem; background-color: #fef3c7; border-radius: 0.75rem; border: 1px solid #fde68a;">
-            <p style="font-weight: 700; margin-bottom: 0.25rem;">Belum dapat memuat produk dari D1</p>
-            <p style="font-size: 0.6875rem; color: #b45309; margin-bottom: 0.5rem;">${err.message}</p>
-            <p style="font-size: 0.6875rem; color: #64748b;">Anda dapat mengisi form di sebelah kiri untuk menyinkronkan produk.</p>
+          <div style="padding: 2rem; text-align: center; background-color: #f8fafc; border-radius: 12px; border: 1px dashed #cbd5e1;">
+            <div style="width: 3rem; height: 3rem; margin: 0 auto 0.75rem; border-radius: 9999px; background-color: #fef3c7; color: #d97706; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+              ⚠️
+            </div>
+            <h4 style="font-weight: 700; font-size: 0.9rem; color: #1e293b; margin-bottom: 0.25rem;">Tidak dapat terhubung ke Worker API</h4>
+            <p style="font-size: 0.75rem; color: #64748b; max-width: 28rem; margin: 0 auto 1rem;">${err.message}. Pastikan server API atau Astro sedang berjalan.</p>
+            <button onclick="loadProducts()" class="btn btn-secondary" style="font-size: 0.75rem; padding: 0.4rem 0.85rem;">
+              🔄 Coba Lagi
+            </button>
           </div>
         `;
         productCountBadge.textContent = '0 Produk';
@@ -1031,8 +1223,12 @@ export const prerender = false;
 
       if (productsList.length === 0) {
         productListEl.innerHTML = `
-          <div style="padding: 2rem; text-align: center; color: #94a3b8; font-size: 0.75rem; background-color: #f8fafc; border-radius: 0.75rem; border: 1px dashed #cbd5e1;">
-            Belum ada produk di database. Tambahkan produk melalui form di sebelah kiri!
+          <div style="padding: 2.5rem 1.5rem; text-align: center; background-color: #f8fafc; border-radius: 12px; border: 1px dashed #cbd5e1;">
+            <div style="width: 3rem; height: 3rem; margin: 0 auto 0.75rem; border-radius: 9999px; background-color: #e0e7ff; color: #4f46e5; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+              📦
+            </div>
+            <h4 style="font-weight: 700; font-size: 0.9rem; color: #1e293b; margin-bottom: 0.25rem;">Belum ada produk di database</h4>
+            <p style="font-size: 0.75rem; color: #64748b; margin-bottom: 1rem;">Tambahkan produk katalog pertama Anda melalui formulir di sebelah kiri.</p>
           </div>
         `;
         return;
@@ -1073,23 +1269,6 @@ export const prerender = false;
           </div>
         `;
       }).join('');
-    }
-
-    async function loadStoreIntegrations() {
-      try {
-        const base = (currentConfig.worker_url || window.location.origin).replace(/\/+$/, '');
-        const res = await fetch(`${base}/api/store/settings?store_id=${encodeURIComponent(currentConfig.store_id || 'navanusa')}`);
-        if (!res.ok) return;
-
-        const data = await res.json();
-        if (data.ok) {
-          statusMayarKey.innerHTML = `Mayar API Key: ${data.has_mayar_key ? `<span class="status-pill status-active">Aktif (${data.mayar_key_preview})</span>` : `<span class="status-pill status-inactive">Belum diset</span>`}`;
-          statusMayarWebhook.innerHTML = `Mayar Webhook: ${data.has_mayar_webhook ? `<span class="status-pill status-active">Tersimpan</span>` : `<span class="status-pill status-inactive">Belum diset</span>`}`;
-          statusBiteshipKey.innerHTML = `Biteship API Key: ${data.has_biteship_key ? `<span class="status-pill status-active">Aktif (${data.biteship_key_preview})</span>` : `<span class="status-pill status-inactive">Belum diset</span>`}`;
-        }
-      } catch (e) {
-        console.warn('Gagal memuat status integrasi:', e);
-      }
     }
 
     window.editProduct = function(id) {
@@ -1134,6 +1313,191 @@ export const prerender = false;
       btnResetForm.textContent = '+ Form Baru';
     }
 
+    // ==========================================
+    // HERO CAROUSEL BANNERS MANAGEMENT
+    // ==========================================
+    async function loadBanners() {
+      bannerListEl.innerHTML = `
+        <div style="padding: 2.5rem; text-align: center; color: #94a3b8; font-size: 0.8rem; background-color: #f8fafc; border-radius: 12px; border: 1px dashed #cbd5e1;">
+          <div class="spin" style="width: 1.5rem; height: 1.5rem; border: 2.5px solid #4f46e5; border-top-color: transparent; border-radius: 9999px; margin-bottom: 0.75rem;"></div>
+          <div>Mengambil data slide banner dari database...</div>
+        </div>
+      `;
+
+      try {
+        const base = (currentConfig.worker_url || window.location.origin).replace(/\/+$/, '');
+        const targetUrl = `${base}/api/banners?store_id=${encodeURIComponent(currentConfig.store_id || 'navanusa')}&all=true`;
+        
+        const res = await fetch(targetUrl);
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+        }
+
+        const data = await res.json();
+        bannersList = Array.isArray(data) ? data : [];
+        renderBanners();
+      } catch (err) {
+        bannerListEl.innerHTML = `
+          <div style="padding: 2rem; text-align: center; background-color: #f8fafc; border-radius: 12px; border: 1px dashed #cbd5e1;">
+            <div style="width: 3rem; height: 3rem; margin: 0 auto 0.75rem; border-radius: 9999px; background-color: #fef3c7; color: #d97706; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+              🎨
+            </div>
+            <h4 style="font-weight: 700; font-size: 0.9rem; color: #1e293b; margin-bottom: 0.25rem;">Belum dapat memuat banner dari D1</h4>
+            <p style="font-size: 0.75rem; color: #64748b; max-width: 28rem; margin: 0 auto 1rem;">${err.message}. Anda tetap dapat menambahkan banner baru lewat form sebelah kiri.</p>
+            <button onclick="loadBanners()" class="btn btn-secondary" style="font-size: 0.75rem; padding: 0.4rem 0.85rem;">
+              🔄 Coba Lagi
+            </button>
+          </div>
+        `;
+        bannerCountBadge.textContent = '0 Banner';
+      }
+    }
+
+    function renderBanners() {
+      bannerCountBadge.textContent = `${bannersList.length} Banner`;
+
+      if (bannersList.length === 0) {
+        bannerListEl.innerHTML = `
+          <div style="padding: 2.5rem 1.5rem; text-align: center; background-color: #f8fafc; border-radius: 12px; border: 1px dashed #cbd5e1;">
+            <div style="width: 3rem; height: 3rem; margin: 0 auto 0.75rem; border-radius: 9999px; background-color: #e0e7ff; color: #4f46e5; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+              🖼️
+            </div>
+            <h4 style="font-weight: 700; font-size: 0.9rem; color: #1e293b; margin-bottom: 0.25rem;">Belum ada banner di database</h4>
+            <p style="font-size: 0.75rem; color: #64748b; margin-bottom: 1rem;">Storefront saat ini menampilkan banner bawaan. Tambahkan banner kustom Anda sekarang!</p>
+          </div>
+        `;
+        return;
+      }
+
+
+      bannerListEl.innerHTML = bannersList.map(b => {
+        const isActive = b.is_active === 1;
+        const imgUrl = b.image_url || 'https://placehold.co/600x300?text=No+Banner';
+
+        return `
+          <div class="product-item">
+            <div style="display: flex; align-items: center; gap: 0.875rem; min-width: 0;">
+              <img src="${imgUrl}" alt="${b.title}" class="banner-thumb" onerror="this.src='https://placehold.co/600x300?text=Error+Loading'" />
+              <div class="product-info">
+                <div class="product-name-row">
+                  <h4 class="product-name">${b.title}</h4>
+                  <span class="status-pill ${isActive ? 'status-active' : 'status-inactive'}">
+                    ${isActive ? 'Aktif' : 'Nonaktif'}
+                  </span>
+                  <span style="font-size: 0.6875rem; font-weight: 600; color: #6366f1; background-color: #e0e7ff; padding: 0.125rem 0.375rem; border-radius: 0.375rem;">
+                    Urutan: ${b.order_num ?? 0}
+                  </span>
+                </div>
+                <div class="product-meta">
+                  <span>Tombol: <strong style="color: #334155;">${b.link_text || 'view product'}</strong></span>
+                  <span>&bull;</span>
+                  <span>Link: <code>${b.link_url || '#'}</code></span>
+                </div>
+              </div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 0.375rem; flex-shrink: 0;">
+              <button onclick="editBanner('${b.id}')" class="btn btn-secondary" style="font-size: 0.75rem; padding: 0.375rem 0.625rem;">
+                Edit
+              </button>
+              <button onclick="deleteBanner('${b.id}')" class="btn btn-danger" style="font-size: 0.75rem; padding: 0.375rem 0.625rem;">
+                Hapus
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    window.editBanner = function(id) {
+      const b = bannersList.find(item => item.id === id);
+      if (!b) return;
+
+      bId.value = b.id;
+      bTitle.value = b.title;
+      bImage.value = b.image_url;
+      bLink.value = b.link_url || '#';
+      bLinkText.value = b.link_text || 'view product';
+      bOrder.value = b.order_num ?? 0;
+      bStatus.value = b.is_active ?? 1;
+
+      if (b.image_url) {
+        bannerImagePreview.src = b.image_url;
+        bannerImagePreviewContainer.classList.remove('hidden');
+      } else {
+        bannerImagePreviewContainer.classList.add('hidden');
+      }
+
+      bannerFormTitle.textContent = 'Edit Slide: ' + b.title;
+      btnResetBannerForm.textContent = 'Batal / Form Baru';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    window.deleteBanner = async function(id) {
+      if (!confirm('Apakah Anda yakin ingin menghapus slide banner ini dari carousel?')) {
+        return;
+      }
+
+      try {
+        const base = (currentConfig.worker_url || window.location.origin).replace(/\/+$/, '');
+        const headers = {};
+        if (currentConfig.internal_token) {
+          headers['Authorization'] = `Bearer ${currentConfig.internal_token}`;
+        }
+
+        const res = await fetch(`${base}/api/banners/${id}?store_id=${encodeURIComponent(currentConfig.store_id || 'navanusa')}`, {
+          method: 'DELETE',
+          headers,
+        });
+
+        const data = await res.json();
+        if (res.ok && data.ok) {
+          showToast('Banner berhasil dihapus!', 'success');
+          await loadBanners();
+          if (bId.value === id) {
+            resetBannerForm();
+          }
+        } else {
+          showToast(data.error || 'Gagal menghapus banner', 'error');
+        }
+      } catch (err) {
+        showToast('Error: ' + err.message, 'error');
+      }
+    };
+
+    function resetBannerForm() {
+      bId.value = '';
+      bTitle.value = '';
+      bImage.value = '';
+      bLink.value = '#';
+      bLinkText.value = 'view product';
+      bOrder.value = '0';
+      bStatus.value = '1';
+      bannerImagePreviewContainer.classList.add('hidden');
+      bannerFormTitle.textContent = 'Tambah / Edit Slide Banner';
+      btnResetBannerForm.textContent = '+ Banner Baru';
+    }
+
+    // ==========================================
+    // STORE SETTINGS & INTEGRATIONS
+    // ==========================================
+    async function loadStoreIntegrations() {
+      try {
+        const base = (currentConfig.worker_url || window.location.origin).replace(/\/+$/, '');
+        const res = await fetch(`${base}/api/store/settings?store_id=${encodeURIComponent(currentConfig.store_id || 'navanusa')}`);
+        if (!res.ok) return;
+
+        const data = await res.json();
+        if (data.ok) {
+          statusMayarKey.innerHTML = `Mayar API Key: ${data.has_mayar_key ? `<span class="status-pill status-active">Aktif (${data.mayar_key_preview})</span>` : `<span class="status-pill status-inactive">Belum diset</span>`}`;
+          statusMayarWebhook.innerHTML = `Mayar Webhook: ${data.has_mayar_webhook ? `<span class="status-pill status-active">Tersimpan</span>` : `<span class="status-pill status-inactive">Belum diset</span>`}`;
+          statusBiteshipKey.innerHTML = `Biteship API Key: ${data.has_biteship_key ? `<span class="status-pill status-active">Aktif (${data.biteship_key_preview})</span>` : `<span class="status-pill status-inactive">Belum diset</span>`}`;
+        }
+      } catch (e) {
+        console.warn('Gagal memuat status integrasi:', e);
+      }
+    }
+
     function openSettings() {
       cfgStoreId.value = currentConfig.store_id || '';
       cfgStoreName.value = currentConfig.store_name || '';
@@ -1156,7 +1520,29 @@ export const prerender = false;
       integrationsModal.classList.add('hidden');
     }
 
+    // ==========================================
+    // EVENT LISTENERS
+    // ==========================================
     function setupEventListeners() {
+      // Tab Switching
+      tabBtnProducts.addEventListener('click', () => {
+        tabBtnProducts.classList.add('active');
+        tabBtnBanners.classList.remove('active');
+        tabProductsContent.classList.remove('hidden');
+        tabBannersContent.classList.add('hidden');
+      });
+
+      tabBtnBanners.addEventListener('click', () => {
+        tabBtnBanners.classList.add('active');
+        tabBtnProducts.classList.remove('active');
+        tabBannersContent.classList.remove('hidden');
+        tabProductsContent.classList.add('hidden');
+        if (bannersList.length === 0) {
+          loadBanners();
+        }
+      });
+
+      // Product Form slug auto-fill & image preview
       pName.addEventListener('input', () => {
         if (!pId.value) {
           pSlug.value = generateSlug(pName.value);
@@ -1173,11 +1559,25 @@ export const prerender = false;
         }
       });
 
+      // Banner Form image preview & reset
+      bImage.addEventListener('input', () => {
+        const url = bImage.value.trim();
+        if (url) {
+          bannerImagePreview.src = url;
+          bannerImagePreviewContainer.classList.remove('hidden');
+        } else {
+          bannerImagePreviewContainer.classList.add('hidden');
+        }
+      });
+
+      btnResetBannerForm.addEventListener('click', resetBannerForm);
+
       btnResetForm.addEventListener('click', resetForm);
       btnRefresh.addEventListener('click', () => {
         loadProducts();
+        loadBanners();
         loadStoreIntegrations();
-        showToast('Data produk & integrasi diperbarui', 'success');
+        showToast('Data produk, banner & integrasi diperbarui', 'success');
       });
 
       // Manual Rebuild Trigger
@@ -1255,6 +1655,7 @@ export const prerender = false;
         closeSettings();
         showToast('Pengaturan berhasil disimpan!', 'success');
         loadProducts();
+        loadBanners();
       });
 
       // Test Mayar Connection
@@ -1369,6 +1770,56 @@ export const prerender = false;
         submitBtn.textContent = 'Simpan Kredensial Terenkripsi';
       });
 
+      // Submit Banner Form
+      bannerForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const banner = {
+          id: bId.value.trim() || generateUUID(),
+          store_id: currentConfig.store_id || 'navanusa',
+          title: bTitle.value.trim(),
+          image_url: bImage.value.trim(),
+          link_url: bLink.value.trim() || '#',
+          link_text: bLinkText.value.trim() || 'view product',
+          order_num: parseInt(bOrder.value, 10) || 0,
+          is_active: parseInt(bStatus.value, 10) || 1
+        };
+
+        btnSyncBanner.disabled = true;
+        btnSyncBanner.innerHTML = `<span class="spin" style="margin-right: 0.5rem;">⚙️</span> Menyimpan Banner...`;
+
+        try {
+          const base = (currentConfig.worker_url || window.location.origin).replace(/\/+$/, '');
+          const headers = { 'Content-Type': 'application/json' };
+          if (currentConfig.internal_token) {
+            headers['Authorization'] = `Bearer ${currentConfig.internal_token}`;
+          }
+
+          const res = await fetch(`${base}/api/banners`, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify(banner),
+          });
+
+          const data = await res.json();
+          if (res.ok && data.ok) {
+            showToast('Slide banner berhasil disimpan ke D1!', 'success');
+            await loadBanners();
+            resetBannerForm();
+          } else {
+            showToast(data.error || 'Gagal menyimpan banner', 'error');
+          }
+        } catch (err) {
+          showToast('Error: ' + err.message, 'error');
+        }
+
+        btnSyncBanner.disabled = false;
+        btnSyncBanner.innerHTML = `
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+          <span>Simpan Banner ke D1</span>
+        `;
+      });
+
       // Product Form Submission (2-Step Sync)
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -1473,6 +1924,7 @@ export const prerender = false;
     document.addEventListener('DOMContentLoaded', () => {
       loadConfig();
       loadProducts();
+      loadBanners();
       loadStoreIntegrations();
       setupEventListeners();
     });

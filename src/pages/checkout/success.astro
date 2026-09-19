@@ -1,0 +1,135 @@
+---
+import ShopLayout from '../../layouts/ShopLayout.astro';
+
+export const prerender = false;
+
+const url = Astro.url;
+const orderId = url.searchParams.get('order_id') || 'ORD-SAMPLE';
+const total = url.searchParams.get('total') || '0';
+const name = url.searchParams.get('name') || 'Pelanggan Setia';
+const method = url.searchParams.get('method') || 'qris';
+const phone = url.searchParams.get('phone') || '';
+
+function formatIDR(amount: number) {
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+  }).format(amount);
+}
+
+const formattedTotal = formatIDR(Number(total) || 0);
+
+const paymentTitles: Record<string, string> = {
+  qris: 'QRIS / E-Wallet (Mayar Gateway)',
+  va: 'Virtual Account (Bank Transfer)',
+  cod: 'Cash On Delivery (COD / Bayar di Tempat)',
+};
+
+const paymentInstruction: Record<string, string> = {
+  qris: 'Silakan scan QRIS di bawah menggunakan aplikasi BCA, GoPay, OVO, Dana, atau ShopeePay untuk menyelesaikan pembayaran secara instan.',
+  va: 'Silakan transfer ke nomor Virtual Account yang telah dikirimkan ke nomor WhatsApp Anda.',
+  cod: 'Pesanan Anda sedang dipersiapkan dan akan dikirim. Siapkan uang pas saat kurir tiba di alamat Anda.',
+};
+---
+
+<ShopLayout title="Pesanan Berhasil | NORDICS" storeName="NORDICS">
+  <div class="bg-gray-50 min-h-[calc(100vh-140px)] py-12 md:py-16">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-2xl">
+      
+      <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6 sm:p-10 text-center">
+        
+        <!-- Success Icon -->
+        <div class="w-16 h-16 bg-green-50 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+
+        <span class="inline-block bg-green-100 text-green-800 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider mb-3">
+          Pesanan Berhasil Dibuat
+        </span>
+
+        <h1 class="text-2xl sm:text-3xl font-bold uppercase tracking-wider text-gray-900 mb-2">
+          Terima Kasih, {name}!
+        </h1>
+        <p class="text-sm text-gray-500 max-w-md mx-auto mb-8">
+          Pesanan Anda telah kami terima dengan ID <strong class="text-gray-900 font-mono font-bold">{orderId}</strong>.
+        </p>
+
+        <!-- Order Detail Card -->
+        <div class="bg-gray-50 rounded-lg p-5 text-left border border-gray-100 space-y-3 mb-8">
+          <div class="flex justify-between items-center text-xs text-gray-500 uppercase tracking-wider">
+            <span>Nomor Pesanan</span>
+            <span class="font-mono font-bold text-gray-900 text-sm">{orderId}</span>
+          </div>
+          <div class="flex justify-between items-center text-xs text-gray-500 uppercase tracking-wider">
+            <span>Metode Pembayaran</span>
+            <span class="font-semibold text-gray-900">{paymentTitles[method] || method.toUpperCase()}</span>
+          </div>
+          <div class="flex justify-between items-center text-xs text-gray-500 uppercase tracking-wider border-t border-gray-200 pt-3">
+            <span class="font-semibold text-gray-700">Total Pembayaran</span>
+            <span class="font-bold text-black text-lg">{formattedTotal}</span>
+          </div>
+        </div>
+
+        <!-- Payment Instructions / QRIS Mock -->
+        {method === 'qris' && (
+          <div class="bg-white border-2 border-dashed border-gray-300 rounded-lg p-6 mb-8 text-center">
+            <h3 class="text-xs uppercase tracking-wider font-bold text-gray-800 mb-3">Scan QRIS untuk Membayar</h3>
+            <div class="w-48 h-48 bg-gray-100 border border-gray-200 rounded-lg mx-auto flex items-center justify-center p-3 shadow-inner">
+              <!-- SVG QR Code Dummy -->
+              <svg class="w-full h-full text-gray-800" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M2 2h8v8H2V2zm2 2v4h4V4H4zm10-2h8v8h-8V2zm2 2v4h4V4h-4zM2 14h8v8H2v-8zm2 2v4h4v-4H4zm10 0h2v2h-2v-2zm4 0h4v2h-4v-2zm-4 4h4v2h-4v-2zm4 2h4v2h-4v-2zm-2-4h2v2h-2v-2zM5 5h2v2H5V5zm12 0h2v2h-2V5zM5 17h2v2H5v-2z"/>
+              </svg>
+            </div>
+            <p class="text-xs text-gray-500 mt-3">{paymentInstruction[method]}</p>
+          </div>
+        )}
+
+        {method !== 'qris' && (
+          <div class="bg-blue-50 border border-blue-200 text-blue-900 rounded-lg p-4 mb-8 text-sm text-left">
+            <div class="flex items-start space-x-3">
+              <svg class="w-5 h-5 text-blue-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <div>
+                <p class="font-semibold mb-0.5">Petunjuk Pembayaran</p>
+                <p class="text-xs text-blue-800 leading-relaxed">{paymentInstruction[method] || 'Silakan ikuti instruksi pembayaran.'}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <!-- Actions -->
+        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+          <a 
+            href="/" 
+            class="bg-black text-white px-8 py-3 text-xs uppercase tracking-wider font-semibold rounded hover:bg-gray-800 transition-colors"
+          >
+            Lanjut Berbelanja
+          </a>
+          {phone && (
+            <a 
+              href={`https://wa.me/6281234567890?text=Halo%20Admin%20NORDICS,%20saya%20sudah%20melakukan%20checkout%20dengan%20Order%20ID%20${orderId}`} 
+              target="_blank"
+              rel="noopener noreferrer"
+              class="border border-gray-300 text-gray-800 px-6 py-3 text-xs uppercase tracking-wider font-semibold rounded hover:bg-gray-50 transition-colors inline-flex items-center justify-center space-x-2"
+            >
+              <span>Konfirmasi via WhatsApp</span>
+            </a>
+          )}
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</ShopLayout>
+
+<script is:inline>
+  // Ensure local cart is cleared when visiting success page
+  try {
+    localStorage.removeItem('nordic_cart_items');
+  } catch (e) {}
+</script>

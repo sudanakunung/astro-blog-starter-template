@@ -61,3 +61,17 @@ export interface StockReservation {
   expires_at: number;
   created_at: number;
 }
+
+export interface D1Banner {
+  id: string;
+  store_id: string;
+  title: string;
+  image_url: string;
+  link_url: string;
+  link_text: string;
+  order_num: number;
+  is_active: number;
+  created_at: number;
+  updated_at: number;
+}
+

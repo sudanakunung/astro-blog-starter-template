@@ -216,4 +216,7 @@ wails-app/build/bin/
 wails-app/build/windows/*.syso
 wails-app/*.exe
 wails-app/config.json
-wails-app/frontend/node_modules/
+wails-app/frontend/node_modules/
+!wails-app/frontend/dist/
+!wails-app/frontend/dist/**
+

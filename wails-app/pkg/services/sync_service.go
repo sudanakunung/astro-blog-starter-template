@@ -176,3 +176,127 @@ func (s *SyncService) TriggerRebuild(cfg models.StoreConfig) (string, error) {
 
 	return "", fmt.Errorf("deploy hook error (HTTP %d): %s", resp.StatusCode, string(body))
 }
+
+// SyncBanner mengirim data banner ke D1 via Worker API
+func (s *SyncService) SyncBanner(banner models.Banner, cfg models.StoreConfig) (models.SyncResult, error) {
+	result := models.SyncResult{
+		ProductID:   banner.ID,
+		ProductName: banner.Title,
+		Timestamp:   time.Now().Unix(),
+	}
+
+	if cfg.WorkerURL == "" {
+		result.Success = false
+		result.Message = "Worker URL belum dikonfigurasi"
+		return result, fmt.Errorf("worker url is required")
+	}
+
+	workerURL := strings.TrimRight(cfg.WorkerURL, "/")
+	if banner.StoreID == "" {
+		banner.StoreID = cfg.StoreID
+	}
+
+	payload, err := json.Marshal(banner)
+	if err != nil {
+		result.Success = false
+		result.Message = fmt.Sprintf("Gagal encode JSON banner: %v", err)
+		return result, err
+	}
+
+	req, err := http.NewRequest("POST", workerURL+"/api/banners", bytes.NewBuffer(payload))
+	if err != nil {
+		result.Success = false
+		result.Message = fmt.Sprintf("Gagal membuat HTTP request: %v", err)
+		return result, err
+	}
+
+	if cfg.InternalToken != "" {
+		req.Header.Set("Authorization", "Bearer "+cfg.InternalToken)
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := s.httpClient.Do(req)
+	if err != nil {
+		result.Success = false
+		result.Message = fmt.Sprintf("Gagal menghubungi Worker API: %v", err)
+		return result, err
+	}
+	defer resp.Body.Close()
+
+	respBody, _ := io.ReadAll(resp.Body)
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		result.Success = false
+		result.Message = fmt.Sprintf("Gagal simpan banner (Status %d): %s", resp.StatusCode, string(respBody))
+		return result, fmt.Errorf("worker returned status %d: %s", resp.StatusCode, string(respBody))
+	}
+
+	result.Success = true
+	result.Message = "Banner berhasil disimpan ke Cloudflare D1"
+	return result, nil
+}
+
+// FetchRemoteBanners mengambil semua banner dari D1
+func (s *SyncService) FetchRemoteBanners(cfg models.StoreConfig) ([]models.Banner, error) {
+	if cfg.WorkerURL == "" {
+		return nil, fmt.Errorf("worker url is required")
+	}
+
+	workerURL := strings.TrimRight(cfg.WorkerURL, "/")
+	targetURL := fmt.Sprintf("%s/api/banners?store_id=%s&all=true", workerURL, cfg.StoreID)
+
+	req, err := http.NewRequest("GET", targetURL, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := s.httpClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("gagal fetch banner: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("worker returned status %d: %s", resp.StatusCode, string(body))
+	}
+
+	var banners []models.Banner
+	if err := json.NewDecoder(resp.Body).Decode(&banners); err != nil {
+		return nil, fmt.Errorf("gagal decode response json: %w", err)
+	}
+
+	return banners, nil
+}
+
+// DeleteRemoteBanner menghapus banner dari D1
+func (s *SyncService) DeleteRemoteBanner(bannerID string, cfg models.StoreConfig) error {
+	if cfg.WorkerURL == "" {
+		return fmt.Errorf("worker url is required")
+	}
+
+	workerURL := strings.TrimRight(cfg.WorkerURL, "/")
+	targetURL := fmt.Sprintf("%s/api/banners/%s?store_id=%s", workerURL, bannerID, cfg.StoreID)
+
+	req, err := http.NewRequest("DELETE", targetURL, nil)
+	if err != nil {
+		return err
+	}
+
+	if cfg.InternalToken != "" {
+		req.Header.Set("Authorization", "Bearer "+cfg.InternalToken)
+	}
+
+	resp, err := s.httpClient.Do(req)
+	if err != nil {
+		return fmt.Errorf("gagal delete banner: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("worker returned status %d: %s", resp.StatusCode, string(body))
+	}
+
+	return nil
+}
+

@@ -109,3 +109,24 @@ CREATE TABLE IF NOT EXISTS stock_reservations (
 
 CREATE INDEX IF NOT EXISTS idx_reservations_product ON stock_reservations(product_id);
 CREATE INDEX IF NOT EXISTS idx_reservations_expiry ON stock_reservations(status, expires_at);
+
+-- ------------------------------------------------------------
+-- 6. BANNERS (Hero Carousel)
+-- Banner slide untuk carousel di halaman depan (hero section)
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS banners (
+  id TEXT PRIMARY KEY,              -- uuid banner
+  store_id TEXT NOT NULL REFERENCES stores(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  image_url TEXT NOT NULL,
+  link_url TEXT NOT NULL DEFAULT '#',
+  link_text TEXT NOT NULL DEFAULT 'view product',
+  order_num INTEGER NOT NULL DEFAULT 0,
+  is_active INTEGER NOT NULL DEFAULT 1,  -- 1 = tampil, 0 = sembunyikan
+  created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+  updated_at INTEGER NOT NULL DEFAULT (unixepoch())
+);
+
+CREATE INDEX IF NOT EXISTS idx_banners_store ON banners(store_id);
+CREATE INDEX IF NOT EXISTS idx_banners_order ON banners(store_id, order_num);
+

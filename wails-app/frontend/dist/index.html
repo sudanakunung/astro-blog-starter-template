@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Store Manager & Cloudflare Sync</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Toast Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Top Navbar -->
+  <header class="navbar">
+    <div class="brand">
+      <div class="brand-icon">S</div>
+      <div>
+        <div class="brand-title">
+          <span>Store Manager & Sync</span>
+          <span class="badge-desktop">Desktop Wails</span>
+        </div>
+        <p class="brand-sub">Cloudflare D1 Real-Time DB &bull; Pages SSG Rebuild</p>
+      </div>
+    </div>
+
+    <!-- Quick Status & Action Buttons -->
+    <div class="nav-actions">
+      <div id="store-badge" class="badge" style="cursor: pointer;" title="Klik untuk ubah pengaturan">
+        <span class="badge-dot"></span>
+        <span id="badge-store-name">Store: navanusa</span>
+      </div>
+
+      <button id="btn-integrations-open" class="btn btn-emerald" title="Kredensial Mayar & Biteship">
+        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+        <span>Kunci API Mayar & Biteship</span>
+      </button>
+
+      <button id="btn-refresh" class="btn btn-secondary">
+        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+        <span>Refresh</span>
+      </button>
+
+      <button id="btn-rebuild" class="btn btn-warning">
+        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+        <span>Rebuild Astro</span>
+      </button>
+
+      <button id="btn-settings-open" class="btn btn-dark">
+        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+        <span>Settings</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Tabs Navigation -->
+  <nav class="tabs-bar">
+    <button id="tab-btn-products" class="tab-btn active">
+      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+      <span>Katalog Produk</span>
+    </button>
+    <button id="tab-btn-banners" class="tab-btn">
+      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+      <span>Hero Carousel (Banner)</span>
+    </button>
+  </nav>
+
+  <!-- Main Content Layout -->
+  <main class="container">
+    <!-- ======================================================== -->
+    <!-- TAB 1: PRODUCT CATALOG -->
+    <!-- ======================================================== -->
+    <div id="tab-products-content" class="tab-pane-grid">
+      <!-- Left Column: Product Form & 2-Step Sync -->
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <h2 id="form-title" class="card-title">Tambah / Edit Produk</h2>
+            <p class="card-sub">Otomatis update ke D1 & memicu rebuild Astro</p>
+          </div>
+          <button id="btn-reset-form" type="button" class="btn-text">
+            + Form Baru
+          </button>
+        </div>
+
+        <form id="product-form" style="display: flex; flex-direction: column; gap: 0.875rem;">
+          <input type="hidden" id="p-id" />
+
+          <div class="form-grid">
+            <div class="form-group col-span-2">
+              <label class="form-label">Nama Produk <span style="color: #ef4444;">*</span></label>
+              <input type="text" id="p-name" required placeholder="Contoh: Premium Linen Shirt" class="input-field" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">URL Slug (Auto) <span style="color: #ef4444;">*</span></label>
+              <input type="text" id="p-slug" required placeholder="premium-linen-shirt" class="input-field input-mono" style="font-size: 0.75rem;" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Status Produk</label>
+              <select id="p-status" class="input-field">
+                <option value="1">Aktif (Tampil di Toko)</option>
+                <option value="0">Nonaktif (Sembunyikan)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Harga (Rupiah) <span style="color: #ef4444;">*</span></label>
+              <div class="currency-wrap">
+                <span class="currency-prefix">Rp</span>
+                <input type="number" id="p-price" required min="0" placeholder="150000" class="input-field input-currency" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Stok Tersedia <span style="color: #ef4444;">*</span></label>
+              <input type="number" id="p-stock" required min="0" placeholder="50" class="input-field input-mono" style="font-weight: 700;" />
+            </div>
+
+            <div class="form-group col-span-2">
+              <label class="form-label">Berat (Gram) - Ongkir Biteship</label>
+              <input type="number" id="p-weight" min="0" placeholder="250" class="input-field input-mono" />
+            </div>
+
+            <div class="form-group col-span-2">
+              <label class="form-label">URL Foto Produk</label>
+              <input type="url" id="p-image" placeholder="https://images.unsplash.com/..." class="input-field input-mono" style="font-size: 0.75rem;" />
+              <div id="image-preview-container" class="hidden" style="margin-top: 0.5rem; display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem; background-color: #f8fafc; border-radius: 0.5rem; border: 1px solid #e2e8f0;">
+                <img id="image-preview" src="" alt="Preview" style="width: 3.5rem; height: 3.5rem; object-fit: cover; border-radius: 0.375rem; border: 1px solid #cbd5e1;" />
+                <div style="font-size: 0.75rem; color: #64748b;">Preview Foto Produk</div>
+              </div>
+            </div>
+
+            <div class="form-group col-span-2">
+              <label class="form-label">Deskripsi Produk</label>
+              <textarea id="p-desc" rows="3" placeholder="Deskripsi lengkap bahan, varian, ukuran..." class="input-field" style="font-size: 0.75rem; resize: vertical;"></textarea>
+            </div>
+          </div>
+
+          <!-- Sync Button -->
+          <div style="padding-top: 0.5rem; border-top: 1px solid #f1f5f9;">
+            <button type="submit" id="btn-sync" class="btn btn-primary btn-sync-large">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+              <span>Sync ke D1 & Rebuild Astro</span>
+            </button>
+
+            <!-- Sync Progress Timeline Box -->
+            <div id="sync-log-box" class="sync-log-box hidden">
+              <div class="sync-log-header">
+                <span style="display: flex; align-items: center; gap: 0.375rem;">
+                  <span class="badge-dot" style="background-color: #4f46e5;"></span>
+                  <span>Alur Sinkronisasi 2-Langkah:</span>
+                </span>
+                <span id="sync-timer" style="color: #64748b; font-family: monospace;">0.0s</span>
+              </div>
+
+              <!-- Step 1 -->
+              <div id="step-d1" class="step-row">
+                <span class="step-indicator">1</span>
+                <div>
+                  <div style="font-weight: 700; color: #0f172a;">Langkah 1: Simpan ke Cloudflare D1</div>
+                  <div id="step-d1-status" style="color: #64748b; font-size: 0.6875rem; margin-top: 0.125rem;">Menunggu...</div>
+                </div>
+              </div>
+
+              <!-- Step 2 -->
+              <div id="step-hook" class="step-row">
+                <span class="step-indicator">2</span>
+                <div>
+                  <div style="font-weight: 700; color: #0f172a;">Langkah 2: Trigger Deploy Hook Astro</div>
+                  <div id="step-hook-status" style="color: #64748b; font-size: 0.6875rem; margin-top: 0.125rem;">Menunggu...</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </section>
+
+      <!-- Right Column: Database Products List -->
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">Produk di Database (Cloudflare D1)</h2>
+            <p class="card-sub">Data live produk yang tersimpan di database</p>
+          </div>
+          <span id="product-count" class="badge">
+            0 Produk
+          </span>
+        </div>
+
+        <div id="product-list" class="product-list-container">
+          <div style="padding: 2.5rem; text-align: center; color: #94a3b8; font-size: 0.75rem; background-color: #f8fafc; border-radius: 0.75rem; border: 1px dashed #cbd5e1;">
+            <div class="spin" style="width: 1.25rem; height: 1.25rem; border: 2px solid #4f46e5; border-top-color: transparent; border-radius: 9999px; margin-bottom: 0.5rem;"></div>
+            <div>Memuat data produk dari database...</div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 2: HERO CAROUSEL BANNERS -->
+    <!-- ======================================================== -->
+    <div id="tab-banners-content" class="tab-pane-grid hidden">
+      <!-- Left Column: Banner Form -->
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <h2 id="banner-form-title" class="card-title">Tambah / Edit Slide Banner</h2>
+            <p class="card-sub">Atur gambar, judul, dan link tombol carousel storefront</p>
+          </div>
+          <button id="btn-reset-banner-form" type="button" class="btn-text">
+            + Banner Baru
+          </button>
+        </div>
+
+        <form id="banner-form" style="display: flex; flex-direction: column; gap: 0.875rem;">
+          <input type="hidden" id="b-id" />
+
+          <div class="form-grid">
+            <div class="form-group col-span-2">
+              <label class="form-label">Judul Banner / Slogan <span style="color: #ef4444;">*</span></label>
+              <input type="text" id="b-title" required placeholder="Contoh: Stripy Zig Zag Jigsaw Pillow and Duvet Set" class="input-field" />
+            </div>
+
+            <div class="form-group col-span-2">
+              <label class="form-label">URL Foto Banner (Landscape 1600x800) <span style="color: #ef4444;">*</span></label>
+              <input type="url" id="b-image" required placeholder="https://images.unsplash.com/..." class="input-field input-mono" style="font-size: 0.75rem;" />
+              <div id="banner-image-preview-container" class="hidden" style="margin-top: 0.5rem; display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem; background-color: #f8fafc; border-radius: 0.5rem; border: 1px solid #e2e8f0;">
+                <img id="banner-image-preview" src="" alt="Banner Preview" style="width: 6rem; height: 3.5rem; object-fit: cover; border-radius: 0.375rem; border: 1px solid #cbd5e1;" />
+                <div style="font-size: 0.75rem; color: #64748b;">Preview Foto Banner Carousel</div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Link Tujuan (URL / Hash)</label>
+              <input type="text" id="b-link" placeholder="# atau /products/slug" value="#" class="input-field input-mono" style="font-size: 0.75rem;" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Teks Tombol Link</label>
+              <input type="text" id="b-link-text" placeholder="view product" value="view product" class="input-field" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Urutan Tampil (0 = Paling Awal)</label>
+              <input type="number" id="b-order" min="0" value="0" placeholder="0" class="input-field input-mono" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Status Banner</label>
+              <select id="b-status" class="input-field">
+                <option value="1">Aktif (Tampil di Storefront)</option>
+                <option value="0">Nonaktif (Sembunyikan)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Submit Banner Button -->
+          <div style="padding-top: 0.5rem; border-top: 1px solid #f1f5f9;">
+            <button type="submit" id="btn-sync-banner" class="btn btn-primary btn-sync-large">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+              <span>Simpan Banner ke D1</span>
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Right Column: Database Banners List -->
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">Daftar Slide Banner (Cloudflare D1)</h2>
+            <p class="card-sub">Slide carousel yang aktif ditampilkan di homepage</p>
+          </div>
+          <span id="banner-count" class="badge">
+            0 Banner
+          </span>
+        </div>
+
+        <div id="banner-list" class="product-list-container">
+          <div style="padding: 2.5rem; text-align: center; color: #94a3b8; font-size: 0.75rem; background-color: #f8fafc; border-radius: 0.75rem; border: 1px dashed #cbd5e1;">
+            <div class="spin" style="width: 1.25rem; height: 1.25rem; border: 2px solid #4f46e5; border-top-color: transparent; border-radius: 9999px; margin-bottom: 0.5rem;"></div>
+            <div>Memuat data banner dari database...</div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Modal 1: Settings Modal (Store ID, Token, Hook) -->
+  <div id="settings-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <h3 style="font-size: 1rem; font-weight: 700; color: #0f172a;">Pengaturan Target & Deploy Hook</h3>
+          <p style="font-size: 0.75rem; color: #64748b;">Konfigurasi endpoint dan token Cloudflare</p>
+        </div>
+        <button id="btn-settings-close" type="button" class="modal-close">&times;</button>
+      </div>
+
+      <form id="settings-form" style="display: flex; flex-direction: column; gap: 0.875rem; padding-top: 1rem;">
+        <div class="form-group">
+          <label class="form-label">Store ID <span style="color: #ef4444;">*</span></label>
+          <input type="text" id="cfg-store-id" required placeholder="navanusa" class="input-field" />
+          <p style="font-size: 0.6875rem; color: #64748b; margin-top: 0.25rem;">ID unik toko di database D1 multi-tenant.</p>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Nama Toko</label>
+          <input type="text" id="cfg-store-name" placeholder="Navanusa Store" class="input-field" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Worker / API Base URL <span style="color: #ef4444;">*</span></label>
+          <input type="url" id="cfg-worker-url" required placeholder="http://localhost:4321 atau https://your-domain.pages.dev" class="input-field input-mono" style="font-size: 0.75rem;" />
+          <p style="font-size: 0.6875rem; color: #64748b; margin-top: 0.25rem;">Base URL endpoint API <code>/api/products</code>.</p>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Internal API Token (Bearer Token)</label>
+          <input type="password" id="cfg-token" placeholder="INTERNAL_API_TOKEN" class="input-field input-mono" style="font-size: 0.75rem;" />
+          <p style="font-size: 0.6875rem; color: #64748b; margin-top: 0.25rem;">Token rahasia yang di-set di <code>wrangler secret put INTERNAL_API_TOKEN</code>.</p>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Cloudflare Pages Deploy Hook URL</label>
+          <input type="url" id="cfg-deploy-hook" placeholder="https://api.cloudflare.com/client/v4/pages/webhooks/deploy_hooks/..." class="input-field input-mono" style="font-size: 0.75rem;" />
+          <p style="font-size: 0.6875rem; color: #64748b; margin-top: 0.25rem;">Didapat dari Cloudflare Pages: <em>Settings &rarr; Builds &rarr; Deploy hooks</em>.</p>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" id="btn-settings-cancel" class="btn btn-secondary">Batal</button>
+          <button type="submit" class="btn btn-primary">Simpan Pengaturan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal 2: Payment & Logistics Credentials (Mayar & Biteship Encrypted) -->
+  <div id="integrations-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <h3 style="font-size: 1rem; font-weight: 700; color: #0f172a;">Integrasi Mayar & Biteship</h3>
+          <p style="font-size: 0.75rem; color: #64748b;">Kredensial dienkripsi AES-256 sebelum disimpan ke D1</p>
+        </div>
+        <button id="btn-integrations-close" type="button" class="modal-close">&times;</button>
+      </div>
+
+      <!-- Current Saved Status Display -->
+      <div id="integrations-status-box" class="status-box" style="margin-top: 1rem;">
+        <div style="font-weight: 700; color: #0f172a; margin-bottom: 0.25rem;">Status Kredensial di D1:</div>
+        <div id="status-mayar-key" style="color: #64748b;">Mayar API Key: <span class="status-pill status-inactive">Belum diset</span></div>
+        <div id="status-mayar-webhook" style="color: #64748b;">Mayar Webhook Secret: <span class="status-pill status-inactive">Belum diset</span></div>
+        <div id="status-biteship-key" style="color: #64748b;">Biteship API Key: <span class="status-pill status-inactive">Belum diset</span></div>
+      </div>
+
+      <form id="integrations-form" style="display: flex; flex-direction: column; gap: 0.875rem; padding-top: 1rem;">
+        <!-- Mayar Section -->
+        <div style="padding: 0.75rem; background-color: #faf5ff; border: 1px solid #f3e8ff; border-radius: 0.75rem; display: flex; flex-direction: column; gap: 0.625rem;">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <span style="font-weight: 700; font-size: 0.8125rem; color: #6b21a8;">1. Mayar Payment Gateway</span>
+            <button type="button" id="btn-test-mayar" class="btn btn-secondary" style="font-size: 0.6875rem; padding: 0.25rem 0.5rem;">
+              Test Koneksi Mayar
+            </button>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Mayar API Key</label>
+            <input type="password" id="input-mayar-key" placeholder="Masukkan API Key Mayar baru (atau biarkan kosong jika tidak diubah)" class="input-field input-mono" style="font-size: 0.75rem;" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Mayar Webhook Secret</label>
+            <input type="password" id="input-mayar-secret" placeholder="Webhook Secret Mayar" class="input-field input-mono" style="font-size: 0.75rem;" />
+          </div>
+        </div>
+
+        <!-- Biteship Section -->
+        <div style="padding: 0.75rem; background-color: #f0fdf4; border: 1px solid #dcfce7; border-radius: 0.75rem; display: flex; flex-direction: column; gap: 0.625rem;">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <span style="font-weight: 700; font-size: 0.8125rem; color: #15803d;">2. Biteship Logistics (Ongkir & Resi)</span>
+            <button type="button" id="btn-test-biteship" class="btn btn-secondary" style="font-size: 0.6875rem; padding: 0.25rem 0.5rem;">
+              Test Koneksi Biteship
+            </button>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Biteship API Key</label>
+            <input type="password" id="input-biteship-key" placeholder="biteship_live_..." class="input-field input-mono" style="font-size: 0.75rem;" />
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" id="btn-integrations-cancel" class="btn btn-secondary">Batal</button>
+          <button type="submit" id="btn-integrations-submit" class="btn btn-primary">
+            Simpan Kredensial Terenkripsi
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>

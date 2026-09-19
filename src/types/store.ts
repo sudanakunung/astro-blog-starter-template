@@ -7,7 +7,7 @@ export interface Product {
 }
 
 export interface CarouselSlide {
-  id: number;
+  id: string | number;
   title: string;
   image: string;
   link: string;

@@ -6,8 +6,9 @@ import HeroCarousel from '../components/HeroCarousel.astro';
 import ProductGrid from '../components/ProductGrid.astro';
 import AboutSection from '../components/AboutSection.astro';
 import { getActiveProducts } from '../lib/db/productRepo';
-import { carouselSlides } from '../data/storeData';
+import { getActiveBanners } from '../lib/db/bannerRepo';
 import type { D1Product, Store } from '../types/d1';
+import type { CarouselSlide } from '../types/store';
 
 // 1. Dapatkan tenant store dari locals (diisi oleh middleware) atau fallback default
 const store: Store = Astro.locals.store || {
@@ -19,12 +20,16 @@ const store: Store = Astro.locals.store || {
   updated_at: 0,
 };
 
-// 2. Query katalog produk tenant dari D1
+// 2. Query katalog produk & banner carousel tenant dari D1
 const db = Astro.locals.runtime?.env?.DB;
 let products: D1Product[] = [];
+let slides: CarouselSlide[] = [];
 
 if (db) {
   products = await getActiveProducts(db, store.id);
+  slides = await getActiveBanners(db, store.id);
+} else {
+  slides = await getActiveBanners();
 }
 ---
 
@@ -34,7 +39,7 @@ if (db) {
   storeName={store.name}
 >
   <!-- Hero Carousel -->
-  <HeroCarousel slides={carouselSlides} />
+  <HeroCarousel slides={slides} />
 
   <!-- Product Catalog Grid -->
   <ProductGrid products={products} title="Katalog Produk" />
@@ -42,3 +47,4 @@ if (db) {
   <!-- About Section -->
   <AboutSection title="About" />
 </ShopLayout>
+
