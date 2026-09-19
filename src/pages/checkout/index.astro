@@ -43,7 +43,7 @@ export const prerender = false;
       </div>
 
       <!-- MAIN CHECKOUT (hidden until auth + cart verified) -->
-      <form id="checkout-form" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <form id="checkout-form" novalidate class="hidden grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
         <!-- Left Column -->
         <div class="lg:col-span-7 space-y-6">
@@ -98,29 +98,29 @@ export const prerender = false;
                   </div>
                   <div>
                     <label class="block text-xs font-semibold text-gray-600 mb-1">Nama Penerima *</label>
-                    <input type="text" id="addr-recipient" required placeholder="Nama penerima" class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-black" />
+                    <input type="text" id="addr-recipient" placeholder="Nama penerima" class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-black" />
                   </div>
                 </div>
                 <div>
                   <label class="block text-xs font-semibold text-gray-600 mb-1">No. HP Penerima *</label>
-                  <input type="tel" id="addr-phone" required placeholder="08xxxxxxxxxx" class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-black" />
+                  <input type="tel" id="addr-phone" placeholder="08xxxxxxxxxx" class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-black" />
                 </div>
                 <div>
                   <label class="block text-xs font-semibold text-gray-600 mb-1">Alamat Lengkap *</label>
-                  <textarea id="addr-detail" rows="2" required placeholder="Jl. Sunset Road No. 88, Kuta" class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-black"></textarea>
+                  <textarea id="addr-detail" rows="2" placeholder="Jl. Sunset Road No. 88, Kuta" class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-black"></textarea>
                 </div>
                 <div class="grid grid-cols-3 gap-3">
                   <div>
                     <label class="block text-xs font-semibold text-gray-600 mb-1">Provinsi *</label>
-                    <input type="text" id="addr-province" required placeholder="Bali" class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-black" />
+                    <input type="text" id="addr-province" placeholder="Bali" class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-black" />
                   </div>
                   <div>
                     <label class="block text-xs font-semibold text-gray-600 mb-1">Kota *</label>
-                    <input type="text" id="addr-city" required placeholder="Denpasar" class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-black" />
+                    <input type="text" id="addr-city" placeholder="Denpasar" class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-black" />
                   </div>
                   <div>
                     <label class="block text-xs font-semibold text-gray-600 mb-1">Kode Pos *</label>
-                    <input type="text" id="addr-postal" required placeholder="80361" class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-black" />
+                    <input type="text" id="addr-postal" placeholder="80361" class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-black" />
                   </div>
                 </div>
                 <div class="flex items-center gap-2">
