@@ -3,6 +3,7 @@ export const prerender = false; // SSR di Cloudflare Workers
 
 import ShopLayout from '../layouts/ShopLayout.astro';
 import HeroCarousel from '../components/HeroCarousel.astro';
+import CategoryGrid from '../components/CategoryGrid.astro';
 import ProductGrid from '../components/ProductGrid.astro';
 import AboutSection from '../components/AboutSection.astro';
 import { getActiveProducts } from '../lib/db/productRepo';
@@ -40,6 +41,9 @@ if (db) {
 >
   <!-- Hero Carousel -->
   <HeroCarousel slides={slides} />
+
+  <!-- Category Grid — variative besar kecil, di bawah hero -->
+  <CategoryGrid />
 
   <!-- Product Catalog Grid -->
   <ProductGrid products={products} title="Katalog Produk" />

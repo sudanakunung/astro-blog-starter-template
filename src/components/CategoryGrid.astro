@@ -1,0 +1,155 @@
+---
+// CategoryGrid.astro - Variative category showcase grid for Navanusa Jewellery
+const categories = [
+  {
+    name: 'Kalung',
+    description: 'Liontin & Rantai Elegan',
+    image: '/cat-necklace.jpg',
+    badge: 'Koleksi Terbaru',
+    size: 'large',
+  },
+  {
+    name: 'Cincin',
+    description: 'Cincin Berlian & Emas',
+    image: '/cat-ring.jpg',
+    badge: 'Pilihan Terbaik',
+    size: 'small',
+  },
+  {
+    name: 'Gelang',
+    description: 'Gelang Mewah & Bangle',
+    image: '/cat-bracelet.jpg',
+    badge: 'Eksklusif',
+    size: 'small',
+  },
+  {
+    name: 'Anting',
+    description: 'Stud, Drop & Hoop',
+    image: '/cat-earring.jpg',
+    badge: 'Tren Musim Ini',
+    size: 'wide',
+  },
+];
+---
+
+<section class="w-full bg-white py-12 px-4 sm:px-6">
+  <!-- Section Header -->
+  <div class="max-w-6xl mx-auto mb-8 text-center">
+    <div class="flex items-center gap-4 mb-3">
+      <div class="h-px flex-1 bg-gray-200"></div>
+      <p class="text-xs uppercase tracking-[0.25em] text-gray-400 font-medium whitespace-nowrap">Koleksi Kami</p>
+      <div class="h-px flex-1 bg-gray-200"></div>
+    </div>
+    <h2 class="text-2xl sm:text-3xl font-light text-gray-900 tracking-tight">
+      Temukan <span class="font-semibold">Kategori</span> Favoritmu
+    </h2>
+  </div>
+
+  <!-- Asymmetric Grid -->
+  <div class="max-w-6xl mx-auto grid gap-3" style="grid-template-columns: repeat(3, 1fr); grid-template-rows: auto auto;">
+
+    <!-- 1. KALUNG — large, spans 2 rows (left side) -->
+    <a href="/#store"
+       class="group relative overflow-hidden rounded-2xl bg-gray-100"
+       style="grid-column: 1; grid-row: 1 / span 2; min-height: 460px;"
+    >
+      <img src="/cat-necklace.jpg" alt="Kalung"
+           class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+           loading="lazy" />
+      <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+      <div class="absolute bottom-0 left-0 right-0 p-6">
+        <p class="text-white/65 text-[10px] uppercase tracking-widest mb-1">Koleksi Terbaru</p>
+        <h3 class="text-white text-2xl font-semibold tracking-tight mb-1">Kalung</h3>
+        <p class="text-white/80 text-xs mb-4">Liontin &amp; Rantai Elegan</p>
+        <span class="inline-flex items-center gap-1.5 bg-white text-gray-900 text-xs font-bold px-4 py-2 rounded-full uppercase tracking-wider group-hover:bg-gray-900 group-hover:text-white transition-colors duration-200">
+          Lihat Semua
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        </span>
+      </div>
+    </a>
+
+    <!-- 2. CINCIN — small, top center -->
+    <a href="/#store"
+       class="group relative overflow-hidden rounded-2xl bg-gray-100"
+       style="grid-column: 2; grid-row: 1; min-height: 220px;"
+    >
+      <img src="/cat-ring.jpg" alt="Cincin"
+           class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+           loading="lazy" />
+      <div class="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent"></div>
+      <div class="absolute bottom-0 left-0 right-0 p-5">
+        <p class="text-white/65 text-[10px] uppercase tracking-widest mb-0.5">Pilihan Terbaik</p>
+        <h3 class="text-white text-lg font-semibold">Cincin</h3>
+        <p class="text-white/75 text-xs">Cincin Berlian &amp; Emas</p>
+      </div>
+      <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        <span class="bg-white text-gray-900 text-xs font-bold px-4 py-2 rounded-full uppercase tracking-wider shadow-lg">Lihat Koleksi</span>
+      </div>
+    </a>
+
+    <!-- 3. GELANG — small, top right -->
+    <a href="/#store"
+       class="group relative overflow-hidden rounded-2xl bg-gray-100"
+       style="grid-column: 3; grid-row: 1; min-height: 220px;"
+    >
+      <img src="/cat-bracelet.jpg" alt="Gelang"
+           class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+           loading="lazy" />
+      <div class="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent"></div>
+      <div class="absolute bottom-0 left-0 right-0 p-5">
+        <p class="text-white/65 text-[10px] uppercase tracking-widest mb-0.5">Eksklusif</p>
+        <h3 class="text-white text-lg font-semibold">Gelang</h3>
+        <p class="text-white/75 text-xs">Gelang Mewah &amp; Bangle</p>
+      </div>
+      <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        <span class="bg-white text-gray-900 text-xs font-bold px-4 py-2 rounded-full uppercase tracking-wider shadow-lg">Lihat Koleksi</span>
+      </div>
+    </a>
+
+    <!-- 4. ANTING — wide, spans 2 cols bottom right -->
+    <a href="/#store"
+       class="group relative overflow-hidden rounded-2xl bg-gray-100"
+       style="grid-column: 2 / span 2; grid-row: 2; min-height: 220px;"
+    >
+      <img src="/cat-earring.jpg" alt="Anting"
+           class="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+           loading="lazy" />
+      <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent"></div>
+      <div class="absolute bottom-0 left-0 p-6">
+        <p class="text-white/65 text-[10px] uppercase tracking-widest mb-1">Tren Musim Ini</p>
+        <h3 class="text-white text-xl font-semibold mb-1">Anting</h3>
+        <p class="text-white/75 text-xs mb-3">Stud, Drop &amp; Hoop</p>
+        <span class="inline-flex items-center gap-1.5 bg-white/20 border border-white/50 text-white text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider group-hover:bg-white group-hover:text-gray-900 transition-all duration-200 backdrop-blur-sm">
+          Lihat Semua
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        </span>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- Mobile fallback: stack as 2-col grid on sm, 1-col on xs -->
+  <style>
+    @media (max-width: 767px) {
+      section .max-w-6xl > div[style*="grid-template-columns"] {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        grid-template-rows: auto !important;
+      }
+      section .max-w-6xl > div[style*="grid-template-columns"] > a {
+        grid-column: auto !important;
+        grid-row: auto !important;
+        min-height: 180px !important;
+      }
+    }
+    @media (max-width: 480px) {
+      section .max-w-6xl > div[style*="grid-template-columns"] {
+        grid-template-columns: 1fr !important;
+      }
+    }
+  </style>
+</section>
