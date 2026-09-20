@@ -147,11 +147,11 @@ export async function initDatabase(db: D1Database): Promise<{ success: boolean; 
     await db.prepare(`CREATE UNIQUE INDEX IF NOT EXISTS idx_customers_email ON customers(store_id, email)`).run();
   } catch (e) {}
 
-  // Ensure default store 'navanusa' exists
+  // Ensure default store 'jewellery' exists
   try {
     await db.prepare(`
       INSERT OR IGNORE INTO stores (id, name, status, origin_postal_code, created_at, updated_at) 
-      VALUES ('navanusa', 'Navanusa Store', 'active', '80361', unixepoch(), unixepoch())
+      VALUES ('jewellery', 'Navanusa Jewellery', 'active', '80361', unixepoch(), unixepoch())
     `).run();
   } catch (e) {}
 

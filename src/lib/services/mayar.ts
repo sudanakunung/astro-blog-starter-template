@@ -33,7 +33,7 @@ export async function createMayarPayment(params: CreateMayarPaymentParams): Prom
   const trimmedKey = apiKey.trim();
   const payload = {
     name: customerName,
-    email: customerEmail || 'customer@navanusa.com',
+    email: customerEmail || 'customer@jewellery.navanusa.com',
     mobile: customerPhone || '08123456789',
     amount: Math.round(amount),
     description: description || `Pembayaran Pesanan #${orderId}`,

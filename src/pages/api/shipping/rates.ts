@@ -58,7 +58,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     }
 
     // Get store config (biteship_api_key + origin_postal_code)
-    const storeId = 'navanusa';
+    const storeId = 'jewellery';
     const store = await db
       .prepare('SELECT biteship_api_key, origin_postal_code FROM stores WHERE id = ?')
       .bind(storeId)

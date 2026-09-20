@@ -1,5 +1,5 @@
 {
-	"name": "navanusa",
+	"name": "jewellery",
 	"compatibility_date": "2025-10-08",
 	"compatibility_flags": [
 		"nodejs_compat"
@@ -12,7 +12,7 @@
 	"d1_databases": [
 		{
 			"binding": "DB",
-			"database_name": "navanusa",
+			"database_name": "jewellery",
 			"database_id": "75d7e747-80a5-476b-8e98-20ab62328f90"
 		}
 	],

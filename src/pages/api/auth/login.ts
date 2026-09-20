@@ -28,7 +28,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     await initDatabase(db);
 
     const body = await request.json();
-    const { email, password, store_id = 'navanusa' } = body;
+    const { email, password, store_id = 'jewellery' } = body;
 
     if (!email || !password) {
       return new Response(

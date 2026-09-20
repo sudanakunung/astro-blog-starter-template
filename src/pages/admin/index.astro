@@ -654,7 +654,7 @@ export const prerender = false;
 
       <div id="store-badge" class="badge" style="cursor: pointer;" title="Klik untuk ubah pengaturan">
         <span class="badge-dot"></span>
-        <span id="badge-store-name">Store: navanusa</span>
+        <span id="badge-store-name">Store: jewellery</span>
       </div>
 
       <button id="btn-integrations-open" class="btn btn-emerald" title="Kredensial Mayar & Biteship">
@@ -928,13 +928,13 @@ export const prerender = false;
       <form id="settings-form" style="display: flex; flex-direction: column; gap: 0.875rem; padding-top: 1rem;">
         <div class="form-group">
           <label class="form-label">Store ID <span style="color: #ef4444;">*</span></label>
-          <input type="text" id="cfg-store-id" required placeholder="navanusa" class="input-field" />
+          <input type="text" id="cfg-store-id" required placeholder="jewellery" class="input-field" />
           <p style="font-size: 0.6875rem; color: #64748b; margin-top: 0.25rem;">ID unik toko di database D1 multi-tenant.</p>
         </div>
 
         <div class="form-group">
           <label class="form-label">Nama Toko</label>
-          <input type="text" id="cfg-store-name" placeholder="Navanusa Store" class="input-field" />
+          <input type="text" id="cfg-store-name" placeholder="Navanusa Jewellery" class="input-field" />
         </div>
 
         <div class="form-group">
@@ -1038,8 +1038,8 @@ export const prerender = false;
     // State management in localStorage
     const STORAGE_KEY = 'astro_sync_config';
     let currentConfig = {
-      store_id: 'navanusa',
-      store_name: 'Navanusa Store',
+      store_id: 'jewellery',
+      store_name: 'Navanusa Jewellery',
       worker_url: window.location.origin,
       internal_token: '',
       deploy_hook_url: ''
@@ -1171,7 +1171,7 @@ export const prerender = false;
         console.warn('Failed to load local config:', e);
       }
 
-      badgeStoreName.textContent = `Store: ${currentConfig.store_id || 'navanusa'}`;
+      badgeStoreName.textContent = `Store: ${currentConfig.store_id || 'jewellery'}`;
       cfgStoreId.value = currentConfig.store_id || '';
       cfgStoreName.value = currentConfig.store_name || '';
       cfgWorkerUrl.value = currentConfig.worker_url || window.location.origin;
@@ -1182,7 +1182,7 @@ export const prerender = false;
     function saveConfig(cfg) {
       currentConfig = cfg;
       localStorage.setItem(STORAGE_KEY, JSON.stringify(cfg));
-      badgeStoreName.textContent = `Store: ${currentConfig.store_id || 'navanusa'}`;
+      badgeStoreName.textContent = `Store: ${currentConfig.store_id || 'jewellery'}`;
     }
 
     // ==========================================
@@ -1198,7 +1198,7 @@ export const prerender = false;
 
       try {
         const base = (currentConfig.worker_url || window.location.origin).replace(/\/+$/, '');
-        const targetUrl = `${base}/api/products?store_id=${encodeURIComponent(currentConfig.store_id || 'navanusa')}&all=true`;
+        const targetUrl = `${base}/api/products?store_id=${encodeURIComponent(currentConfig.store_id || 'jewellery')}&all=true`;
         
         const res = await fetch(targetUrl);
         if (!res.ok) {
@@ -1333,7 +1333,7 @@ export const prerender = false;
 
       try {
         const base = (currentConfig.worker_url || window.location.origin).replace(/\/+$/, '');
-        const targetUrl = `${base}/api/banners?store_id=${encodeURIComponent(currentConfig.store_id || 'navanusa')}&all=true`;
+        const targetUrl = `${base}/api/banners?store_id=${encodeURIComponent(currentConfig.store_id || 'jewellery')}&all=true`;
         
         const res = await fetch(targetUrl);
         if (!res.ok) {
@@ -1452,7 +1452,7 @@ export const prerender = false;
           headers['Authorization'] = `Bearer ${currentConfig.internal_token}`;
         }
 
-        const res = await fetch(`${base}/api/banners/${id}?store_id=${encodeURIComponent(currentConfig.store_id || 'navanusa')}`, {
+        const res = await fetch(`${base}/api/banners/${id}?store_id=${encodeURIComponent(currentConfig.store_id || 'jewellery')}`, {
           method: 'DELETE',
           headers,
         });
@@ -1491,7 +1491,7 @@ export const prerender = false;
     async function loadStoreIntegrations() {
       try {
         const base = (currentConfig.worker_url || window.location.origin).replace(/\/+$/, '');
-        const res = await fetch(`${base}/api/store/settings?store_id=${encodeURIComponent(currentConfig.store_id || 'navanusa')}`);
+        const res = await fetch(`${base}/api/store/settings?store_id=${encodeURIComponent(currentConfig.store_id || 'jewellery')}`);
         if (!res.ok) return;
 
         const data = await res.json();
@@ -1737,7 +1737,7 @@ export const prerender = false;
         e.preventDefault();
 
         const payload = {
-          store_id: currentConfig.store_id || 'navanusa',
+          store_id: currentConfig.store_id || 'jewellery',
           name: currentConfig.store_name || '',
           mayar_api_key: inputMayarKey.value.trim(),
           mayar_webhook_secret: inputMayarSecret.value.trim(),
@@ -1787,7 +1787,7 @@ export const prerender = false;
 
         const banner = {
           id: bId.value.trim() || generateUUID(),
-          store_id: currentConfig.store_id || 'navanusa',
+          store_id: currentConfig.store_id || 'jewellery',
           title: bTitle.value.trim(),
           image_url: bImage.value.trim(),
           link_url: bLink.value.trim() || '#',
@@ -1837,7 +1837,7 @@ export const prerender = false;
 
         const product = {
           id: pId.value.trim() || generateUUID(),
-          store_id: currentConfig.store_id || 'navanusa',
+          store_id: currentConfig.store_id || 'jewellery',
           name: pName.value.trim(),
           slug: pSlug.value.trim(),
           description: pDesc.value.trim(),

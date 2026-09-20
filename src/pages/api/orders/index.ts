@@ -26,7 +26,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const body = await request.json();
 
     const {
-      store_id = locals.store?.id || 'navanusa',
+      store_id = locals.store?.id || 'jewellery',
       customer_id,
       customer_name,
       customer_phone,
@@ -92,7 +92,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
               customerName: customer_name,
               customerEmail: customer_email,
               customerPhone: customer_phone,
-              description: `Pesanan #${orderId} di Navanusa`,
+              description: `Pesanan #${orderId} di Navanusa Jewellery`,
               redirectUrl,
             });
 

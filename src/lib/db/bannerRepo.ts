@@ -6,7 +6,7 @@ import { carouselSlides as defaultSlides } from '../../data/storeData';
  * Mengambil daftar banner aktif dari Cloudflare D1.
  * Jika tabel belum ada atau kosong, fallback ke data bawaan di storeData.ts.
  */
-export async function getActiveBanners(db?: D1Database, storeId: string = 'navanusa'): Promise<CarouselSlide[]> {
+export async function getActiveBanners(db?: D1Database, storeId: string = 'jewellery'): Promise<CarouselSlide[]> {
   if (!db) {
     return defaultSlides;
   }
@@ -42,7 +42,7 @@ export async function getActiveBanners(db?: D1Database, storeId: string = 'navan
 /**
  * Mengambil semua banner (termasuk yang nonaktif) untuk Admin Panel.
  */
-export async function getAllBanners(db: D1Database, storeId: string = 'navanusa'): Promise<D1Banner[]> {
+export async function getAllBanners(db: D1Database, storeId: string = 'jewellery'): Promise<D1Banner[]> {
   try {
     const { results } = await db
       .prepare(

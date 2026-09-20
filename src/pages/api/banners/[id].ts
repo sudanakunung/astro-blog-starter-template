@@ -45,7 +45,7 @@ export const DELETE: APIRoute = async ({ params, request, locals }) => {
     }
 
     const url = new URL(request.url);
-    const storeId = url.searchParams.get('store_id') || 'navanusa';
+    const storeId = url.searchParams.get('store_id') || 'jewellery';
 
     await db
       .prepare('DELETE FROM banners WHERE id = ? AND store_id = ?')

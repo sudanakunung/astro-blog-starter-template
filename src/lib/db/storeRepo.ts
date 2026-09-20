@@ -21,7 +21,7 @@ export async function getStoreByDomainOrId(db: D1Database, hostOrId: string): Pr
 
     // 3. Fallback default ke store pertama yang aktif (misal akses dari workers.dev atau domain preview)
     const defaultStore = await db
-      .prepare("SELECT * FROM stores WHERE status = 'active' ORDER BY id = 'navanusa' DESC, created_at ASC LIMIT 1")
+      .prepare("SELECT * FROM stores WHERE status = 'active' ORDER BY id = 'jewellery' DESC, created_at ASC LIMIT 1")
       .first<Store>();
 
     return defaultStore ?? null;

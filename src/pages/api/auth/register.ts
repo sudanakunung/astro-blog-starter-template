@@ -28,7 +28,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     await initDatabase(db);
 
     const body = await request.json();
-    const { name, email, phone, password, confirm_password, store_id = 'navanusa' } = body;
+    const { name, email, phone, password, confirm_password, store_id = 'jewellery' } = body;
 
     // Validation
     if (!name || !email || !password) {

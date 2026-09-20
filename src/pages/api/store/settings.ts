@@ -43,7 +43,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     const body = await request.json();
     const {
-      store_id = 'navanusa',
+      store_id = 'jewellery',
       name = '',
       mayar_api_key = '',
       mayar_webhook_secret = '',
@@ -141,7 +141,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
     await initDatabase(db);
 
     const url = new URL(request.url);
-    const storeId = url.searchParams.get('store_id') || locals.store?.id || 'navanusa';
+    const storeId = url.searchParams.get('store_id') || locals.store?.id || 'jewellery';
     const encryptionKey = env?.ENCRYPTION_KEY || process.env.ENCRYPTION_KEY;
 
     const store = await db

@@ -31,7 +31,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
     await initDatabase(db);
 
     const url = new URL(request.url);
-    const storeId = url.searchParams.get('store_id') || locals.store?.id || 'navanusa';
+    const storeId = url.searchParams.get('store_id') || locals.store?.id || 'jewellery';
     const all = url.searchParams.get('all') === 'true';
 
     let query = 'SELECT * FROM banners WHERE store_id = ?';
