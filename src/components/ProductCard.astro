@@ -27,7 +27,7 @@ const fallbackImage = 'https://images.unsplash.com/photo-1555982105-d25af4182e4e
     <button
       type="button"
       aria-label={`Tambah ${product.name} ke wishlist`}
-      class="wishlist-toggle-btn absolute top-3 right-3 p-2 bg-white/85 hover:bg-white backdrop-blur-sm rounded-full shadow-sm text-gray-400 hover:text-red-500 transition-all focus:outline-none z-10"
+      class="wishlist-toggle-btn absolute top-3 right-3 p-2 bg-white rounded-full shadow-md border border-gray-200 hover:scale-110 transition-all duration-200 focus:outline-none z-10 group/wish"
       data-product-id={product.id}
       data-product-name={product.name}
       data-product-price={product.price}
@@ -35,7 +35,7 @@ const fallbackImage = 'https://images.unsplash.com/photo-1555982105-d25af4182e4e
       data-product-slug={product.slug}
       data-product-stock={product.stock}
     >
-      <svg class="h-4 w-4 fill-none stroke-current" viewBox="0 0 24 24" stroke-width="2">
+      <svg class="wishlist-icon h-4 w-4 fill-none stroke-current text-gray-400 group-hover/wish:text-red-500 transition-colors" viewBox="0 0 24 24" stroke-width="2">
         <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
       </svg>
     </button>
@@ -71,8 +71,35 @@ const fallbackImage = 'https://images.unsplash.com/photo-1555982105-d25af4182e4e
 </div>
 
 <script is:inline>
+  // Helper: update a single wishlist button's icon state
+  function _syncWishBtnIcon(btn, isActive) {
+    const icon = btn.querySelector('.wishlist-icon, svg');
+    if (!icon) return;
+    if (isActive) {
+      icon.classList.add('fill-current', 'text-red-500');
+      icon.classList.remove('fill-none', 'text-gray-400');
+      btn.classList.add('border-red-200', 'bg-red-50');
+      btn.classList.remove('border-gray-200', 'bg-white');
+    } else {
+      icon.classList.remove('fill-current', 'text-red-500');
+      icon.classList.add('fill-none', 'text-gray-400');
+      btn.classList.remove('border-red-200', 'bg-red-50');
+      btn.classList.add('border-gray-200', 'bg-white');
+    }
+  }
+
+  // Sync all wishlist button icons from localStorage on page load
+  (function syncAllWishlistIcons() {
+    try {
+      const items = JSON.parse(localStorage.getItem('nordic_wishlist_items') || '[]');
+      document.querySelectorAll('.wishlist-toggle-btn').forEach(function (btn) {
+        const id = btn.getAttribute('data-product-id');
+        _syncWishBtnIcon(btn, items.some(function (i) { return i.id === id; }));
+      });
+    } catch (e) {}
+  })();
+
   // Use event delegation on document to avoid race condition with WishlistDrawer script.
-  // Both quick-add and wishlist buttons are handled here.
   document.addEventListener('click', function (e) {
     // Quick Add to Cart (event delegation)
     const cartBtn = e.target.closest('.quick-add-cart-btn');
@@ -105,9 +132,22 @@ const fallbackImage = 'https://images.unsplash.com/photo-1555982105-d25af4182e4e
         stock: parseInt(wishBtn.getAttribute('data-product-stock') || '99', 10),
       };
       if (window.NordicWishlist) {
-        window.NordicWishlist.toggleItem(product);
+        const isNowActive = window.NordicWishlist.toggleItem(product);
+        // Update icon immediately on the clicked button
+        _syncWishBtnIcon(wishBtn, isNowActive);
       }
       return;
     }
+  });
+
+  // Also sync all icons when wishlist is updated (e.g. removed from drawer)
+  window.addEventListener('nordic:wishlist-updated', function () {
+    try {
+      const items = JSON.parse(localStorage.getItem('nordic_wishlist_items') || '[]');
+      document.querySelectorAll('.wishlist-toggle-btn').forEach(function (btn) {
+        const id = btn.getAttribute('data-product-id');
+        _syncWishBtnIcon(btn, items.some(function (i) { return i.id === id; }));
+      });
+    } catch (e) {}
   });
 </script>

@@ -61,7 +61,7 @@ const fallbackImage = 'https://images.unsplash.com/photo-1555982105-d25af4182e4e
             <button
               type="button"
               id="detail-wishlist-btn"
-              class="wishlist-toggle-btn absolute top-4 right-4 p-3 bg-white/90 hover:bg-white rounded-full shadow-md text-gray-500 hover:text-red-500 transition-all focus:outline-none"
+              class="wishlist-toggle-btn absolute top-4 right-4 p-3 bg-white rounded-full shadow-lg border border-gray-200 hover:scale-110 transition-all duration-200 focus:outline-none"
               data-product-id={product.id}
               data-product-name={product.name}
               data-product-price={product.price}
@@ -70,7 +70,7 @@ const fallbackImage = 'https://images.unsplash.com/photo-1555982105-d25af4182e4e
               data-product-stock={product.stock}
               aria-label="Tambah ke Wishlist"
             >
-              <svg class="h-6 w-6 fill-none stroke-current" viewBox="0 0 24 24" stroke-width="1.8">
+              <svg class="wishlist-icon h-6 w-6 fill-none stroke-current text-gray-400 transition-colors" viewBox="0 0 24 24" stroke-width="1.8">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
               </svg>
             </button>
@@ -294,19 +294,26 @@ const fallbackImage = 'https://images.unsplash.com/photo-1555982105-d25af4182e4e
     // Wishlist button on detail page
     const detailWishlistBtn = document.getElementById('detail-wishlist-btn');
     if (detailWishlistBtn) {
-      // Sync initial icon state from localStorage
+      // Sync initial icon state from localStorage directly (no dependency on NordicWishlist timing)
       function syncDetailWishlistIcon() {
-        const isInWishlist = window.NordicWishlist?.hasItem(currentProduct.id);
-        const icon = detailWishlistBtn.querySelector('svg');
-        if (icon) {
-          if (isInWishlist) {
-            icon.classList.add('text-red-500', 'fill-current');
-            icon.classList.remove('fill-none', 'text-gray-500');
-          } else {
-            icon.classList.remove('text-red-500', 'fill-current');
-            icon.classList.add('fill-none', 'text-gray-500');
+        try {
+          const items = JSON.parse(localStorage.getItem('nordic_wishlist_items') || '[]');
+          const isInWishlist = items.some(function (i) { return i.id === currentProduct.id; });
+          const icon = detailWishlistBtn.querySelector('.wishlist-icon, svg');
+          if (icon) {
+            if (isInWishlist) {
+              icon.classList.add('text-red-500', 'fill-current');
+              icon.classList.remove('fill-none', 'text-gray-400');
+              detailWishlistBtn.classList.add('border-red-200', 'bg-red-50');
+              detailWishlistBtn.classList.remove('border-gray-200', 'bg-white');
+            } else {
+              icon.classList.remove('text-red-500', 'fill-current');
+              icon.classList.add('fill-none', 'text-gray-400');
+              detailWishlistBtn.classList.remove('border-red-200', 'bg-red-50');
+              detailWishlistBtn.classList.add('border-gray-200', 'bg-white');
+            }
           }
-        }
+        } catch (e) {}
       }
       syncDetailWishlistIcon();
 
@@ -322,6 +329,7 @@ const fallbackImage = 'https://images.unsplash.com/photo-1555982105-d25af4182e4e
           slug: currentProduct.slug,
           stock: currentProduct.stock,
         });
+        // Sync icon after toggle (state already committed to localStorage)
         syncDetailWishlistIcon();
       });
 
@@ -330,3 +338,4 @@ const fallbackImage = 'https://images.unsplash.com/photo-1555982105-d25af4182e4e
     }
   });
 </script>
+
