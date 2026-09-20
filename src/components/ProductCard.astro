@@ -71,39 +71,43 @@ const fallbackImage = 'https://images.unsplash.com/photo-1555982105-d25af4182e4e
 </div>
 
 <script is:inline>
-  document.addEventListener('DOMContentLoaded', () => {
-    // Quick Add to Cart
-    document.querySelectorAll('.quick-add-cart-btn').forEach((btn) => {
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        const product = {
-          id: btn.getAttribute('data-product-id'),
-          name: btn.getAttribute('data-product-name'),
-          price: parseInt(btn.getAttribute('data-product-price') || '0', 10),
-          image: btn.getAttribute('data-product-image'),
-          slug: btn.getAttribute('data-product-slug'),
-          stock: parseInt(btn.getAttribute('data-product-stock') || '99', 10),
-        };
-        window.NordicCart?.addItem(product, 1);
-      });
-    });
+  // Use event delegation on document to avoid race condition with WishlistDrawer script.
+  // Both quick-add and wishlist buttons are handled here.
+  document.addEventListener('click', function (e) {
+    // Quick Add to Cart (event delegation)
+    const cartBtn = e.target.closest('.quick-add-cart-btn');
+    if (cartBtn) {
+      e.preventDefault();
+      e.stopPropagation();
+      const product = {
+        id: cartBtn.getAttribute('data-product-id'),
+        name: cartBtn.getAttribute('data-product-name'),
+        price: parseInt(cartBtn.getAttribute('data-product-price') || '0', 10),
+        image: cartBtn.getAttribute('data-product-image'),
+        slug: cartBtn.getAttribute('data-product-slug'),
+        stock: parseInt(cartBtn.getAttribute('data-product-stock') || '99', 10),
+      };
+      window.NordicCart?.addItem(product, 1);
+      return;
+    }
 
-    // Wishlist Toggle
-    document.querySelectorAll('.wishlist-toggle-btn').forEach((btn) => {
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        const product = {
-          id: btn.getAttribute('data-product-id'),
-          name: btn.getAttribute('data-product-name'),
-          price: parseInt(btn.getAttribute('data-product-price') || '0', 10),
-          image: btn.getAttribute('data-product-image'),
-          slug: btn.getAttribute('data-product-slug'),
-          stock: parseInt(btn.getAttribute('data-product-stock') || '99', 10),
-        };
-        window.NordicWishlist?.toggleItem(product);
-      });
-    });
+    // Wishlist Toggle (event delegation)
+    const wishBtn = e.target.closest('.wishlist-toggle-btn');
+    if (wishBtn) {
+      e.preventDefault();
+      e.stopPropagation();
+      const product = {
+        id: wishBtn.getAttribute('data-product-id'),
+        name: wishBtn.getAttribute('data-product-name'),
+        price: parseInt(wishBtn.getAttribute('data-product-price') || '0', 10),
+        image: wishBtn.getAttribute('data-product-image'),
+        slug: wishBtn.getAttribute('data-product-slug'),
+        stock: parseInt(wishBtn.getAttribute('data-product-stock') || '99', 10),
+      };
+      if (window.NordicWishlist) {
+        window.NordicWishlist.toggleItem(product);
+      }
+      return;
+    }
   });
 </script>

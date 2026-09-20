@@ -290,5 +290,43 @@ const fallbackImage = 'https://images.unsplash.com/photo-1555982105-d25af4182e4e
         window.location.href = '/checkout';
       });
     }
+
+    // Wishlist button on detail page
+    const detailWishlistBtn = document.getElementById('detail-wishlist-btn');
+    if (detailWishlistBtn) {
+      // Sync initial icon state from localStorage
+      function syncDetailWishlistIcon() {
+        const isInWishlist = window.NordicWishlist?.hasItem(currentProduct.id);
+        const icon = detailWishlistBtn.querySelector('svg');
+        if (icon) {
+          if (isInWishlist) {
+            icon.classList.add('text-red-500', 'fill-current');
+            icon.classList.remove('fill-none', 'text-gray-500');
+          } else {
+            icon.classList.remove('text-red-500', 'fill-current');
+            icon.classList.add('fill-none', 'text-gray-500');
+          }
+        }
+      }
+      syncDetailWishlistIcon();
+
+      detailWishlistBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!window.NordicWishlist) return;
+        window.NordicWishlist.toggleItem({
+          id: currentProduct.id,
+          name: currentProduct.name,
+          price: currentProduct.price,
+          image: currentProduct.image_url || fallbackImage,
+          slug: currentProduct.slug,
+          stock: currentProduct.stock,
+        });
+        syncDetailWishlistIcon();
+      });
+
+      // Also sync when wishlist is updated from other sources
+      window.addEventListener('nordic:wishlist-updated', syncDetailWishlistIcon);
+    }
   });
 </script>

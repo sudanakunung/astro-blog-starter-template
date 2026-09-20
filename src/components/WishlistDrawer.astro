@@ -160,10 +160,10 @@
         if (icon) {
           if (isFavorited) {
             icon.classList.add('text-red-500', 'fill-current');
-            icon.classList.remove('text-gray-500', 'fill-none');
+            icon.classList.remove('fill-none', 'stroke-current');
           } else {
             icon.classList.remove('text-red-500', 'fill-current');
-            icon.classList.add('text-gray-500', 'fill-none');
+            icon.classList.add('fill-none', 'stroke-current');
           }
         }
       });
