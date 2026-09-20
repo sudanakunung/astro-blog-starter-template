@@ -23,23 +23,6 @@ const fallbackImage = 'https://images.unsplash.com/photo-1555982105-d25af4182e4e
       />
     </a>
 
-    <!-- Wishlist Button Overlay -->
-    <button
-      type="button"
-      aria-label={`Tambah ${product.name} ke wishlist`}
-      class="wishlist-toggle-btn absolute top-3 right-3 p-2 bg-white rounded-full shadow-md border border-gray-200 hover:scale-110 transition-all duration-200 focus:outline-none z-10 group/wish"
-      data-product-id={product.id}
-      data-product-name={product.name}
-      data-product-price={product.price}
-      data-product-image={product.image_url || fallbackImage}
-      data-product-slug={product.slug}
-      data-product-stock={product.stock}
-    >
-      <svg class="wishlist-icon h-4 w-4 fill-none stroke-current text-gray-400 group-hover/wish:text-red-500 transition-colors" viewBox="0 0 24 24" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-      </svg>
-    </button>
-
     <!-- Quick Add To Cart Button on Card Hover -->
     <button
       type="button"
@@ -57,10 +40,27 @@ const fallbackImage = 'https://images.unsplash.com/photo-1555982105-d25af4182e4e
 
   <!-- Product Details -->
   <div class="p-4 flex flex-col flex-1 justify-between gap-2">
-    <div>
-      <a href={`/products/${product.slug}`} class="text-gray-900 group-hover/card:text-indigo-600 font-semibold text-sm line-clamp-2 block transition-colors leading-snug" title={product.name}>
+    <!-- Nama produk + tombol wishlist sejajar di ujung kanan -->
+    <div class="flex items-start justify-between gap-2">
+      <a href={`/products/${product.slug}`} class="text-gray-900 group-hover/card:text-indigo-600 font-semibold text-sm line-clamp-2 flex-1 transition-colors leading-snug" title={product.name}>
         {product.name}
       </a>
+      <!-- Wishlist Button — sejajar nama, ujung kanan -->
+      <button
+        type="button"
+        aria-label={`Tambah ${product.name} ke wishlist`}
+        class="wishlist-toggle-btn flex-shrink-0 p-1.5 bg-white rounded-full shadow-sm border border-gray-200 hover:scale-110 transition-all duration-200 focus:outline-none"
+        data-product-id={product.id}
+        data-product-name={product.name}
+        data-product-price={product.price}
+        data-product-image={product.image_url || fallbackImage}
+        data-product-slug={product.slug}
+        data-product-stock={product.stock}
+      >
+        <svg class="wishlist-icon h-4 w-4 fill-none stroke-current text-gray-400 transition-colors" viewBox="0 0 24 24" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+        </svg>
+      </button>
     </div>
 
     <div class="flex items-center justify-between pt-2 border-t border-gray-50 mt-auto">
