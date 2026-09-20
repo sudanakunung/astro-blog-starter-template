@@ -156,40 +156,20 @@ export const prerender = false;
             <div id="courier-options" class="space-y-2 hidden"></div>
           </div>
 
-          <!-- 4. Payment Method -->
+          <!-- 4. Informasi Pembayaran -->
           <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-            <div class="flex items-center space-x-3 mb-4 border-b border-gray-100 pb-3">
+            <div class="flex items-center space-x-3 mb-3 border-b border-gray-100 pb-3">
               <span class="flex items-center justify-center w-7 h-7 rounded-full bg-black text-white text-xs font-bold">4</span>
-              <h2 class="text-base font-bold uppercase tracking-wider text-gray-900">Metode Pembayaran</h2>
+              <h2 class="text-base font-bold uppercase tracking-wider text-gray-900">Pembayaran</h2>
             </div>
-            <div class="space-y-2">
-              <label class="flex items-center justify-between p-3 border border-black bg-gray-50 rounded-lg cursor-pointer payment-label">
-                <div class="flex items-center space-x-3">
-                  <input type="radio" name="payment_method" value="qris" checked class="h-4 w-4 text-black focus:ring-black" />
-                  <div>
-                    <span class="block text-sm font-semibold text-gray-900">QRIS / E-Wallet (Mayar)</span>
-                    <span class="block text-xs text-gray-500">GoPay, OVO, Dana, ShopeePay</span>
-                  </div>
-                </div>
-              </label>
-              <label class="flex items-center justify-between p-3 border border-gray-200 rounded-lg cursor-pointer payment-label">
-                <div class="flex items-center space-x-3">
-                  <input type="radio" name="payment_method" value="va" class="h-4 w-4 text-black focus:ring-black" />
-                  <div>
-                    <span class="block text-sm font-semibold text-gray-900">Virtual Account (Bank Transfer)</span>
-                    <span class="block text-xs text-gray-500">BCA, BRI, BNI, Mandiri</span>
-                  </div>
-                </div>
-              </label>
-              <label class="flex items-center justify-between p-3 border border-gray-200 rounded-lg cursor-pointer payment-label">
-                <div class="flex items-center space-x-3">
-                  <input type="radio" name="payment_method" value="cod" class="h-4 w-4 text-black focus:ring-black" />
-                  <div>
-                    <span class="block text-sm font-semibold text-gray-900">Cash On Delivery (COD)</span>
-                    <span class="block text-xs text-gray-500">Bayar tunai saat paket tiba</span>
-                  </div>
-                </div>
-              </label>
+            <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-500 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <div>
+                <p class="text-sm font-semibold text-gray-800">Pilih metode pembayaran di halaman selanjutnya</p>
+                <p class="text-xs text-gray-500 mt-1">Anda dapat memilih antara QRIS, Transfer Bank (VA), E-Wallet, atau Minimarket setelah pesanan dikonfirmasi.</p>
+              </div>
             </div>
           </div>
         </div>
@@ -606,7 +586,6 @@ export const prerender = false;
       if (!selectedShippingCost) { alert('Pilih kurir pengiriman.'); return; }
 
       const addr = addressesData.find(a => a.id === selectedAddressId);
-      const paymentMethod = document.querySelector('input[name="payment_method"]:checked')?.value || 'qris';
       const courierRadio = document.querySelector('input[name="courier"]:checked');
 
       const subtotal = items.reduce((s, it) => s + it.price * it.qty, 0);
@@ -639,7 +618,6 @@ export const prerender = false;
             shipping_courier: courierRadio?.dataset?.code || '',
             shipping_service: courierRadio?.dataset?.service || '',
             total_amount: totalAmount,
-            payment_method: paymentMethod,
             items,
           }),
         });
@@ -651,16 +629,23 @@ export const prerender = false;
         localStorage.removeItem(CART_KEY);
         window.dispatchEvent(new CustomEvent('nordic:cart-updated', { detail: { items: [] } }));
 
+        // Jika Mayar berhasil membuat payment link, langsung redirect ke halaman pembayaran Mayar
+        if (data.payment_url) {
+          // Simpan order_id di sessionStorage supaya halaman sukses bisa dicek setelah balik
+          sessionStorage.setItem('last_order_id', data.order_id);
+          sessionStorage.setItem('last_order_name', addr.recipient_name);
+          sessionStorage.setItem('last_order_total', totalAmount.toString());
+          window.location.href = data.payment_url;
+          return;
+        }
+
+        // Fallback: redirect ke halaman sukses lokal (jika Mayar tidak tersedia)
         const params = new URLSearchParams({
           order_id: data.order_id,
           total: totalAmount.toString(),
           name: addr.recipient_name,
-          method: paymentMethod,
           phone: addr.phone,
         });
-        if (data.payment_url) {
-          params.set('payment_url', data.payment_url);
-        }
         window.location.href = `/checkout/success?${params.toString()}`;
       } catch (err) {
         alert('Gagal memproses pesanan: ' + err.message);

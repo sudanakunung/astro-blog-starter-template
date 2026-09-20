@@ -37,10 +37,26 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const env = locals.runtime?.env as any;
     const db = env?.DB as D1Database;
 
-    if (!db) {
+    // Parse body terlebih dahulu (sebelum cek DB) agar bisa handle event 'testing'
+    const body = await request.json().catch(() => ({}));
+    const event = body.event || body.type || '';
+    const eventData = body.data || body;
+
+    // Mayar mengirim 'testing' event saat admin klik "Test URL" dari dashboard.
+    // Selalu kembalikan 200 agar tidak dicatat sebagai FAILED.
+    if (event === 'testing') {
       return new Response(
-        JSON.stringify({ ok: false, error: 'Database D1 tidak tersedia' }),
-        { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
+        JSON.stringify({ ok: true, message: 'Webhook endpoint aktif dan siap menerima event.' }),
+        { status: 200, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
+      );
+    }
+
+    if (!db) {
+      // Return 200 agar Mayar tidak retry terus — log di sisi kita sudah cukup
+      console.error('[Mayar Webhook] Database D1 tidak tersedia');
+      return new Response(
+        JSON.stringify({ ok: true, warning: 'Database not configured, event acknowledged but not processed.' }),
+        { status: 200, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
       );
     }
 
@@ -84,11 +100,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       }
     }
 
-    // 3. Parse Payload dari Mayar
-    const body = await request.json().catch(() => ({}));
-    const event = body.event || body.type || '';
-    const eventData = body.data || body;
-
+    // 3. Data sudah diparsing di atas
     const transactionId = eventData.id || eventData.transactionId || eventData.invoiceId || '';
     const paymentStatus = (eventData.status || '').toLowerCase();
     const description = eventData.description || '';
