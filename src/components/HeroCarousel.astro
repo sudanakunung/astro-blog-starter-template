@@ -10,8 +10,8 @@ const safeSlides = slides.length > 0 ? slides : [];
 ---
 
 {safeSlides.length > 0 && (
-  <div class="carousel relative container mx-auto" style="max-width:1600px;" id="hero-carousel" data-slides-count={safeSlides.length}>
-    <div class="carousel-inner relative overflow-hidden w-full" style="min-height: 480px; height: 50vh;">
+  <div class="carousel relative container mx-auto px-4 sm:px-6" id="hero-carousel" data-slides-count={safeSlides.length}>
+    <div class="carousel-inner relative overflow-hidden w-full rounded-2xl" style="min-height: 480px; height: 50vh;">
       {safeSlides.map((slide, idx) => (
         <div
           class={`carousel-slide-item absolute inset-0 w-full h-full transition-opacity duration-700 ease-in-out ${
