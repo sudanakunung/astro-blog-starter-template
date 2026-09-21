@@ -16,6 +16,7 @@ export interface D1Product {
   name: string;
   slug: string;
   description: string | null;
+  category?: string | null;
   price: number; // Disimpan dalam integer Rupiah
   stock: number;
   image_url: string | null;

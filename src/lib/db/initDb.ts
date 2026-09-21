@@ -20,6 +20,7 @@ export async function initDatabase(db: D1Database): Promise<{ success: boolean; 
       name TEXT NOT NULL,
       slug TEXT NOT NULL,
       description TEXT,
+      category TEXT,
       price INTEGER NOT NULL,
       stock INTEGER NOT NULL DEFAULT 0,
       image_url TEXT,
@@ -132,6 +133,9 @@ export async function initDatabase(db: D1Database): Promise<{ success: boolean; 
   }
 
   // Add customer_id column to orders if missing
+  try {
+    await db.prepare(`ALTER TABLE products ADD COLUMN category TEXT`).run();
+  } catch (e) {}
   try {
     await db.prepare(`ALTER TABLE orders ADD COLUMN customer_id TEXT`).run();
   } catch (e) {}

@@ -200,6 +200,8 @@ export const GET: APIRoute = async ({ request, locals }) => {
         has_mayar_webhook: Boolean(store.mayar_webhook_secret && store.mayar_webhook_secret !== ''),
         has_biteship_key: Boolean(store.biteship_api_key && store.biteship_api_key !== ''),
         biteship_key_preview: biteshipPreview,
+        biteship_webhook_url: `${url.origin}/api/webhooks/biteship?store_id=${store.id}`,
+        mayar_webhook_url: `${url.origin}/api/webhooks/mayar?store_id=${store.id}`,
       }),
       {
         status: 200,

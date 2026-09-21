@@ -1,8 +1,8 @@
 import type { Product, CarouselSlide, NavLink } from '../types/store';
 
 export const navLinks: NavLink[] = [
-  { label: 'Shop', href: '#store' },
-  { label: 'About', href: '#about' },
+  { label: 'Shop', href: '/products' },
+  { label: 'About', href: '/#about' },
 ];
 
 export const carouselSlides: CarouselSlide[] = [

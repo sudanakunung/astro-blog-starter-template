@@ -5,9 +5,18 @@ import type { D1Product } from '../types/d1';
 interface Props {
   products: D1Product[];
   title?: string;
+  showViewAll?: boolean;
+  viewAllText?: string;
+  viewAllHref?: string;
 }
 
-const { products = [], title = 'Store' } = Astro.props;
+const {
+  products = [],
+  title = 'Store',
+  showViewAll = true,
+  viewAllText = 'View All Products',
+  viewAllHref = '/products',
+} = Astro.props;
 ---
 
 <section id="store" class="bg-white py-10">
@@ -25,11 +34,32 @@ const { products = [], title = 'Store' } = Astro.props;
 
     <!-- Product Grid Items with Uniform Columns & Heights -->
     {products.length > 0 ? (
-      <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 items-stretch">
-        {products.map((product) => (
-          <ProductCard product={product} />
-        ))}
-      </div>
+      <>
+        <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 items-stretch">
+          {products.map((product) => (
+            <ProductCard product={product} />
+          ))}
+        </div>
+
+        {showViewAll && (
+          <div class="mt-12 text-center">
+            <a
+              href={viewAllHref}
+              class="inline-flex items-center justify-center gap-2.5 px-8 py-3.5 bg-gray-900 hover:bg-black text-white text-xs sm:text-sm font-semibold tracking-widest uppercase rounded-full shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 group focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900"
+            >
+              <span>{viewAllText}</span>
+              <svg
+                class="w-4 h-4 transform group-hover:translate-x-1.5 transition-transform duration-200"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </a>
+          </div>
+        )}
+      </>
     ) : (
       <div class="w-full text-center py-16 text-gray-400 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
         <svg class="w-12 h-12 mx-auto text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>

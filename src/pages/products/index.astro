@@ -1,0 +1,818 @@
+---
+export const prerender = false;
+
+import ShopLayout from '../../layouts/ShopLayout.astro';
+import { getActiveProducts, inferProductCategory } from '../../lib/db/productRepo';
+import { formatRupiah } from '../../lib/utils/currency';
+import type { D1Product, Store } from '../../types/d1';
+
+// 1. Dapatkan tenant store
+const store: Store = Astro.locals.store || {
+  id: 'jewellery',
+  name: 'Navanusa Jewellery',
+  domain: 'localhost',
+  status: 'active',
+  created_at: 0,
+  updated_at: 0,
+};
+
+// 2. Ambil katalog produk aktif
+const db = Astro.locals.runtime?.env?.DB;
+const rawProducts: D1Product[] = await getActiveProducts(db, store.id);
+
+// 3. Pastikan semua produk memiliki kategori yang rapi
+const products = rawProducts.map((p) => ({
+  ...p,
+  category: inferProductCategory(p),
+}));
+
+// 4. Hitung daftar kategori unik dan jumlah produk per kategori
+const categoryCounts: Record<string, number> = {};
+products.forEach((p) => {
+  const cat = p.category || 'Lainnya';
+  categoryCounts[cat] = (categoryCounts[cat] || 0) + 1;
+});
+
+const categories = Object.keys(categoryCounts).sort();
+
+// 5. Query parameters awal dari URL
+const initialCategory = Astro.url.searchParams.get('category') || '';
+const initialQuery = Astro.url.searchParams.get('q') || '';
+const initialPage = parseInt(Astro.url.searchParams.get('page') || '1', 10);
+const initialSort = Astro.url.searchParams.get('sort') || 'default';
+
+// 6. Siapkan data produk untuk client-side interactivity
+const serializedProducts = products.map((p) => ({
+  id: p.id,
+  name: p.name,
+  slug: p.slug,
+  description: p.description || '',
+  category: p.category || 'Lainnya',
+  price: p.price,
+  formattedPrice: formatRupiah(p.price),
+  stock: p.stock,
+  image_url: p.image_url || 'https://images.unsplash.com/photo-1555982105-d25af4182e4e?auto=format&fit=crop&w=600&q=80',
+  created_at: p.created_at || 0,
+}));
+---
+
+<ShopLayout
+  title={`All Products - ${store.name}`}
+  description={`Jelajahi seluruh koleksi produk eksklusif di ${store.name}`}
+  storeName={store.name}
+>
+  <div class="bg-gray-50/50 border-b border-gray-100">
+    <div class="container mx-auto px-4 sm:px-6 py-8">
+      <!-- Breadcrumbs -->
+      <nav class="text-xs uppercase tracking-wider text-gray-400 mb-4 flex items-center gap-2">
+        <a href="/" class="hover:text-gray-900 transition-colors">Home</a>
+        <span>/</span>
+        <span class="text-gray-900 font-semibold">Products</span>
+      </nav>
+
+      <!-- Page Title & Subtitle -->
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <h1 class="text-2xl sm:text-4xl font-light tracking-tight text-gray-900">
+            All <span class="font-bold">Products</span>
+          </h1>
+          <p class="text-sm text-gray-500 mt-1 max-w-xl">
+            Jelajahi seluruh koleksi pilihan dengan desain elegan, kualitas premium, dan detail memukau.
+          </p>
+        </div>
+
+        <div class="text-xs text-gray-400 font-medium">
+          Total <span class="text-gray-900 font-semibold" id="total-product-badge">{products.length}</span> Produk Tersedia
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="container mx-auto px-4 sm:px-6 py-8" id="catalog-section">
+    <!-- Filter & Search Control Panel -->
+    <div class="flex flex-col gap-6 mb-8">
+      <!-- Row 1: Search Bar with Autocomplete & Sort Dropdown -->
+      <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+        <!-- Autocomplete Search Input -->
+        <div class="relative flex-1 max-w-xl">
+          <div class="relative">
+            <input
+              type="text"
+              id="search-input"
+              value={initialQuery}
+              placeholder="Cari produk (contoh: kalung, cincin, gelang)..."
+              autocomplete="off"
+              class="w-full pl-11 pr-10 py-3 bg-white border border-gray-200 rounded-full text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm"
+              aria-label="Cari produk"
+            />
+            <!-- Search Icon -->
+            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <!-- Clear Button (✕) -->
+            <button
+              type="button"
+              id="clear-search-btn"
+              class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors hidden"
+              aria-label="Bersihkan pencarian"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          <!-- Autocomplete Dropdown Suggestions -->
+          <div
+            id="autocomplete-dropdown"
+            class="absolute left-0 right-0 top-full mt-2 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-40 hidden transition-all duration-200"
+          >
+            <div id="autocomplete-list" class="max-h-80 overflow-y-auto divide-y divide-gray-50 py-1">
+              <!-- Rendered via JS -->
+            </div>
+            <div id="autocomplete-footer" class="bg-gray-50 px-4 py-2.5 text-xs text-gray-500 flex items-center justify-between border-t border-gray-100">
+              <span>Tekan <kbd class="px-1.5 py-0.5 bg-white border border-gray-200 rounded text-[10px] font-mono text-gray-600 shadow-2xs">Enter</kbd> untuk mencari</span>
+              <span id="autocomplete-count-hint" class="font-medium text-gray-700">0 produk</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sort Select Box -->
+        <div class="flex items-center gap-2 self-end md:self-auto flex-shrink-0">
+          <label for="sort-select" class="text-xs uppercase tracking-wider text-gray-400 font-semibold whitespace-nowrap">
+            Urutkan:
+          </label>
+          <div class="relative">
+            <select
+              id="sort-select"
+              class="appearance-none bg-white border border-gray-200 text-gray-800 text-xs font-medium py-2.5 pl-3.5 pr-8 rounded-full focus:outline-none focus:ring-2 focus:ring-gray-900 shadow-sm cursor-pointer"
+            >
+              <option value="default" selected={initialSort === 'default'}>Terbaru (Default)</option>
+              <option value="price-asc" selected={initialSort === 'price-asc'}>Harga: Rendah ke Tinggi</option>
+              <option value="price-desc" selected={initialSort === 'price-desc'}>Harga: Tinggi ke Rendah</option>
+              <option value="name-asc" selected={initialSort === 'name-asc'}>Nama: A - Z</option>
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-gray-400">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 2: Category Filter Pills -->
+      <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none pt-1" id="category-pills-container">
+        <!-- 'All' Pill -->
+        <button
+          type="button"
+          class="category-pill inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold uppercase tracking-wider transition-all whitespace-nowrap border"
+          data-category=""
+        >
+          <span>All</span>
+          <span class="pill-badge text-[10px] px-1.5 py-0.5 rounded-full font-bold">
+            {products.length}
+          </span>
+        </button>
+
+        <!-- Dynamic Category Pills -->
+        {categories.map((cat) => (
+          <button
+            type="button"
+            class="category-pill inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold uppercase tracking-wider transition-all whitespace-nowrap border"
+            data-category={cat}
+          >
+            <span>{cat}</span>
+            <span class="pill-badge text-[10px] px-1.5 py-0.5 rounded-full font-bold">
+              {categoryCounts[cat]}
+            </span>
+          </button>
+        ))}
+      </div>
+    </div>
+
+    <!-- Active Filters Summary & Result Count Bar -->
+    <div class="flex items-center justify-between pb-4 mb-6 border-b border-gray-100 text-xs text-gray-500">
+      <div id="results-count-text">
+        Menampilkan produk...
+      </div>
+
+      <button
+        type="button"
+        id="reset-all-btn"
+        class="text-xs text-gray-400 hover:text-gray-900 underline transition-colors hidden"
+      >
+        Reset Semua Filter
+      </button>
+    </div>
+
+    <!-- Dynamic Product Cards Grid Container -->
+    <div
+      id="products-grid"
+      class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 items-stretch min-h-[400px]"
+    >
+      <!-- Injected and updated reactively via JavaScript -->
+    </div>
+
+    <!-- Empty State Container -->
+    <div
+      id="empty-state"
+      class="hidden w-full text-center py-20 bg-gray-50 rounded-2xl border border-dashed border-gray-200 px-4"
+    >
+      <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-white flex items-center justify-center shadow-sm text-gray-400 border border-gray-100">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+        </svg>
+      </div>
+      <h3 class="text-base font-semibold text-gray-900 mb-1">Produk Tidak Ditemukan</h3>
+      <p class="text-xs sm:text-sm text-gray-500 max-w-md mx-auto mb-6">
+        Kami tidak menemukan produk yang cocok dengan kriteria pencarian atau kategori yang dipilih.
+      </p>
+      <button
+        type="button"
+        id="empty-reset-btn"
+        class="inline-flex items-center justify-center px-6 py-2.5 bg-gray-900 text-white text-xs font-semibold uppercase tracking-wider rounded-full hover:bg-black transition-colors"
+      >
+        Lihat Semua Produk
+      </button>
+    </div>
+
+    <!-- Pagination Controls -->
+    <div id="pagination-container" class="mt-12 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-gray-100 pt-6">
+      <div class="text-xs text-gray-500 font-medium" id="pagination-info">
+        Halaman 1 dari 1
+      </div>
+
+      <div class="flex items-center gap-1.5" id="pagination-buttons">
+        <!-- Rendered via JS -->
+      </div>
+    </div>
+  </section>
+</ShopLayout>
+
+<!-- Client State & Interactive Catalog Controller -->
+<script is:inline define:vars={{ serializedProducts, initialCategory, initialQuery, initialPage, initialSort }}>
+  (function () {
+    const ITEMS_PER_PAGE = 8;
+    const allProducts = serializedProducts || [];
+
+    // State
+    let currentCategory = initialCategory || '';
+    let currentQuery = initialQuery || '';
+    let currentPage = initialPage || 1;
+    let currentSort = initialSort || 'default';
+    let focusedIndex = -1;
+
+    // DOM Elements
+    const searchInput = document.getElementById('search-input');
+    const clearSearchBtn = document.getElementById('clear-search-btn');
+    const autocompleteDropdown = document.getElementById('autocomplete-dropdown');
+    const autocompleteList = document.getElementById('autocomplete-list');
+    const autocompleteCountHint = document.getElementById('autocomplete-count-hint');
+    const sortSelect = document.getElementById('sort-select');
+    const categoryPillsContainer = document.getElementById('category-pills-container');
+    const resultsCountText = document.getElementById('results-count-text');
+    const resetAllBtn = document.getElementById('reset-all-btn');
+    const productsGrid = document.getElementById('products-grid');
+    const emptyState = document.getElementById('empty-state');
+    const paginationContainer = document.getElementById('pagination-container');
+    const paginationInfo = document.getElementById('pagination-info');
+    const paginationButtons = document.getElementById('pagination-buttons');
+    const emptyResetBtn = document.getElementById('empty-reset-btn');
+    const catalogSection = document.getElementById('catalog-section');
+
+    // Parse URL query params if user navigates back/forward
+    function syncStateFromUrl() {
+      const url = new URL(window.location.href);
+      currentCategory = url.searchParams.get('category') || '';
+      currentQuery = url.searchParams.get('q') || '';
+      currentPage = parseInt(url.searchParams.get('page') || '1', 10);
+      currentSort = url.searchParams.get('sort') || 'default';
+
+      if (searchInput) searchInput.value = currentQuery;
+      if (sortSelect) sortSelect.value = currentSort;
+    }
+
+    // Push state to URL
+    function updateUrl() {
+      const url = new URL(window.location.href);
+      if (currentCategory) {
+        url.searchParams.set('category', currentCategory);
+      } else {
+        url.searchParams.delete('category');
+      }
+
+      if (currentQuery) {
+        url.searchParams.set('q', currentQuery);
+      } else {
+        url.searchParams.delete('q');
+      }
+
+      if (currentPage > 1) {
+        url.searchParams.set('page', currentPage.toString());
+      } else {
+        url.searchParams.delete('page');
+      }
+
+      if (currentSort !== 'default') {
+        url.searchParams.set('sort', currentSort);
+      } else {
+        url.searchParams.delete('sort');
+      }
+
+      window.history.replaceState({}, '', url.toString());
+    }
+
+    // Filter & Sort Logic
+    function getFilteredProducts() {
+      let filtered = allProducts.slice();
+
+      // Filter by category
+      if (currentCategory) {
+        const catLower = currentCategory.toLowerCase();
+        filtered = filtered.filter(function (p) {
+          return (p.category || '').toLowerCase() === catLower;
+        });
+      }
+
+      // Filter by query
+      if (currentQuery.trim()) {
+        const qLower = currentQuery.trim().toLowerCase();
+        filtered = filtered.filter(function (p) {
+          return (
+            p.name.toLowerCase().includes(qLower) ||
+            p.description.toLowerCase().includes(qLower) ||
+            p.category.toLowerCase().includes(qLower)
+          );
+        });
+      }
+
+      // Sorting
+      if (currentSort === 'price-asc') {
+        filtered.sort(function (a, b) { return a.price - b.price; });
+      } else if (currentSort === 'price-desc') {
+        filtered.sort(function (a, b) { return b.price - a.price; });
+      } else if (currentSort === 'name-asc') {
+        filtered.sort(function (a, b) { return a.name.localeCompare(b.name); });
+      } else {
+        // Default newest
+        filtered.sort(function (a, b) { return (b.created_at || 0) - (a.created_at || 0); });
+      }
+
+      return filtered;
+    }
+
+    // Highlight text in string
+    function highlightMatch(text, query) {
+      if (!query) return text;
+      const index = text.toLowerCase().indexOf(query.toLowerCase());
+      if (index === -1) return text;
+      const before = text.substring(0, index);
+      const match = text.substring(index, index + query.length);
+      const after = text.substring(index + query.length);
+      return before + '<span class="bg-yellow-100 text-gray-900 font-bold">' + match + '</span>' + after;
+    }
+
+    // Render Autocomplete Dropdown
+    function updateAutocomplete() {
+      const q = searchInput.value.trim();
+      if (!q) {
+        autocompleteDropdown.classList.add('hidden');
+        clearSearchBtn.classList.add('hidden');
+        return;
+      }
+
+      clearSearchBtn.classList.remove('hidden');
+
+      const qLower = q.toLowerCase();
+      const matches = allProducts.filter(function (p) {
+        return (
+          p.name.toLowerCase().includes(qLower) ||
+          p.category.toLowerCase().includes(qLower)
+        );
+      });
+
+      focusedIndex = -1;
+
+      if (matches.length === 0) {
+        autocompleteList.innerHTML = `
+          <div class="px-4 py-5 text-center text-xs text-gray-400">
+            Tidak ada produk yang cocok dengan "<strong>${q}</strong>"
+          </div>
+        `;
+        autocompleteCountHint.textContent = '0 produk';
+        autocompleteDropdown.classList.remove('hidden');
+        return;
+      }
+
+      const displayMatches = matches.slice(0, 6);
+      autocompleteCountHint.textContent = matches.length + ' produk';
+
+      let html = '';
+      displayMatches.forEach(function (product, idx) {
+        html += `
+          <a
+            href="/products/${product.slug}"
+            class="autocomplete-item flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors text-left group"
+            data-index="${idx}"
+            data-slug="${product.slug}"
+          >
+            <img
+              src="${product.image_url}"
+              alt="${product.name}"
+              class="w-10 h-10 object-cover rounded-lg bg-gray-100 flex-shrink-0 border border-gray-100"
+              loading="lazy"
+            />
+            <div class="flex-1 min-w-0">
+              <div class="text-xs font-semibold text-gray-900 truncate group-hover:text-black">
+                ${highlightMatch(product.name, q)}
+              </div>
+              <div class="flex items-center gap-2 mt-0.5">
+                <span class="inline-block text-[10px] uppercase font-bold text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">
+                  ${product.category}
+                </span>
+                <span class="text-xs font-bold text-gray-900">${product.formattedPrice}</span>
+              </div>
+            </div>
+            <svg class="w-4 h-4 text-gray-300 group-hover:text-gray-600 flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </a>
+        `;
+      });
+
+      // Quick filter option
+      html += `
+        <button
+          type="button"
+          id="autocomplete-apply-search"
+          class="w-full text-left px-4 py-2 text-xs font-medium text-gray-600 hover:bg-gray-100 flex items-center justify-between transition-colors cursor-pointer"
+        >
+          <span>Filter katalog untuk <strong>"${q}"</strong></span>
+          <span class="text-gray-400 text-[11px]">&rarr;</span>
+        </button>
+      `;
+
+      autocompleteList.innerHTML = html;
+      autocompleteDropdown.classList.remove('hidden');
+
+      // Bind filter button in autocomplete
+      const applyBtn = document.getElementById('autocomplete-apply-search');
+      if (applyBtn) {
+        applyBtn.addEventListener('click', function () {
+          currentQuery = q;
+          currentPage = 1;
+          autocompleteDropdown.classList.add('hidden');
+          render();
+        });
+      }
+    }
+
+    // Render Product Cards
+    function renderProductCard(product) {
+      return `
+        <div class="w-full flex flex-col h-full bg-white rounded-xl overflow-hidden border border-gray-100 hover:border-gray-200 hover:shadow-md transition-all duration-300 group/card">
+          <!-- Square Image Box -->
+          <div class="relative w-full aspect-square overflow-hidden bg-gray-50 flex items-center justify-center flex-shrink-0" style="aspect-ratio: 1 / 1;">
+            <a href="/products/${product.slug}" class="w-full h-full block">
+              <img
+                class="w-full h-full object-cover transition-transform duration-500 group-hover/card:scale-105"
+                src="${product.image_url}"
+                alt="${product.name}"
+                loading="lazy"
+                style="aspect-ratio: 1 / 1; object-fit: cover; width: 100%; height: 100%;"
+              />
+            </a>
+
+            <!-- Quick Add To Cart Button -->
+            <button
+              type="button"
+              class="quick-add-cart-btn absolute bottom-0 inset-x-0 bg-gray-900/90 hover:bg-gray-900 backdrop-blur-sm text-white text-[11px] uppercase tracking-wider py-2.5 font-semibold transform translate-y-full group-hover/card:translate-y-0 transition-transform duration-200 text-center cursor-pointer"
+              data-product-id="${product.id}"
+              data-product-name="${product.name}"
+              data-product-price="${product.price}"
+              data-product-image="${product.image_url}"
+              data-product-slug="${product.slug}"
+              data-product-stock="${product.stock}"
+            >
+              + Tambah ke Keranjang
+            </button>
+          </div>
+
+          <!-- Product Details -->
+          <div class="p-4 flex flex-col flex-1 justify-between gap-2">
+            <div>
+              <span class="text-[10px] uppercase font-bold tracking-wider text-gray-400 block mb-1">
+                ${product.category}
+              </span>
+              <div class="flex items-start justify-between gap-2">
+                <a href="/products/${product.slug}" class="text-gray-900 group-hover/card:text-indigo-600 font-semibold text-sm line-clamp-2 flex-1 transition-colors leading-snug" title="${product.name}">
+                  ${product.name}
+                </a>
+                <button
+                  type="button"
+                  aria-label="Tambah ${product.name} ke wishlist"
+                  class="wishlist-toggle-btn flex-shrink-0 p-1.5 bg-white rounded-full shadow-sm border border-gray-200 hover:scale-110 transition-all duration-200 focus:outline-none cursor-pointer"
+                  data-product-id="${product.id}"
+                  data-product-name="${product.name}"
+                  data-product-price="${product.price}"
+                  data-product-image="${product.image_url}"
+                  data-product-slug="${product.slug}"
+                  data-product-stock="${product.stock}"
+                >
+                  <svg class="wishlist-icon h-4 w-4 fill-none stroke-current text-gray-400 transition-colors" viewBox="0 0 24 24" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between pt-2 border-t border-gray-50 mt-auto">
+              <p class="text-gray-900 font-bold text-sm">${product.formattedPrice}</p>
+              <span class="text-[11px] text-gray-400 font-medium">Stok: ${product.stock}</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Render Pagination Buttons
+    function renderPagination(totalPages) {
+      if (totalPages <= 1) {
+        paginationContainer.classList.add('hidden');
+        return;
+      }
+
+      paginationContainer.classList.remove('hidden');
+      paginationInfo.textContent = `Halaman ${currentPage} dari ${totalPages}`;
+
+      let html = '';
+
+      // Prev Button
+      const prevDisabled = currentPage === 1;
+      html += `
+        <button
+          type="button"
+          class="page-nav-btn px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors cursor-pointer ${
+            prevDisabled
+              ? 'border-gray-200 text-gray-300 cursor-not-allowed'
+              : 'border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400'
+          }"
+          data-page="${currentPage - 1}"
+          ${prevDisabled ? 'disabled' : ''}
+        >
+          &larr; Prev
+        </button>
+      `;
+
+      // Page numbers with ellipsis
+      for (let p = 1; p <= totalPages; p++) {
+        if (p === 1 || p === totalPages || (p >= currentPage - 1 && p <= currentPage + 1)) {
+          const isActive = p === currentPage;
+          html += `
+            <button
+              type="button"
+              class="page-num-btn w-8 h-8 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                isActive
+                  ? 'bg-gray-900 text-white shadow-sm'
+                  : 'text-gray-700 hover:bg-gray-100 border border-transparent hover:border-gray-200'
+              }"
+              data-page="${p}"
+            >
+              ${p}
+            </button>
+          `;
+        } else if (p === currentPage - 2 || p === currentPage + 2) {
+          html += `<span class="px-1 text-gray-400 text-xs select-none">...</span>`;
+        }
+      }
+
+      // Next Button
+      const nextDisabled = currentPage === totalPages;
+      html += `
+        <button
+          type="button"
+          class="page-nav-btn px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors cursor-pointer ${
+            nextDisabled
+              ? 'border-gray-200 text-gray-300 cursor-not-allowed'
+              : 'border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400'
+          }"
+          data-page="${currentPage + 1}"
+          ${nextDisabled ? 'disabled' : ''}
+        >
+          Next &rarr;
+        </button>
+      `;
+
+      paginationButtons.innerHTML = html;
+    }
+
+    // Update Category Pills Active Styles
+    function updateCategoryPillsUI() {
+      const pills = categoryPillsContainer.querySelectorAll('.category-pill');
+      pills.forEach(function (pill) {
+        const cat = pill.getAttribute('data-category') || '';
+        const badge = pill.querySelector('.pill-badge');
+        const isActive = cat.toLowerCase() === currentCategory.toLowerCase();
+
+        if (isActive) {
+          pill.className = 'category-pill inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold uppercase tracking-wider transition-all whitespace-nowrap border bg-gray-900 text-white border-gray-900 shadow-sm cursor-pointer';
+          if (badge) {
+            badge.className = 'pill-badge text-[10px] px-1.5 py-0.5 rounded-full font-bold bg-white/20 text-white';
+          }
+        } else {
+          pill.className = 'category-pill inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold uppercase tracking-wider transition-all whitespace-nowrap border bg-white text-gray-700 border-gray-200 hover:border-gray-400 hover:bg-gray-50 cursor-pointer';
+          if (badge) {
+            badge.className = 'pill-badge text-[10px] px-1.5 py-0.5 rounded-full font-bold bg-gray-100 text-gray-500';
+          }
+        }
+      });
+    }
+
+    // Main Render Function
+    function render(shouldScroll) {
+      updateCategoryPillsUI();
+      updateUrl();
+
+      const filtered = getFilteredProducts();
+      const totalItems = filtered.length;
+      const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE) || 1;
+
+      // Ensure currentPage within bounds
+      if (currentPage > totalPages) currentPage = totalPages;
+      if (currentPage < 1) currentPage = 1;
+
+      // Update Result Count text & Reset button visibility
+      const hasActiveFilters = Boolean(currentCategory || currentQuery);
+      if (resetAllBtn) {
+        resetAllBtn.classList.toggle('hidden', !hasActiveFilters);
+      }
+
+      if (totalItems === 0) {
+        resultsCountText.innerHTML = `Tidak ada produk ditemukan`;
+        productsGrid.innerHTML = '';
+        productsGrid.classList.add('hidden');
+        emptyState.classList.remove('hidden');
+        paginationContainer.classList.add('hidden');
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+      productsGrid.classList.remove('hidden');
+
+      const startIdx = (currentPage - 1) * ITEMS_PER_PAGE;
+      const endIdx = Math.min(startIdx + ITEMS_PER_PAGE, totalItems);
+      const pageItems = filtered.slice(startIdx, endIdx);
+
+      resultsCountText.innerHTML = `
+        Menampilkan <span class="font-bold text-gray-900">${startIdx + 1}&ndash;${endIdx}</span> dari <span class="font-bold text-gray-900">${totalItems}</span> produk
+        ${currentCategory ? `dalam kategori <strong>"${currentCategory}"</strong>` : ''}
+        ${currentQuery ? `untuk kata kunci <strong>"${currentQuery}"</strong>` : ''}
+      `;
+
+      // Render cards
+      productsGrid.innerHTML = pageItems.map(renderProductCard).join('');
+
+      // Render pagination
+      renderPagination(totalPages);
+
+      // Sync Wishlist icons on cards
+      if (window._syncAllWishIcons) {
+        window._syncAllWishIcons();
+      }
+
+      if (shouldScroll && catalogSection) {
+        catalogSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
+    // Event Listeners Setup
+    function setupEvents() {
+      // 1. Search input events
+      let searchTimeout;
+      searchInput.addEventListener('input', function () {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(function () {
+          updateAutocomplete();
+        }, 150);
+      });
+
+      searchInput.addEventListener('focus', function () {
+        if (searchInput.value.trim()) {
+          updateAutocomplete();
+        }
+      });
+
+      searchInput.addEventListener('keydown', function (e) {
+        const items = autocompleteList.querySelectorAll('.autocomplete-item');
+
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          if (items.length > 0) {
+            focusedIndex = (focusedIndex + 1) % items.length;
+            items.forEach(function (el, i) {
+              el.classList.toggle('bg-gray-100', i === focusedIndex);
+            });
+            items[focusedIndex].scrollIntoView({ block: 'nearest' });
+          }
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          if (items.length > 0) {
+            focusedIndex = (focusedIndex - 1 + items.length) % items.length;
+            items.forEach(function (el, i) {
+              el.classList.toggle('bg-gray-100', i === focusedIndex);
+            });
+            items[focusedIndex].scrollIntoView({ block: 'nearest' });
+          }
+        } else if (e.key === 'Enter') {
+          e.preventDefault();
+          if (focusedIndex >= 0 && items[focusedIndex]) {
+            items[focusedIndex].click();
+          } else {
+            // Apply current query to page filter
+            currentQuery = searchInput.value.trim();
+            currentPage = 1;
+            autocompleteDropdown.classList.add('hidden');
+            render();
+          }
+        } else if (e.key === 'Escape') {
+          autocompleteDropdown.classList.add('hidden');
+        }
+      });
+
+      // Clear search button
+      clearSearchBtn.addEventListener('click', function () {
+        searchInput.value = '';
+        currentQuery = '';
+        currentPage = 1;
+        clearSearchBtn.classList.add('hidden');
+        autocompleteDropdown.classList.add('hidden');
+        searchInput.focus();
+        render();
+      });
+
+      // Close autocomplete on click outside
+      document.addEventListener('click', function (e) {
+        if (!searchInput.contains(e.target) && !autocompleteDropdown.contains(e.target)) {
+          autocompleteDropdown.classList.add('hidden');
+        }
+      });
+
+      // 2. Category pill clicks
+      categoryPillsContainer.addEventListener('click', function (e) {
+        const pill = e.target.closest('.category-pill');
+        if (!pill) return;
+        const cat = pill.getAttribute('data-category') || '';
+        currentCategory = cat;
+        currentPage = 1;
+        render();
+      });
+
+      // 3. Sort change
+      sortSelect.addEventListener('change', function () {
+        currentSort = sortSelect.value;
+        currentPage = 1;
+        render();
+      });
+
+      // 4. Pagination clicks
+      paginationButtons.addEventListener('click', function (e) {
+        const btn = e.target.closest('button');
+        if (!btn || btn.disabled) return;
+        const targetPage = parseInt(btn.getAttribute('data-page') || '1', 10);
+        if (targetPage && targetPage !== currentPage) {
+          currentPage = targetPage;
+          render(true);
+        }
+      });
+
+      // 5. Reset all buttons
+      function resetFilters() {
+        currentCategory = '';
+        currentQuery = '';
+        currentPage = 1;
+        currentSort = 'default';
+        if (searchInput) searchInput.value = '';
+        if (sortSelect) sortSelect.value = 'default';
+        clearSearchBtn.classList.add('hidden');
+        autocompleteDropdown.classList.add('hidden');
+        render();
+      }
+
+      if (resetAllBtn) resetAllBtn.addEventListener('click', resetFilters);
+      if (emptyResetBtn) emptyResetBtn.addEventListener('click', resetFilters);
+
+      // 6. Handle browser forward/back buttons
+      window.addEventListener('popstate', function () {
+        syncStateFromUrl();
+        render();
+      });
+    }
+
+    // Initialize
+    setupEvents();
+    render();
+  })();
+</script>

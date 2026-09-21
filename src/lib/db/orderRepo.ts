@@ -159,10 +159,10 @@ export async function findOrderByIdOrTransaction(
       .prepare(
         `SELECT id, store_id, customer_name, customer_phone, customer_email, shipping_address, status, total_amount, shipping_cost, mayar_transaction_id, biteship_order_id, tracking_number, created_at, updated_at 
          FROM orders 
-         WHERE id = ? OR mayar_transaction_id = ? 
+         WHERE id = ? OR mayar_transaction_id = ? OR biteship_order_id = ? 
          LIMIT 1`
       )
-      .bind(queryId, queryId)
+      .bind(queryId, queryId, queryId)
       .first<Order>();
 
     return order ?? null;
@@ -171,4 +171,77 @@ export async function findOrderByIdOrTransaction(
     return null;
   }
 }
+
+export async function findOrderByBiteshipId(
+  db: D1Database,
+  biteshipOrderId: string
+): Promise<Order | null> {
+  try {
+    const order = await db
+      .prepare(
+        `SELECT id, store_id, customer_name, customer_phone, customer_email, shipping_address, status, total_amount, shipping_cost, mayar_transaction_id, biteship_order_id, tracking_number, created_at, updated_at 
+         FROM orders 
+         WHERE biteship_order_id = ? OR id = ? 
+         LIMIT 1`
+      )
+      .bind(biteshipOrderId, biteshipOrderId)
+      .first<Order>();
+
+    return order ?? null;
+  } catch (error) {
+    console.error('Error finding order by Biteship ID:', error);
+    return null;
+  }
+}
+
+export async function updateOrderShipping(
+  db: D1Database,
+  orderId: string,
+  data: {
+    status?: Order['status'];
+    biteshipOrderId?: string;
+    trackingNumber?: string;
+    shippingCourier?: string;
+  }
+): Promise<boolean> {
+  try {
+    const updates: string[] = ['updated_at = unixepoch()'];
+    const bindings: any[] = [];
+
+    if (data.status) {
+      updates.push('status = ?');
+      bindings.push(data.status);
+    }
+    if (data.trackingNumber) {
+      updates.push('tracking_number = ?');
+      bindings.push(data.trackingNumber);
+    }
+    if (data.biteshipOrderId) {
+      updates.push('biteship_order_id = ?');
+      bindings.push(data.biteshipOrderId);
+    }
+    if (data.shippingCourier) {
+      updates.push('shipping_courier = ?');
+      bindings.push(data.shippingCourier);
+    }
+
+    bindings.push(orderId);
+    bindings.push(orderId);
+
+    await db
+      .prepare(
+        `UPDATE orders 
+         SET ${updates.join(', ')} 
+         WHERE id = ? OR biteship_order_id = ?`
+      )
+      .bind(...bindings)
+      .run();
+
+    return true;
+  } catch (error) {
+    console.error(`Error updating order ${orderId} shipping:`, error);
+    return false;
+  }
+}
+
 
