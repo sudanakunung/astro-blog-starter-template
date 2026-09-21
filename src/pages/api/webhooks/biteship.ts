@@ -18,6 +18,13 @@ export const OPTIONS: APIRoute = async () => {
   });
 };
 
+export const HEAD: APIRoute = async () => {
+  return new Response(null, {
+    status: 200,
+    headers: corsHeaders,
+  });
+};
+
 /**
  * GET /api/webhooks/biteship
  * Health check & verification endpoint (berguna saat test URL di dashboard Biteship)
@@ -26,10 +33,11 @@ export const GET: APIRoute = async () => {
   return new Response(
     JSON.stringify({
       ok: true,
+      success: true,
+      status: 'ok',
       service: 'biteship-webhook',
-      status: 'active',
       timestamp: new Date().toISOString(),
-      message: 'Biteship webhook endpoint siap menerima event.',
+      message: 'ok',
     }),
     {
       status: 200,
@@ -53,7 +61,16 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const env = locals.runtime?.env as any;
     const db = env?.DB as D1Database;
 
-    const body = await request.json().catch(() => ({}));
+    // Safely parse body (menerima empty body tanpa throw error)
+    let body: any = {};
+    try {
+      const rawText = await request.text();
+      if (rawText && rawText.trim()) {
+        body = JSON.parse(rawText);
+      }
+    } catch {
+      body = {};
+    }
 
     // 1. Identifikasi event dan data payload Biteship
     const event = body.event || body.type || '';
@@ -68,12 +85,14 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const biteshipStatus = (body.status || body.courier?.status || '').toLowerCase();
     const courierCompany = body.courier?.company || body.courier_name || '';
 
-    // 2. Handle test event dari dashboard Biteship
+    // 2. Handle test / installation ping event dari dashboard Biteship (termasuk empty body)
     if (event === 'test' || event === 'order.test' || (!orderId && !waybillId)) {
       return new Response(
         JSON.stringify({
           ok: true,
-          message: 'Biteship webhook endpoint aktif dan berhasil menerima ping uji coba.',
+          success: true,
+          status: 'ok',
+          message: 'ok',
           received_event: event || 'ping',
         }),
         {
