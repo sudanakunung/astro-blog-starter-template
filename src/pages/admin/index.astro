@@ -626,6 +626,94 @@ export const prerender = false;
       animation: spin 1s linear infinite;
       display: inline-block;
     }
+
+    /* ── Product List Items ─────────────────────────────────── */
+    .product-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border-color);
+      background: var(--bg-card);
+      transition: background 0.15s ease;
+    }
+    .product-item:last-child { border-bottom: none; }
+    .product-item:hover { background: #f8fafc; }
+
+    .product-thumb {
+      width: 3.5rem;
+      height: 3.5rem;
+      object-fit: cover;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+      flex-shrink: 0;
+      background: #f1f5f9;
+    }
+
+    .product-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+      min-width: 0;
+    }
+
+    .product-name-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .product-name {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 16rem;
+    }
+
+    .product-price {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .product-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+    }
+
+    /* ── Banner List Items ──────────────────────────────────── */
+    .banner-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border-color);
+      background: var(--bg-card);
+      transition: background 0.15s ease;
+    }
+    .banner-item:last-child { border-bottom: none; }
+    .banner-item:hover { background: #f8fafc; }
+
+    .banner-thumb {
+      width: 7rem;
+      height: 3.5rem;
+      object-fit: cover;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+      flex-shrink: 0;
+      background: #f1f5f9;
+    }
+
   </style>
 </head>
 <body>
