@@ -14,4 +14,8 @@ export default defineConfig({
 			enabled: true,
 		},
 	}),
+	// Disable CSRF origin check agar webhook dari Biteship / Mayar (cross-origin POST) tidak diblokir
+	security: {
+		checkOrigin: false,
+	},
 });
