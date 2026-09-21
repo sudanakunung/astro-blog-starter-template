@@ -51,10 +51,11 @@ export const GET: APIRoute = async () => {
 
 /**
  * POST /api/webhooks/biteship
- * Menangani event notifikasi dari Biteship:
- * - order.status (allocated, picking_up, picked, dropping_off, delivered, cancelled, dll.)
- * - order.waybill_id_updated (nomor resi terbit)
- * - test (verifikasi dashboard)
+ * Menangani 3 event utama dari Biteship:
+ * 1. order.status (update status pengiriman: confirmed, allocated, picking_up, picked, dropping_off, delivered, cancelled)
+ * 2. order.price (update tarif/ongkir jika berat aktual paket berbeda dari estimasi awal)
+ * 3. order.waybill_id (update nomor resi / AWB saat diterbitkan atau diperbarui)
+ * Serta ping verifikasi dashboard Biteship ('test' / 'order.test')
  */
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
@@ -72,27 +73,40 @@ export const POST: APIRoute = async ({ request, locals }) => {
       body = {};
     }
 
-    // 1. Identifikasi event dan data payload Biteship
+    // 1. Ekstraksi data event dan payload Biteship
     const event = body.event || body.type || '';
     const orderId = body.order_id || body.id || body.courier?.order_id || '';
+    
+    // Prioritaskan courier_waybill_id (nomor resi AWB aktual dari kurir seperti SKS-XXXXX / abc-1234)
     const waybillId =
-      body.courier_tracking_id ||
+      body.courier_waybill_id ||
       body.waybill_id ||
-      body.tracking_id ||
       body.courier?.waybill_id ||
+      body.courier_tracking_id ||
+      body.tracking_id ||
       body.courier?.tracking_id ||
       '';
-    const biteshipStatus = (body.status || body.courier?.status || '').toLowerCase();
-    const courierCompany = body.courier?.company || body.courier_name || '';
 
-    // 2. Handle test / installation ping event dari dashboard Biteship (termasuk empty body)
+    const biteshipStatus = (body.status || body.courier?.status || '').toLowerCase();
+    const courierCompany = body.courier_company || body.courier?.company || body.courier_name || '';
+    const courierType = body.courier_type || body.courier?.type || '';
+    
+    // Biaya pengiriman aktual (khusus event order.price)
+    const shipmentFee =
+      typeof body.shippment_fee === 'number'
+        ? body.shippment_fee
+        : typeof body.price === 'number' && event === 'order.price'
+        ? body.price
+        : undefined;
+
+    // 2. Handle test / ping verification dari dashboard Biteship
     if (event === 'test' || event === 'order.test' || (!orderId && !waybillId)) {
       return new Response(
         JSON.stringify({
           ok: true,
           success: true,
           status: 'ok',
-          message: 'ok',
+          message: 'Webhook Biteship aktif dan terverifikasi.',
           received_event: event || 'ping',
         }),
         {
@@ -103,7 +117,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     }
 
     if (!db) {
-      console.warn('[Biteship Webhook] Database D1 tidak tersedia. Mengembalikan 200 agar webhook tidak gagal.');
+      console.warn('[Biteship Webhook] Database D1 tidak tersedia. Mengembalikan 200.');
       return new Response(
         JSON.stringify({
           ok: true,
@@ -123,7 +137,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     if (!existingOrder) {
       console.warn(`[Biteship Webhook] Order tidak ditemukan untuk order_id: ${orderId}`);
-      // Tetap kembalikan 200 agar Biteship tidak melakukan retry berulang kali
+      // Kembalikan 200 agar Biteship tidak melakukan retry berulang kali
       return new Response(
         JSON.stringify({
           ok: true,
@@ -136,13 +150,13 @@ export const POST: APIRoute = async ({ request, locals }) => {
       );
     }
 
-    // 4. Pemetaan status Biteship ke status pesanan di sistem toko kita
+    // 4. Pemetaan status Biteship ke status pesanan internal
     // Status Biteship:
-    // - allocated / courier_assigned
+    // - confirmed / allocated / courier_assigned
     // - picking_up (kurir menjemput barang)
-    // - picked / dropping_off / in_transit (barang sudah dibawa kurir / sedang diantar)
+    // - picked / dropping_off / in_transit (barang dibawa kurir / sedang diantar)
     // - delivered (barang sampai di tujuan)
-    // - cancelled / rejected / courier_not_found (batal / ditolak)
+    // - cancelled / rejected / courier_not_found (batal)
     let newOrderStatus: Order['status'] | undefined = undefined;
 
     if (biteshipStatus === 'delivered') {
@@ -155,27 +169,36 @@ export const POST: APIRoute = async ({ request, locals }) => {
       newOrderStatus = 'shipped';
     } else if (biteshipStatus === 'cancelled' || biteshipStatus === 'rejected') {
       newOrderStatus = 'cancelled';
-    } else if (waybillId && (existingOrder.status === 'pending' || existingOrder.status === 'paid')) {
+    } else if (
+      (event === 'order.waybill_id' || waybillId) &&
+      (existingOrder.status === 'pending' || existingOrder.status === 'paid')
+    ) {
       // Jika resi sudah keluar, minimal status menjadi shipped
       newOrderStatus = 'shipped';
     }
 
-    // 5. Update data pengiriman dan status order di D1
+    // 5. Update data pesanan di D1 database
     await updateOrderShipping(db, existingOrder.id, {
       status: newOrderStatus,
       biteshipOrderId: orderId || existingOrder.biteship_order_id || undefined,
       trackingNumber: waybillId || existingOrder.tracking_number || undefined,
       shippingCourier: courierCompany || undefined,
+      shippingService: courierType || undefined,
+      shippingCost: shipmentFee,
     });
 
     return new Response(
       JSON.stringify({
         ok: true,
-        message: 'Status pengiriman Biteship berhasil diperbarui.',
+        message: `Webhook Biteship event '${event}' berhasil diproses.`,
         order_id: existingOrder.id,
         biteship_order_id: orderId,
+        event,
         tracking_number: waybillId || existingOrder.tracking_number,
         order_status: newOrderStatus || existingOrder.status,
+        shipping_courier: courierCompany || undefined,
+        shipping_service: courierType || undefined,
+        shipping_cost: shipmentFee ?? existingOrder.shipping_cost,
       }),
       {
         status: 200,

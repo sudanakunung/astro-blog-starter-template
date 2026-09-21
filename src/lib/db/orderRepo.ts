@@ -202,6 +202,8 @@ export async function updateOrderShipping(
     biteshipOrderId?: string;
     trackingNumber?: string;
     shippingCourier?: string;
+    shippingService?: string;
+    shippingCost?: number;
   }
 ): Promise<boolean> {
   try {
@@ -223,6 +225,14 @@ export async function updateOrderShipping(
     if (data.shippingCourier) {
       updates.push('shipping_courier = ?');
       bindings.push(data.shippingCourier);
+    }
+    if (data.shippingService) {
+      updates.push('shipping_service = ?');
+      bindings.push(data.shippingService);
+    }
+    if (typeof data.shippingCost === 'number') {
+      updates.push('shipping_cost = ?');
+      bindings.push(data.shippingCost);
     }
 
     bindings.push(orderId);
