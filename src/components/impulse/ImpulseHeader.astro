@@ -1,0 +1,141 @@
+---
+interface Props {
+  brandName?: string;
+}
+
+const { brandName = 'IMPULSE' } = Astro.props;
+---
+
+<header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-neutral-200 transition-all duration-300">
+  <div class="max-w-[1500px] mx-auto px-4 sm:px-8 lg:px-12 h-20 flex items-center justify-between">
+    
+    <!-- Left Column: Search & Mobile Menu Button -->
+    <div class="flex items-center space-x-6 flex-1 justify-start">
+      <!-- Mobile Menu Toggle -->
+      <button id="impulse-mobile-menu-btn" class="lg:hidden p-2 text-black hover:opacity-70 focus:outline-none" aria-label="Toggle Navigation">
+        <svg class="w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+
+      <!-- Search Trigger -->
+      <button id="impulse-search-btn" class="flex items-center space-x-2 text-neutral-800 hover:text-black transition-colors group focus:outline-none">
+        <svg class="w-5 h-5 stroke-current transition-transform group-hover:scale-110" fill="none" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+        <span class="hidden sm:inline text-[13px] tracking-widest uppercase font-medium">Search</span>
+      </button>
+
+      <!-- Desktop Left Navigation -->
+      <nav class="hidden lg:flex items-center space-x-7 pl-4 text-[13px] tracking-[0.15em] uppercase font-medium text-neutral-800">
+        <a href="#catalog" class="hover:text-black border-b border-transparent hover:border-black pb-0.5 transition-all">New</a>
+        <a href="#catalog" class="hover:text-black border-b border-transparent hover:border-black pb-0.5 transition-all">Clothing</a>
+        <a href="#catalog" class="text-rose-700 hover:text-rose-900 border-b border-transparent hover:border-rose-900 pb-0.5 transition-all">Sale</a>
+      </nav>
+    </div>
+
+    <!-- Center Column: Bold Editorial Logo -->
+    <div class="flex-shrink-0 text-center">
+      <a href="/" class="inline-block">
+        <span class="font-serif text-2xl sm:text-3xl lg:text-4xl tracking-[0.25em] font-light uppercase text-black hover:opacity-90 transition-opacity">
+          {brandName}
+        </span>
+      </a>
+    </div>
+
+    <!-- Right Column: Editorial Links, Account, Cart -->
+    <div class="flex items-center space-x-6 sm:space-x-8 flex-1 justify-end">
+      <nav class="hidden xl:flex items-center space-x-7 pr-4 text-[13px] tracking-[0.15em] uppercase font-medium text-neutral-700">
+        <a href="#lookbook" class="hover:text-black transition-colors">The Lookbook</a>
+        <a href="#journal" class="hover:text-black transition-colors">Journal</a>
+        <a href="#collections" class="hover:text-black transition-colors">Theme Features</a>
+      </nav>
+
+      <!-- Account Link -->
+      <a href="/login" class="hidden sm:flex text-neutral-800 hover:text-black transition-colors p-1" title="Account">
+        <svg class="w-5 h-5 stroke-current" fill="none" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+        </svg>
+      </a>
+
+      <!-- Cart Trigger (integrates with global CartDrawer) -->
+      <button id="cart-drawer-toggle-impulse" class="flex items-center space-x-2 text-neutral-800 hover:text-black transition-colors relative group focus:outline-none" title="Shopping Cart">
+        <svg class="w-5 h-5 stroke-current transition-transform group-hover:scale-105" fill="none" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+        </svg>
+        <span id="impulse-cart-count" class="cart-badge-count text-[11px] font-bold bg-black text-white rounded-full w-5 h-5 flex items-center justify-center -ml-1">0</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Drawer Menu Overlay -->
+  <div id="impulse-mobile-menu" class="hidden lg:hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm transition-opacity">
+    <div class="fixed inset-y-0 left-0 max-w-xs w-full bg-white shadow-2xl p-6 flex flex-col justify-between overflow-y-auto">
+      <div>
+        <div class="flex items-center justify-between pb-6 border-b border-neutral-100">
+          <span class="font-serif text-xl tracking-[0.2em] uppercase font-bold">{brandName}</span>
+          <button id="impulse-close-mobile-menu" class="p-2 text-neutral-500 hover:text-black">
+            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+
+        <nav class="py-6 flex flex-col space-y-5 text-[15px] tracking-widest uppercase font-medium text-neutral-900">
+          <a href="#catalog" class="hover:text-neutral-500 py-1 border-b border-neutral-100">New Arrivals</a>
+          <a href="#catalog" class="hover:text-neutral-500 py-1 border-b border-neutral-100">Clothing</a>
+          <a href="#catalog" class="text-rose-700 py-1 border-b border-neutral-100">Sale Up to 40%</a>
+          <a href="#lookbook" class="hover:text-neutral-500 py-1 border-b border-neutral-100">The Lookbook</a>
+          <a href="#journal" class="hover:text-neutral-500 py-1 border-b border-neutral-100">Inside The Journal</a>
+          <a href="/login" class="hover:text-neutral-500 py-1 border-b border-neutral-100">My Account / Login</a>
+        </nav>
+      </div>
+
+      <div class="pt-6 border-t border-neutral-200 text-xs text-neutral-500 space-y-2">
+        <p>Customer Support: support@impulse.com</p>
+        <p>Mon - Fri: 9:00 AM - 6:00 PM EST</p>
+      </div>
+    </div>
+  </div>
+</header>
+
+<script is:inline>
+  (function() {
+    const mobileBtn = document.getElementById('impulse-mobile-menu-btn');
+    const closeBtn = document.getElementById('impulse-close-mobile-menu');
+    const mobileMenu = document.getElementById('impulse-mobile-menu');
+    const cartToggle = document.getElementById('cart-drawer-toggle-impulse');
+
+    if (mobileBtn && mobileMenu) {
+      mobileBtn.addEventListener('click', () => mobileMenu.classList.remove('hidden'));
+    }
+    if (closeBtn && mobileMenu) {
+      closeBtn.addEventListener('click', () => mobileMenu.classList.add('hidden'));
+    }
+
+    // Connect to global cart drawer toggle
+    if (cartToggle) {
+      cartToggle.addEventListener('click', () => {
+        const globalCartToggle = document.getElementById('cart-drawer-toggle');
+        if (globalCartToggle) {
+          globalCartToggle.click();
+        } else {
+          const drawer = document.getElementById('cart-drawer');
+          if (drawer) drawer.classList.remove('hidden');
+        }
+      });
+    }
+
+    // Sync impulse cart badge count
+    function syncBadge() {
+      try {
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        const count = cart.reduce((acc, item) => acc + (item.qty || 1), 0);
+        const el = document.getElementById('impulse-cart-count');
+        if (el) el.textContent = count.toString();
+      } catch (e) {}
+    }
+    window.addEventListener('cart-updated', syncBadge);
+    window.addEventListener('storage', syncBadge);
+    document.addEventListener('DOMContentLoaded', syncBadge);
+    syncBadge();
+  })();
+</script>

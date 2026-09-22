@@ -1,0 +1,71 @@
+---
+// Collection Link Grid (Mixed Size: 4 Small on Row 1, 2 Large on Row 2)
+const row1 = [
+  { title: 'The Linen Edit', image: 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?q=80&w=500&auto=format&fit=crop', link: '#catalog' },
+  { title: 'Soft Neutrals', image: 'https://images.unsplash.com/photo-1551803091-e20673f15770?q=80&w=500&auto=format&fit=crop', link: '#catalog' },
+  { title: 'Everyday Dresses', image: 'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?q=80&w=500&auto=format&fit=crop', link: '#catalog' },
+  { title: 'Thoughtful Layers', image: 'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?q=80&w=500&auto=format&fit=crop', link: '#catalog' },
+];
+
+const row2 = [
+  { title: 'The Lookbook', subtitle: 'Explore Editorial Curations', image: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=1000&auto=format&fit=crop', link: '#lookbook' },
+  { title: 'Journal', subtitle: 'Notes on Slow Living & Style', image: 'https://images.unsplash.com/photo-1445205170230-053b83016050?q=80&w=1000&auto=format&fit=crop', link: '#journal' },
+];
+---
+
+<section id="collections" class="py-12 sm:py-20 px-4 sm:px-8 lg:px-12 max-w-[1500px] mx-auto">
+  <div class="text-center mb-10 sm:mb-12">
+    <span class="text-[11px] tracking-[0.25em] uppercase font-semibold text-neutral-500 block mb-2">
+      Curated Selections
+    </span>
+    <h2 class="font-serif text-2xl sm:text-4xl font-light text-neutral-900">
+      Explore Collections
+    </h2>
+  </div>
+
+  <div class="space-y-4 sm:space-y-6">
+    <!-- Row 1: 4 Small Thumbnails -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
+      {row1.map((item) => (
+        <a href={item.link} class="relative group aspect-[4/5] sm:aspect-square overflow-hidden rounded-sm bg-stone-100">
+          <img
+            src={item.image}
+            alt={item.title}
+            class="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-110 brightness-[0.88] group-hover:brightness-75"
+            loading="lazy"
+          />
+          <div class="absolute inset-0 flex items-center justify-center p-4 text-center">
+            <span class="font-serif text-lg sm:text-xl lg:text-2xl font-normal text-white tracking-wide drop-shadow-md border-b border-transparent group-hover:border-white pb-1 transition-all">
+              {item.title}
+            </span>
+          </div>
+        </a>
+      ))}
+    </div>
+
+    <!-- Row 2: 2 Large Thumbnails -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+      {row2.map((item) => (
+        <a href={item.link} class="relative group h-64 sm:h-80 lg:h-96 overflow-hidden rounded-sm bg-stone-100">
+          <img
+            src={item.image}
+            alt={item.title}
+            class="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105 brightness-[0.85] group-hover:brightness-75"
+            loading="lazy"
+          />
+          <div class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center text-white">
+            <span class="text-[11px] tracking-[0.25em] uppercase font-medium text-neutral-300 mb-2">
+              {item.subtitle}
+            </span>
+            <span class="font-serif text-2xl sm:text-4xl font-light tracking-wider drop-shadow-md">
+              {item.title}
+            </span>
+            <span class="mt-4 text-[11px] tracking-widest uppercase font-bold text-white underline underline-offset-4 opacity-90 group-hover:opacity-100">
+              Discover &rarr;
+            </span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>

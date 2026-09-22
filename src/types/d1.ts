@@ -1,7 +1,9 @@
 export interface Store {
   id: string;
   name: string;
+  title?: string | null;
   domain: string | null;
+  theme?: string | null;
   mayar_api_key?: string | null;
   mayar_webhook_secret?: string | null;
   biteship_api_key?: string | null;

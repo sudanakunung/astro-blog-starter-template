@@ -5,17 +5,26 @@ import CartDrawer from '../components/CartDrawer.astro';
 import WishlistDrawer from '../components/WishlistDrawer.astro';
 import Toast from '../components/Toast.astro';
 import BackToTop from '../components/BackToTop.astro';
+import type { Store } from '../types/d1';
 
 interface Props {
   title?: string;
   description?: string;
   storeName?: string;
+  hideNavbar?: boolean;
+  hideFooter?: boolean;
 }
 
+const currentStore: Store | undefined = Astro.locals.store;
+const defaultStoreName = currentStore?.name || 'Navanusa Jewellery';
+const defaultPageTitle = currentStore?.title || `${defaultStoreName} - Nordic Minimalist Shop`;
+
 const {
-  title = 'Nordic Shop - Minimalist Store',
-  description = 'Platform multi-tenant toko online minimalis',
-  storeName = 'NORDICS',
+  title = defaultPageTitle,
+  description = `Platform multi-tenant toko online minimalis di ${defaultStoreName}`,
+  storeName = defaultStoreName,
+  hideNavbar = false,
+  hideFooter = false,
 } = Astro.props;
 ---
 
@@ -58,18 +67,37 @@ const {
   </head>
 
   <body class="bg-white text-gray-600 work-sans leading-normal text-base tracking-normal flex flex-col min-h-screen">
-    <Navbar storeName={storeName} />
+    {!hideNavbar && <Navbar storeName={storeName} />}
     
     <main class="flex-1">
       <slot />
     </main>
 
-    <ShopFooter />
+    {!hideFooter && <ShopFooter />}
 
     <!-- Interactive Global Drawers & Toast Notifications -->
     <CartDrawer />
     <WishlistDrawer />
     <Toast />
     <BackToTop />
+
+    <script is:inline>
+      // Sinkronisasi client-side otomatis jika ada konfigurasi terbaru di localStorage
+      try {
+        const saved = localStorage.getItem('astro_sync_config');
+        if (saved) {
+          const cfg = JSON.parse(saved);
+          if (cfg.store_name) {
+            const brandEl = document.getElementById('navbar-brand-name');
+            if (brandEl && (!brandEl.dataset.customized || brandEl.textContent.trim() === 'NORDICS')) {
+              brandEl.textContent = cfg.store_name;
+            }
+          }
+          if (cfg.store_title && document.title.includes('Nordic Minimalist Shop')) {
+            document.title = cfg.store_title;
+          }
+        }
+      } catch (e) {}
+    </script>
   </body>
 </html>

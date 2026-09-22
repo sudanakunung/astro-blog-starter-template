@@ -1,0 +1,171 @@
+---
+// Impulse Theme (Theme 2) - Shopify "Impulse" Minimalist-Editorial Women's Fashion Theme
+import ImpulseUtilityBar from '../components/impulse/ImpulseUtilityBar.astro';
+import ImpulseHeader from '../components/impulse/ImpulseHeader.astro';
+import ImpulseHero from '../components/impulse/ImpulseHero.astro';
+import ImpulseCategoryGrid from '../components/impulse/ImpulseCategoryGrid.astro';
+import ImpulseProductGrid, { type ImpulseProduct } from '../components/impulse/ImpulseProductGrid.astro';
+import ImpulsePromoSplit from '../components/impulse/ImpulsePromoSplit.astro';
+import ImpulseEditorialBanner from '../components/impulse/ImpulseEditorialBanner.astro';
+import ImpulseJournalTeaser from '../components/impulse/ImpulseJournalTeaser.astro';
+import ImpulseClosingBanner from '../components/impulse/ImpulseClosingBanner.astro';
+import ImpulseCollectionLinks from '../components/impulse/ImpulseCollectionLinks.astro';
+import ImpulseValueProps from '../components/impulse/ImpulseValueProps.astro';
+import ImpulseFooter from '../components/impulse/ImpulseFooter.astro';
+import ImpulseQuickViewModal from '../components/impulse/ImpulseQuickViewModal.astro';
+import type { D1Product } from '../types/d1';
+
+interface Props {
+  brandName?: string;
+  dbProducts?: D1Product[];
+}
+
+const { brandName = 'IMPULSE' } = Astro.props;
+
+// Section 5 Products: Everyday Essentials
+const everydayEssentials: ImpulseProduct[] = [
+  {
+    id: 'impulse-p1',
+    name: 'The Lido Short',
+    price: 96,
+    originalPrice: 120,
+    badge: 'Sale',
+    image1: 'https://images.unsplash.com/photo-1591195853828-11db59a44f6b?q=80&w=800&auto=format&fit=crop',
+    image2: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=800&auto=format&fit=crop',
+    description: 'Tailored pleats and lightweight organic linen, made for breezy seaside days and relaxed city strolls.',
+  },
+  {
+    id: 'impulse-p2',
+    name: 'The Brisa Overshirt',
+    price: 132,
+    image1: 'https://images.unsplash.com/photo-1554412933-514a83d2f3c8?q=80&w=800&auto=format&fit=crop',
+    image2: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=800&auto=format&fit=crop',
+    description: 'An easy layer in structured cotton twill with horn buttons and dropped shoulders.',
+  },
+  {
+    id: 'impulse-p3',
+    name: 'The Cove Skirt',
+    price: 112,
+    badge: 'New',
+    image1: 'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?q=80&w=800&auto=format&fit=crop',
+    image2: 'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?q=80&w=800&auto=format&fit=crop',
+    description: 'A flowing midi length cut on the bias with a subtle elastic waist for understated elegance.',
+  },
+  {
+    id: 'impulse-p4',
+    name: 'The Arden Co-ord',
+    price: 214,
+    image1: 'https://images.unsplash.com/photo-1598554747436-c9293d6a588f?q=80&w=800&auto=format&fit=crop',
+    image2: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=800&auto=format&fit=crop',
+    description: 'Effortless top and trouser matching set designed for warm-weather movement and repeat wear.',
+  },
+  {
+    id: 'impulse-p5',
+    name: 'The Vela Shirt',
+    price: 118,
+    originalPrice: 130,
+    badge: 'Sale',
+    image1: 'https://images.unsplash.com/photo-1534126511673-b6899657816a?q=80&w=800&auto=format&fit=crop',
+    image2: 'https://images.unsplash.com/photo-1528459801416-a9e53bbf4e17?q=80&w=800&auto=format&fit=crop',
+    description: 'Crisp Japanese cotton poplin shirt with elongated cuffs and a clean band collar.',
+  },
+];
+
+// Section 7 Products: All New
+const allNewProducts: ImpulseProduct[] = [
+  {
+    id: 'impulse-p6',
+    name: 'The Wren Coat',
+    price: 286,
+    badge: 'New',
+    image1: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=800&auto=format&fit=crop',
+    image2: 'https://images.unsplash.com/photo-1485968579580-b6d095142e6e?q=80&w=800&auto=format&fit=crop',
+    description: 'A lightweight unlined duster coat in washed taupe linen with a storm flap detail.',
+  },
+  {
+    id: 'impulse-p7',
+    name: 'The Ceru Knit',
+    price: 148,
+    image1: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=800&auto=format&fit=crop',
+    image2: 'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?q=80&w=800&auto=format&fit=crop',
+    description: 'Chunky ribbed knit crafted from breathable organic cotton and recycled alpaca blend.',
+  },
+  {
+    id: 'impulse-p8',
+    name: 'The Hana Overshirt',
+    price: 164,
+    badge: 'New',
+    image1: 'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?q=80&w=800&auto=format&fit=crop',
+    image2: 'https://images.unsplash.com/photo-1554412933-514a83d2f3c8?q=80&w=800&auto=format&fit=crop',
+    description: 'Relaxed fit overshirt with large utility pockets and double-needle contrast stitching.',
+  },
+  {
+    id: 'impulse-p9',
+    name: 'The Lark Jacket',
+    price: 204,
+    image1: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=800&auto=format&fit=crop',
+    image2: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=800&auto=format&fit=crop',
+    description: 'Minimalist worker jacket with understated horn closures and raw-edge seam accents.',
+  },
+  {
+    id: 'impulse-p10',
+    name: 'The Eno Cardigan',
+    price: 188,
+    image1: 'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?q=80&w=800&auto=format&fit=crop',
+    image2: 'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?q=80&w=800&auto=format&fit=crop',
+    description: 'V-neck knit cardigan with deep ribbed hems, designed to be worn buttoned or draped open.',
+  },
+];
+---
+
+<div class="impulse-theme-wrapper w-full bg-[#FAF8F5] text-neutral-800 font-sans antialiased selection:bg-neutral-800 selection:text-white">
+  <!-- 1. Top Utility Bar -->
+  <ImpulseUtilityBar />
+
+  <!-- 2. Header -->
+  <ImpulseHeader brandName={brandName} />
+
+  <!-- 3. Hero Section with Shoppable Hotspots -->
+  <ImpulseHero />
+
+  <!-- 4. Category Grid (4 Columns) -->
+  <ImpulseCategoryGrid />
+
+  <!-- 5. Product Grid — "Everyday Essentials" (5 Cards) -->
+  <ImpulseProductGrid
+    title="Everyday Essentials"
+    products={everydayEssentials}
+    sectionId="catalog"
+  />
+
+  <!-- 6. Promo Banner 2 Kolom (50/50) -->
+  <ImpulsePromoSplit />
+
+  <!-- 7. Product Grid — "All New" (5 Cards) -->
+  <ImpulseProductGrid
+    title="All New"
+    products={allNewProducts}
+    sectionId="all-new"
+  />
+
+  <!-- 8. Full-Width Editorial Banner ("Made to move with ease") -->
+  <ImpulseEditorialBanner />
+
+  <!-- 9. Journal/Blog Teaser -->
+  <ImpulseJournalTeaser />
+
+  <!-- 10. Full-Width Closing Banner ("Easy to wear, easy to return to") -->
+  <ImpulseClosingBanner />
+
+  <!-- 11. Collection Link Grid (Mixed size: 4 small + 2 large) -->
+  <ImpulseCollectionLinks />
+
+  <!-- 12. Value Proposition (3 Columns) -->
+  <ImpulseValueProps />
+
+  <!-- 13. Footer -->
+  <ImpulseFooter brandName={brandName} />
+
+  <!-- Quick View Modal Interactive Popup -->
+  <ImpulseQuickViewModal />
+</div>

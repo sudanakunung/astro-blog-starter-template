@@ -1,0 +1,59 @@
+---
+// Category Grid (4 Columns) - Shopify Impulse Style
+const categories = [
+  {
+    title: '2026 - Tops',
+    image: 'https://images.unsplash.com/photo-1534126511673-b6899657816a?q=80&w=600&auto=format&fit=crop',
+    link: '#catalog',
+    itemCount: '24 styles',
+  },
+  {
+    title: '2026 - Bottoms',
+    image: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=600&auto=format&fit=crop',
+    link: '#catalog',
+    itemCount: '18 styles',
+  },
+  {
+    title: '2026 - Dresses',
+    image: 'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?q=80&w=600&auto=format&fit=crop',
+    link: '#catalog',
+    itemCount: '32 styles',
+  },
+  {
+    title: '2026 - Layers',
+    image: 'https://images.unsplash.com/photo-1485968579580-b6d095142e6e?q=80&w=600&auto=format&fit=crop',
+    link: '#catalog',
+    itemCount: '16 styles',
+  },
+];
+---
+
+<section class="py-14 sm:py-20 px-4 sm:px-8 lg:px-12 max-w-[1500px] mx-auto">
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+    {categories.map((cat) => (
+      <a href={cat.link} class="group block text-center">
+        <!-- Image Container -->
+        <div class="relative aspect-[3/4] w-full overflow-hidden bg-[#F0ECE1] rounded-sm">
+          <img
+            src={cat.image}
+            alt={cat.title}
+            class="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
+            loading="lazy"
+          />
+          <!-- Subtle hover overlay -->
+          <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300"></div>
+        </div>
+
+        <!-- Caption Below Image -->
+        <div class="mt-4 text-center">
+          <h3 class="text-xs sm:text-[13px] tracking-[0.2em] uppercase font-semibold text-neutral-900 group-hover:text-black transition-colors">
+            {cat.title}
+          </h3>
+          <p class="text-[11px] text-neutral-500 font-light mt-1 tracking-wider">
+            {cat.itemCount}
+          </p>
+        </div>
+      </a>
+    ))}
+  </div>
+</section>

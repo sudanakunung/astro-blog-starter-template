@@ -1,0 +1,208 @@
+---
+// Quick View Modal Component for Impulse Theme
+---
+
+<div
+  id="impulse-quick-view-modal"
+  class="hidden fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6"
+  aria-modal="true"
+  role="dialog"
+>
+  <div class="relative bg-white rounded-lg max-w-3xl w-full overflow-hidden shadow-2xl transition-all transform animate-fadeIn">
+    
+    <!-- Close Button -->
+    <button
+      id="quick-view-close-btn"
+      class="absolute top-4 right-4 z-20 text-neutral-400 hover:text-black p-2 rounded-full hover:bg-neutral-100 transition-colors"
+      aria-label="Close modal"
+    >
+      <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+
+    <!-- Modal Content Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2">
+      <!-- Image Column -->
+      <div class="relative aspect-[3/4] bg-[#F4F1EA] overflow-hidden">
+        <img
+          id="qv-product-img"
+          src=""
+          alt=""
+          class="w-full h-full object-cover object-center"
+        />
+        <span
+          id="qv-product-badge"
+          class="hidden absolute top-4 left-4 px-2.5 py-1 text-[10px] tracking-wider uppercase font-bold rounded-sm bg-black text-white"
+        ></span>
+      </div>
+
+      <!-- Details Column -->
+      <div class="p-6 sm:p-8 flex flex-col justify-between">
+        <div>
+          <span class="text-[11px] tracking-[0.2em] uppercase font-semibold text-neutral-500 block mb-1">
+            Women's Collection
+          </span>
+          <h3 id="qv-product-name" class="font-serif text-2xl font-light text-neutral-900 leading-tight">
+            Product Title
+          </h3>
+
+          <!-- Price -->
+          <div class="mt-3 flex items-center space-x-2">
+            <span id="qv-product-origprice" class="hidden text-neutral-400 line-through text-sm"></span>
+            <span id="qv-product-price" class="text-lg font-semibold text-neutral-900"></span>
+            <span id="qv-product-savings" class="hidden text-xs text-[#D98270] font-medium"></span>
+          </div>
+
+          <!-- Description -->
+          <p id="qv-product-desc" class="mt-4 text-xs sm:text-sm text-neutral-600 font-light leading-relaxed">
+            Crafted with natural lightweight fibers for effortless daily movement.
+          </p>
+
+          <!-- Color Options -->
+          <div class="mt-6">
+            <span class="text-[11px] tracking-widest uppercase font-semibold text-neutral-800 block mb-2">
+              Color: <span id="qv-selected-color" class="font-normal text-neutral-500">Natural Oat</span>
+            </span>
+            <div class="flex items-center space-x-2">
+              <button class="w-6 h-6 rounded-full bg-[#E8E2D5] ring-2 ring-black ring-offset-2 focus:outline-none"></button>
+              <button class="w-6 h-6 rounded-full bg-[#9EAA96] hover:ring-2 hover:ring-neutral-400 focus:outline-none"></button>
+              <button class="w-6 h-6 rounded-full bg-[#2B2B2B] hover:ring-2 hover:ring-neutral-400 focus:outline-none"></button>
+            </div>
+          </div>
+
+          <!-- Size Options -->
+          <div class="mt-5">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-[11px] tracking-widest uppercase font-semibold text-neutral-800">Select Size</span>
+              <a href="#help" class="text-[10px] uppercase underline text-neutral-500 hover:text-black">Size Guide</a>
+            </div>
+            <div class="grid grid-cols-5 gap-2">
+              {['XS', 'S', 'M', 'L', 'XL'].map((size, idx) => (
+                <button
+                  class={`py-2 text-xs font-medium border rounded-sm transition-colors ${
+                    idx === 1
+                      ? 'border-black bg-black text-white'
+                      : 'border-neutral-300 text-neutral-700 hover:border-black'
+                  }`}
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <!-- Add To Bag Section -->
+        <div class="mt-8 pt-4 border-t border-neutral-100 flex items-center space-x-3">
+          <button
+            id="qv-add-to-cart-btn"
+            class="flex-1 bg-black text-white hover:bg-neutral-800 py-3.5 rounded-full text-xs font-bold tracking-[0.2em] uppercase transition-all shadow-md"
+          >
+            ADD TO BAG
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  (function() {
+    const modal = document.getElementById('impulse-quick-view-modal');
+    const closeBtn = document.getElementById('quick-view-close-btn');
+    const qvImg = document.getElementById('qv-product-img');
+    const qvName = document.getElementById('qv-product-name');
+    const qvPrice = document.getElementById('qv-product-price');
+    const qvOrigPrice = document.getElementById('qv-product-origprice');
+    const qvSavings = document.getElementById('qv-product-savings');
+    const qvBadge = document.getElementById('qv-product-badge');
+    const qvDesc = document.getElementById('qv-product-desc');
+    const qvAddBtn = document.getElementById('qv-add-to-cart-btn');
+
+    let currentItem = null;
+
+    document.querySelectorAll('.quick-view-trigger').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const id = btn.dataset.id;
+        const name = btn.dataset.name;
+        const price = parseInt(btn.dataset.price, 10);
+        const origPrice = btn.dataset.origprice ? parseInt(btn.dataset.origprice, 10) : null;
+        const badge = btn.dataset.badge;
+        const image = btn.dataset.image;
+        const desc = btn.dataset.desc;
+
+        currentItem = { id, name, price, origPrice, badge, image, desc };
+
+        if (qvImg) qvImg.src = image;
+        if (qvName) qvName.textContent = name;
+        if (qvPrice) qvPrice.textContent = `$${price}`;
+        if (qvDesc) qvDesc.textContent = desc || 'Crafted with premium natural fiber and tailored with minimal timeless cuts.';
+
+        if (origPrice && origPrice > price) {
+          if (qvOrigPrice) {
+            qvOrigPrice.textContent = `$${origPrice}`;
+            qvOrigPrice.classList.remove('hidden');
+          }
+          if (qvSavings) {
+            qvSavings.textContent = `(Save $${origPrice - price})`;
+            qvSavings.classList.remove('hidden');
+          }
+        } else {
+          if (qvOrigPrice) qvOrigPrice.classList.add('hidden');
+          if (qvSavings) qvSavings.classList.add('hidden');
+        }
+
+        if (badge && qvBadge) {
+          qvBadge.textContent = badge;
+          qvBadge.className = `absolute top-4 left-4 px-2.5 py-1 text-[10px] tracking-wider uppercase font-bold rounded-sm ${
+            badge === 'Sale' ? 'bg-[#D98270] text-white' : 'bg-black text-white'
+          }`;
+          qvBadge.classList.remove('hidden');
+        } else if (qvBadge) {
+          qvBadge.classList.add('hidden');
+        }
+
+        if (modal) modal.classList.remove('hidden');
+      });
+    });
+
+    if (closeBtn && modal) {
+      closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
+    }
+
+    if (modal) {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.classList.add('hidden');
+      });
+    }
+
+    if (qvAddBtn) {
+      qvAddBtn.addEventListener('click', () => {
+        if (!currentItem) return;
+        let cart = [];
+        try { cart = JSON.parse(localStorage.getItem('cart') || '[]'); } catch(err) {}
+        const existing = cart.find(item => item.id === currentItem.id);
+        if (existing) {
+          existing.qty = (existing.qty || 1) + 1;
+        } else {
+          cart.push({ id: currentItem.id, name: currentItem.name, price: currentItem.price, qty: 1, image: currentItem.image });
+        }
+        localStorage.setItem('cart', JSON.stringify(cart));
+        window.dispatchEvent(new CustomEvent('cart-updated'));
+
+        if (window.showToast) {
+          window.showToast(`Added ${currentItem.name} to bag.`);
+        }
+
+        if (modal) modal.classList.add('hidden');
+
+        const drawer = document.getElementById('cart-drawer');
+        if (drawer) drawer.classList.remove('hidden');
+      });
+    }
+  })();
+</script>

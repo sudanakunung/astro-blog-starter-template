@@ -4,6 +4,7 @@ export async function initDatabase(db: D1Database): Promise<{ success: boolean; 
     `CREATE TABLE IF NOT EXISTS stores (
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL,
+      title TEXT,
       domain TEXT UNIQUE,
       mayar_api_key TEXT,
       mayar_webhook_secret TEXT,
@@ -132,6 +133,13 @@ export async function initDatabase(db: D1Database): Promise<{ success: boolean; 
     // Column already exists — safe to ignore
   }
 
+  // Add title column to stores if missing (safe ALTER)
+  try {
+    await db.prepare(`ALTER TABLE stores ADD COLUMN title TEXT`).run();
+  } catch (e) {
+    // Column already exists — safe to ignore
+  }
+
   // Add customer_id column to orders if missing
   try {
     await db.prepare(`ALTER TABLE products ADD COLUMN category TEXT`).run();
@@ -154,8 +162,8 @@ export async function initDatabase(db: D1Database): Promise<{ success: boolean; 
   // Ensure default store 'jewellery' exists
   try {
     await db.prepare(`
-      INSERT OR IGNORE INTO stores (id, name, status, origin_postal_code, created_at, updated_at) 
-      VALUES ('jewellery', 'Navanusa Jewellery', 'active', '80361', unixepoch(), unixepoch())
+      INSERT OR IGNORE INTO stores (id, name, title, status, origin_postal_code, created_at, updated_at) 
+      VALUES ('jewellery', 'Navanusa Jewellery', 'Navanusa Jewellery - Nordic Minimalist Shop', 'active', '80361', unixepoch(), unixepoch())
     `).run();
   } catch (e) {}
 

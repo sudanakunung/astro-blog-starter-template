@@ -1,0 +1,35 @@
+---
+import HeroCarousel from '../components/HeroCarousel.astro';
+import CategoryGrid from '../components/CategoryGrid.astro';
+import ProductGrid from '../components/ProductGrid.astro';
+import FeaturedShowcase from '../components/FeaturedShowcase.astro';
+import TrustFeatures from '../components/TrustFeatures.astro';
+import AboutSection from '../components/AboutSection.astro';
+import type { D1Product } from '../types/d1';
+import type { CarouselSlide } from '../types/store';
+
+interface Props {
+  products: D1Product[];
+  slides: CarouselSlide[];
+}
+
+const { products, slides } = Astro.props;
+---
+
+<!-- Hero Carousel -->
+<HeroCarousel slides={slides} />
+
+<!-- Category Grid — variative besar kecil, di bawah hero -->
+<CategoryGrid />
+
+<!-- Product Catalog Grid -->
+<ProductGrid products={products} title="Katalog Produk" />
+
+<!-- Featured Showcase ("Elegent and Modern" & "Hidden Halo Ring") -->
+<FeaturedShowcase />
+
+<!-- Trust Features Section ("We offer the best!") -->
+<TrustFeatures />
+
+<!-- About Section -->
+<AboutSection title="About" />

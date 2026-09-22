@@ -1,15 +1,15 @@
 ---
 import ShopLayout from '../../layouts/ShopLayout.astro';
-export const prerender = false;
+const storeName = Astro.locals.store?.name || 'Navanusa Jewellery';
 ---
 
-<ShopLayout title="Daftar Akun Baru | NORDICS" storeName="NORDICS">
+<ShopLayout title={`Daftar Akun Baru | ${storeName}`}>
   <div class="bg-gray-50 min-h-[calc(100vh-140px)] flex items-center justify-center py-12 px-4">
     <div class="w-full max-w-md">
       
       <div class="text-center mb-8">
         <h1 class="text-2xl font-bold uppercase tracking-wider text-gray-900">Buat Akun Baru</h1>
-        <p class="text-sm text-gray-500 mt-1">Daftar untuk mulai berbelanja di NORDICS.</p>
+        <p class="text-sm text-gray-500 mt-1">Daftar untuk mulai berbelanja di {storeName}.</p>
       </div>
 
       <div class="bg-white rounded-lg border border-gray-200 p-8 shadow-sm">
