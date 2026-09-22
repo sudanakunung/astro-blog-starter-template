@@ -307,16 +307,16 @@ const heroSlides = [
       const name = btn.dataset.name;
       const price = parseInt(btn.dataset.price, 10);
       const image = btn.dataset.image;
-      let cart = [];
-      try { cart = JSON.parse(localStorage.getItem('cart') || '[]'); } catch(err) {}
-      const existing = cart.find(item => item.id === id);
-      if (existing) existing.qty = (existing.qty || 1) + 1;
-      else cart.push({ id, name, price, qty: 1, image });
-      localStorage.setItem('cart', JSON.stringify(cart));
-      window.dispatchEvent(new CustomEvent('cart-updated'));
-      if (window.showToast) window.showToast('Added ' + name + ' to your cart.');
-      const drawer = document.getElementById('cart-drawer');
-      if (drawer) drawer.classList.remove('hidden');
+
+      if (window.NordicCart) {
+        window.NordicCart.addItem({
+          id,
+          name,
+          price,
+          image,
+          slug: id,
+        }, 1);
+      }
     });
   });
 

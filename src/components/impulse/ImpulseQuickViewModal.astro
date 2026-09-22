@@ -183,25 +183,16 @@
     if (qvAddBtn) {
       qvAddBtn.addEventListener('click', () => {
         if (!currentItem) return;
-        let cart = [];
-        try { cart = JSON.parse(localStorage.getItem('cart') || '[]'); } catch(err) {}
-        const existing = cart.find(item => item.id === currentItem.id);
-        if (existing) {
-          existing.qty = (existing.qty || 1) + 1;
-        } else {
-          cart.push({ id: currentItem.id, name: currentItem.name, price: currentItem.price, qty: 1, image: currentItem.image });
+        if (window.NordicCart) {
+          window.NordicCart.addItem({
+            id: currentItem.id,
+            name: currentItem.name,
+            price: currentItem.price,
+            image: currentItem.image,
+            slug: currentItem.id,
+          }, 1);
         }
-        localStorage.setItem('cart', JSON.stringify(cart));
-        window.dispatchEvent(new CustomEvent('cart-updated'));
-
-        if (window.showToast) {
-          window.showToast(`Added ${currentItem.name} to bag.`);
-        }
-
         if (modal) modal.classList.add('hidden');
-
-        const drawer = document.getElementById('cart-drawer');
-        if (drawer) drawer.classList.remove('hidden');
       });
     }
   })();
