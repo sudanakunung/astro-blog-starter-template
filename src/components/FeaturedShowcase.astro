@@ -1,0 +1,179 @@
+---
+// FeaturedShowcase.astro - "Elegant and Modern" Featured Showcase below Product Grid
+interface Props {
+  titleLine1?: string;
+  titleLine2?: string;
+  subtitle?: string;
+}
+
+const {
+  titleLine1 = 'Elegent and',
+  titleLine2 = 'Modern',
+  subtitle = 'Experience Luxury Redefined with Our Modern and Elegant Jewelry Pieces.',
+} = Astro.props;
+
+const items = [
+  {
+    title: 'Hidden Halo Ring',
+    image: '/ring-hidden-halo.jpg',
+    href: '/products?search=Ring',
+  },
+  {
+    title: 'Classic Solitaire Ring',
+    image: '/ring-solitaire.jpg',
+    href: '/products?search=Ring',
+  },
+  {
+    title: 'Royal Diamond Necklace',
+    image: '/cat-necklace.jpg',
+    href: '/products?category=Kalung',
+  },
+  {
+    title: 'Sparkling Gem Bracelet',
+    image: '/cat-bracelet.jpg',
+    href: '/products?category=Gelang',
+  },
+];
+---
+
+<section class="w-full bg-white py-10 md:py-16 overflow-hidden">
+  <div class="container mx-auto px-4 sm:px-6">
+    <div class="relative flex flex-col lg:flex-row items-center gap-6 lg:gap-8">
+      
+      <!-- Prev Navigation Button (Left Side) -->
+      <button
+        id="showcase-prev-btn"
+        type="button"
+        aria-label="Previous"
+        class="absolute -left-2 sm:-left-3 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#18181b] text-white flex items-center justify-center shadow-lg hover:bg-black hover:scale-105 active:scale-95 transition-all duration-200 focus:outline-none"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+
+      <!-- Next Navigation Button (Right Side) -->
+      <button
+        id="showcase-next-btn"
+        type="button"
+        aria-label="Next"
+        class="absolute -right-2 sm:-right-3 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#18181b] text-white flex items-center justify-center shadow-lg hover:bg-black hover:scale-105 active:scale-95 transition-all duration-200 focus:outline-none"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+
+      <!-- LEFT: Hero Lifestyle Feature Banner -->
+      <div class="w-full lg:w-[62%] relative bg-[#f7f5f2] rounded-2xl md:rounded-3xl overflow-hidden border border-[#eee9e0] shadow-sm flex flex-col md:flex-row items-center pl-6 sm:pl-10 md:pl-12 pr-0 min-h-[360px] md:min-h-[420px]">
+        <!-- Text Content -->
+        <div class="w-full md:w-[48%] py-8 md:py-10 pr-4 z-10 text-left">
+          <h2 class="font-serif text-3xl sm:text-4xl md:text-[2.75rem] leading-[1.12] text-[#332f2c] font-normal tracking-tight mb-4">
+            <span>{titleLine1}</span><br />
+            <span>{titleLine2}</span>
+          </h2>
+          <p class="text-xs sm:text-[13px] text-[#78716c] leading-relaxed max-w-[260px] font-normal">
+            {subtitle}
+          </p>
+          <div class="mt-6">
+            <a
+              href="/products"
+              class="inline-flex items-center gap-2 text-xs uppercase tracking-widest font-semibold text-gray-900 border-b border-gray-900 pb-0.5 hover:text-amber-800 hover:border-amber-800 transition-colors"
+            >
+              <span>Explore Collection</span>
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Model Image Container -->
+        <div class="w-full md:w-[52%] h-72 md:h-[420px] relative overflow-hidden self-end md:self-stretch">
+          <img
+            src="/model-jewelry-banner.jpg"
+            alt="Elegent and Modern Jewellery"
+            class="w-full h-full object-cover object-top md:object-center transform hover:scale-102 transition-transform duration-700"
+            loading="lazy"
+          />
+          <!-- Subtle gradient overlay blending on mobile -->
+          <div class="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-[#f7f5f2] via-transparent to-transparent opacity-60 md:opacity-40 pointer-events-none"></div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Interactive Product Card Showcase Slider -->
+      <div class="w-full lg:w-[38%] relative">
+        <div class="overflow-hidden rounded-2xl md:rounded-3xl" id="showcase-carousel-wrapper">
+          <div
+            id="showcase-slider-track"
+            class="flex transition-transform duration-500 ease-out"
+            style="transform: translateX(0%);"
+          >
+            {items.map((item, idx) => (
+              <div class="w-full flex-shrink-0 flex flex-col group" data-slide-index={idx}>
+                <a href={item.href} class="block overflow-hidden rounded-2xl bg-gray-50 border border-gray-100 shadow-sm aspect-[3/4] max-h-[380px] relative">
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    loading="lazy"
+                  />
+                  <!-- Hover overlay badge -->
+                  <div class="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    <span class="bg-white/95 text-gray-900 text-xs font-semibold px-4 py-2 rounded-full uppercase tracking-wider shadow">
+                      View Details
+                    </span>
+                  </div>
+                </a>
+                <!-- Product Title Below Card -->
+                <div class="pt-3 pb-1 text-left">
+                  <a href={item.href} class="font-serif text-base sm:text-lg text-gray-900 hover:text-amber-800 transition-colors font-medium">
+                    {item.title}
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<script>
+  function setupShowcaseSlider() {
+    const track = document.getElementById('showcase-slider-track');
+    const prevBtn = document.getElementById('showcase-prev-btn');
+    const nextBtn = document.getElementById('showcase-next-btn');
+
+    if (!track || !prevBtn || !nextBtn) return;
+
+    const slides = track.querySelectorAll('[data-slide-index]');
+    const total = slides.length;
+    let currentIndex = 0;
+
+    function updateSlide() {
+      track.style.transform = `translateX(-${currentIndex * 100}%)`;
+    }
+
+    prevBtn.addEventListener('click', () => {
+      currentIndex = (currentIndex - 1 + total) % total;
+      updateSlide();
+    });
+
+    nextBtn.addEventListener('click', () => {
+      currentIndex = (currentIndex + 1) % total;
+      updateSlide();
+    });
+  }
+
+  setupShowcaseSlider();
+  document.addEventListener('astro:page-load', setupShowcaseSlider);
+</script>
+
+<style>
+  .font-serif {
+    font-family: 'Playfair Display', Georgia, Cambria, 'Times New Roman', Times, serif;
+  }
+</style>

@@ -1,0 +1,531 @@
+---
+export const prerender = false;
+---
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profil Saya</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="stylesheet" href="https://unpkg.com/tailwindcss@2.2.19/dist/tailwind.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Work Sans', sans-serif; }
+
+    /* Tab active indicator */
+    .tab-btn.active {
+      color: #111827;
+      border-bottom: 2px solid #111827;
+      font-weight: 600;
+    }
+
+    /* Status badges */
+    .badge-pending   { background:#fef3c7; color:#92400e; }
+    .badge-paid      { background:#dbeafe; color:#1e40af; }
+    .badge-shipped   { background:#e0e7ff; color:#3730a3; }
+    .badge-completed { background:#d1fae5; color:#065f46; }
+    .badge-cancelled { background:#fee2e2; color:#991b1b; }
+
+    /* Skeleton pulse */
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+    .skeleton { animation: pulse 1.5s ease-in-out infinite; background:#e5e7eb; border-radius:4px; }
+
+    /* Card hover */
+    .order-card { transition: box-shadow 0.2s ease; }
+    .order-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+
+    /* Address card */
+    .address-card { transition: border-color 0.2s; }
+    .address-card:hover { border-color:#6b7280; }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+  <!-- Navbar minimal -->
+  <header class="bg-white border-b border-gray-200 sticky top-0 z-30">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2 font-bold text-gray-900 text-lg uppercase tracking-wide">
+        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M5,22h14c1.103,0,2-0.897,2-2V9c0-0.553-0.447-1-1-1h-3V7c0-2.757-2.243-5-5-5S7,4.243,7,7v1H4C3.447,8,3,8.447,3,9v11C3,21.103,3.897,22,5,22z M9,7c0-1.654,1.346-3,3-3s3,1.346,3,3v1H9V7z M5,10h2v2h2v-2h6v2h2v-2h2l0.002,10H5V10z"/>
+        </svg>
+        <span id="store-name-header">Toko</span>
+      </a>
+      <button id="btn-logout" class="text-sm text-gray-500 hover:text-red-600 transition-colors font-medium flex items-center gap-1">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+        </svg>
+        Keluar
+      </button>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-4 py-8">
+
+    <!-- Profile Header -->
+    <div class="bg-white rounded-2xl border border-gray-200 p-6 mb-6 flex items-center gap-5">
+      <div id="avatar" class="w-16 h-16 rounded-full bg-gray-900 text-white flex items-center justify-center text-2xl font-bold flex-shrink-0">?</div>
+      <div class="min-w-0">
+        <h1 id="profile-name" class="text-xl font-bold text-gray-900">Memuat...</h1>
+        <p id="profile-email" class="text-sm text-gray-500 mt-0.5">-</p>
+        <p id="profile-phone" class="text-sm text-gray-500">-</p>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+      <div class="flex border-b border-gray-200 px-2">
+        <button class="tab-btn active px-5 py-4 text-sm text-gray-500 hover:text-gray-900 transition-colors" data-tab="orders">
+          Pesanan Saya
+        </button>
+        <button class="tab-btn px-5 py-4 text-sm text-gray-500 hover:text-gray-900 transition-colors" data-tab="addresses">
+          Alamat
+        </button>
+        <button class="tab-btn px-5 py-4 text-sm text-gray-500 hover:text-gray-900 transition-colors" data-tab="profile">
+          Profil
+        </button>
+      </div>
+
+      <!-- Tab: Orders -->
+      <div id="tab-orders" class="tab-pane p-5">
+        <div id="orders-loading" class="space-y-3">
+          <div class="skeleton h-24 w-full"></div>
+          <div class="skeleton h-24 w-full"></div>
+          <div class="skeleton h-24 w-full"></div>
+        </div>
+        <div id="orders-empty" class="hidden text-center py-16">
+          <div class="text-5xl mb-3">📦</div>
+          <p class="text-gray-500 font-medium">Belum ada pesanan</p>
+          <a href="/" class="mt-4 inline-block text-sm font-semibold text-gray-900 underline">Mulai belanja</a>
+        </div>
+        <div id="orders-list" class="hidden space-y-4"></div>
+      </div>
+
+      <!-- Tab: Addresses -->
+      <div id="tab-addresses" class="tab-pane hidden p-5">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="font-semibold text-gray-900">Alamat Pengiriman</h2>
+          <button id="btn-add-address" class="text-sm font-semibold bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+            + Tambah Alamat
+          </button>
+        </div>
+        <div id="addresses-loading" class="space-y-3">
+          <div class="skeleton h-20 w-full"></div>
+          <div class="skeleton h-20 w-full"></div>
+        </div>
+        <div id="addresses-empty" class="hidden text-center py-12">
+          <div class="text-4xl mb-3">🏠</div>
+          <p class="text-gray-500">Belum ada alamat tersimpan</p>
+        </div>
+        <div id="addresses-list" class="hidden space-y-3"></div>
+
+        <!-- Add Address Form (hidden by default) -->
+        <div id="address-form-wrap" class="hidden mt-5 bg-gray-50 rounded-xl border border-gray-200 p-5">
+          <h3 class="font-semibold text-gray-900 mb-4" id="address-form-title">Tambah Alamat Baru</h3>
+          <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div class="sm:col-span-2">
+              <label class="block text-xs font-semibold text-gray-600 mb-1">Label Alamat</label>
+              <input id="addr-label" type="text" placeholder="Rumah / Kantor / Kos" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-900" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-600 mb-1">Nama Penerima *</label>
+              <input id="addr-recipient" type="text" placeholder="Nama lengkap penerima" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-900" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-600 mb-1">Nomor HP Penerima *</label>
+              <input id="addr-phone" type="tel" placeholder="08xxxxxxxxxx" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-900" />
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block text-xs font-semibold text-gray-600 mb-1">Alamat Lengkap *</label>
+              <textarea id="addr-address" rows="3" placeholder="Nama jalan, nomor, RT/RW, dll." class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-900 resize-none"></textarea>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-600 mb-1">Provinsi *</label>
+              <input id="addr-province" type="text" placeholder="Provinsi" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-900" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-600 mb-1">Kota/Kabupaten *</label>
+              <input id="addr-city" type="text" placeholder="Kota / Kabupaten" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-900" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-600 mb-1">Kecamatan</label>
+              <input id="addr-district" type="text" placeholder="Kecamatan" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-900" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-600 mb-1">Kode Pos *</label>
+              <input id="addr-postal" type="text" placeholder="12345" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-900" />
+            </div>
+            <div class="sm:col-span-2 flex items-center gap-2">
+              <input id="addr-default" type="checkbox" class="w-4 h-4 accent-gray-900" />
+              <label for="addr-default" class="text-sm text-gray-700">Jadikan alamat utama</label>
+            </div>
+          </div>
+          <input type="hidden" id="addr-editing-id" value="" />
+          <div class="flex gap-2 mt-4">
+            <button id="btn-save-address" class="flex-1 bg-gray-900 text-white text-sm font-semibold py-2.5 rounded-lg hover:bg-gray-700 transition-colors">
+              Simpan Alamat
+            </button>
+            <button id="btn-cancel-address" class="px-4 text-sm font-medium text-gray-600 hover:text-gray-900 border border-gray-300 rounded-lg transition-colors">
+              Batal
+            </button>
+          </div>
+          <p id="addr-error" class="text-red-500 text-xs mt-2 hidden"></p>
+        </div>
+      </div>
+
+      <!-- Tab: Profile -->
+      <div id="tab-profile" class="tab-pane hidden p-5">
+        <h2 class="font-semibold text-gray-900 mb-4">Informasi Profil</h2>
+        <div class="space-y-4 max-w-sm">
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wider">Nama Lengkap</label>
+            <p id="pf-name" class="text-gray-900 font-medium">-</p>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wider">Email</label>
+            <p id="pf-email" class="text-gray-900 font-medium">-</p>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wider">Nomor HP</label>
+            <p id="pf-phone" class="text-gray-900 font-medium">-</p>
+          </div>
+          <div class="pt-4 border-t border-gray-100">
+            <button id="btn-logout-2" class="flex items-center gap-2 text-sm text-red-500 hover:text-red-700 font-semibold transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+              </svg>
+              Keluar dari Akun
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Toast -->
+  <div id="toast" class="fixed bottom-5 right-5 bg-gray-900 text-white text-sm font-semibold px-4 py-3 rounded-xl shadow-xl hidden z-50 max-w-xs"></div>
+
+<script is:inline>
+(function() {
+  // ── Auth guard ──────────────────────────────────────────
+  const token   = localStorage.getItem('nordic_auth_token');
+  const custRaw = localStorage.getItem('nordic_customer');
+  if (!token || !custRaw) {
+    window.location.replace('/account/login?redirect=/account/profile');
+    return;
+  }
+
+  let customer = {};
+  try { customer = JSON.parse(custRaw); } catch {}
+
+  // ── Helpers ─────────────────────────────────────────────
+  function toast(msg, isError) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.style.background = isError ? '#dc2626' : '#111827';
+    el.classList.remove('hidden');
+    setTimeout(() => el.classList.add('hidden'), 3000);
+  }
+
+  function formatRp(n) {
+    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(n);
+  }
+
+  function formatDate(ts) {
+    if (!ts) return '-';
+    return new Date(ts * 1000).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+
+  function statusBadge(status) {
+    const labels = {
+      pending:   'Menunggu Bayar',
+      paid:      'Sudah Dibayar',
+      shipped:   'Dikirim',
+      completed: 'Selesai',
+      cancelled: 'Dibatalkan',
+    };
+    return `<span class="text-xs font-bold px-2 py-0.5 rounded-full badge-${status}">${labels[status] || status}</span>`;
+  }
+
+  // ── Fill profile header ──────────────────────────────────
+  document.getElementById('profile-name').textContent  = customer.name || '-';
+  document.getElementById('profile-email').textContent = customer.email || '-';
+  document.getElementById('profile-phone').textContent = customer.phone || '-';
+  document.getElementById('avatar').textContent        = (customer.name || '?')[0].toUpperCase();
+  document.getElementById('pf-name').textContent  = customer.name || '-';
+  document.getElementById('pf-email').textContent = customer.email || '-';
+  document.getElementById('pf-phone').textContent = customer.phone || '-';
+
+  // ── Logout ───────────────────────────────────────────────
+  function logout() {
+    localStorage.removeItem('nordic_auth_token');
+    localStorage.removeItem('nordic_customer');
+    window.location.replace('/account/login');
+  }
+  document.getElementById('btn-logout').addEventListener('click', logout);
+  document.getElementById('btn-logout-2').addEventListener('click', logout);
+
+  // ── Tabs ─────────────────────────────────────────────────
+  const tabBtns  = document.querySelectorAll('.tab-btn');
+  const tabPanes = document.querySelectorAll('.tab-pane');
+
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabBtns.forEach(b => b.classList.remove('active'));
+      tabPanes.forEach(p => p.classList.add('hidden'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + btn.dataset.tab).classList.remove('hidden');
+    });
+  });
+
+  // ── Orders ───────────────────────────────────────────────
+  async function loadOrders() {
+    try {
+      const res  = await fetch('/api/orders/my', {
+        headers: { Authorization: 'Bearer ' + token }
+      });
+      const data = await res.json();
+      document.getElementById('orders-loading').classList.add('hidden');
+
+      if (!data.ok || !data.orders || data.orders.length === 0) {
+        document.getElementById('orders-empty').classList.remove('hidden');
+        return;
+      }
+
+      const orders    = data.orders;
+      const ongoing   = orders.filter(o => ['pending','paid','shipped'].includes(o.status));
+      const completed = orders.filter(o => ['completed','cancelled'].includes(o.status));
+
+      let html = '';
+
+      if (ongoing.length > 0) {
+        html += `<div class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Pesanan Aktif</div>`;
+        ongoing.forEach(o => { html += renderOrder(o, true); });
+      }
+
+      if (completed.length > 0) {
+        html += `<div class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 ${ongoing.length > 0 ? 'mt-5' : ''}">Riwayat Pesanan</div>`;
+        completed.forEach(o => { html += renderOrder(o, false); });
+      }
+
+      document.getElementById('orders-list').innerHTML = html;
+      document.getElementById('orders-list').classList.remove('hidden');
+    } catch (err) {
+      document.getElementById('orders-loading').classList.add('hidden');
+      document.getElementById('orders-empty').classList.remove('hidden');
+    }
+  }
+
+  function renderOrder(o, isOngoing) {
+    const addr = typeof o.shipping_address === 'object' && o.shipping_address
+      ? `${o.shipping_address.address || ''}, ${o.shipping_address.city || ''}`
+      : (o.shipping_address || '-');
+
+    const itemsSummary = (o.items || [])
+      .map(i => `${i.product_name} ×${i.qty}`)
+      .join(', ');
+
+    // Tracking info for ongoing orders
+    let trackingHtml = '';
+    if (isOngoing && (o.status === 'shipped' || o.tracking_number)) {
+      const courierName  = [o.shipping_courier, o.shipping_service].filter(Boolean).join(' ') || 'Kurir';
+      const trackingNum  = o.tracking_number || '-';
+      const trackingLink = o.tracking_number
+        ? `https://www.cek-resi.com/?awb=${o.tracking_number}`
+        : null;
+
+      trackingHtml = `
+        <div class="mt-3 bg-indigo-50 border border-indigo-100 rounded-xl p-3 flex items-start gap-3">
+          <div class="text-indigo-500 mt-0.5">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12"/>
+            </svg>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-xs font-bold text-indigo-700">${courierName}</p>
+            <p class="text-xs text-indigo-600 font-mono mt-0.5">${trackingNum}</p>
+            ${trackingLink ? `<a href="${trackingLink}" target="_blank" class="text-xs text-indigo-500 hover:text-indigo-700 underline font-medium">Lacak Paket →</a>` : ''}
+          </div>
+        </div>`;
+    }
+
+    return `
+      <div class="order-card border border-gray-200 rounded-xl p-4 bg-white">
+        <div class="flex items-start justify-between gap-3 flex-wrap">
+          <div class="min-w-0">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="text-xs font-mono font-bold text-gray-900">${o.id}</span>
+              ${statusBadge(o.status)}
+            </div>
+            <p class="text-xs text-gray-400 mt-0.5">${formatDate(o.created_at)}</p>
+          </div>
+          <div class="text-right flex-shrink-0">
+            <p class="font-bold text-gray-900">${formatRp(o.total_amount)}</p>
+            <p class="text-xs text-gray-400">+ ongkir ${formatRp(o.shipping_cost)}</p>
+          </div>
+        </div>
+
+        ${itemsSummary ? `<p class="text-xs text-gray-500 mt-2 truncate">${itemsSummary}</p>` : ''}
+        ${addr && addr !== '-' ? `<p class="text-xs text-gray-400 mt-1 truncate">📍 ${addr}</p>` : ''}
+
+        ${trackingHtml}
+      </div>`;
+  }
+
+  // ── Addresses ────────────────────────────────────────────
+  let editingAddressId = null;
+
+  async function loadAddresses() {
+    try {
+      const res  = await fetch('/api/addresses', {
+        headers: { Authorization: 'Bearer ' + token }
+      });
+      const data = await res.json();
+      document.getElementById('addresses-loading').classList.add('hidden');
+
+      if (!data.ok || !data.addresses || data.addresses.length === 0) {
+        document.getElementById('addresses-empty').classList.remove('hidden');
+        document.getElementById('addresses-list').classList.add('hidden');
+        return;
+      }
+
+      renderAddresses(data.addresses);
+    } catch {
+      document.getElementById('addresses-loading').classList.add('hidden');
+      document.getElementById('addresses-empty').classList.remove('hidden');
+    }
+  }
+
+  function renderAddresses(addresses) {
+    const list = document.getElementById('addresses-list');
+    list.innerHTML = addresses.map(a => `
+      <div class="address-card border border-gray-200 rounded-xl p-4 bg-white flex items-start justify-between gap-3">
+        <div class="min-w-0 flex-1">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-sm font-bold text-gray-900">${a.label || 'Alamat'}</span>
+            ${a.is_default ? '<span class="text-xs font-bold bg-gray-900 text-white px-2 py-0.5 rounded-full">Utama</span>' : ''}
+          </div>
+          <p class="text-sm text-gray-700 font-medium">${a.recipient_name}</p>
+          <p class="text-xs text-gray-500 mt-0.5">${a.phone}</p>
+          <p class="text-xs text-gray-500 mt-1">${a.address}, ${a.district ? a.district + ', ' : ''}${a.city}, ${a.province} ${a.postal_code}</p>
+        </div>
+        <div class="flex flex-col gap-1 flex-shrink-0">
+          <button onclick="editAddress(${JSON.stringify(a).replace(/"/g,'&quot;')})" class="text-xs text-gray-600 hover:text-gray-900 font-medium underline">Edit</button>
+          ${!a.is_default ? `<button onclick="deleteAddress('${a.id}')" class="text-xs text-red-400 hover:text-red-600 font-medium underline">Hapus</button>` : ''}
+        </div>
+      </div>
+    `).join('');
+    list.classList.remove('hidden');
+    document.getElementById('addresses-empty').classList.add('hidden');
+  }
+
+  window.editAddress = function(a) {
+    editingAddressId = a.id;
+    document.getElementById('addr-editing-id').value   = a.id;
+    document.getElementById('addr-label').value        = a.label || '';
+    document.getElementById('addr-recipient').value    = a.recipient_name || '';
+    document.getElementById('addr-phone').value        = a.phone || '';
+    document.getElementById('addr-address').value      = a.address || '';
+    document.getElementById('addr-province').value     = a.province || '';
+    document.getElementById('addr-city').value         = a.city || '';
+    document.getElementById('addr-district').value     = a.district || '';
+    document.getElementById('addr-postal').value       = a.postal_code || '';
+    document.getElementById('addr-default').checked    = !!a.is_default;
+    document.getElementById('address-form-title').textContent = 'Edit Alamat';
+    document.getElementById('address-form-wrap').classList.remove('hidden');
+    document.getElementById('address-form-wrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  window.deleteAddress = async function(id) {
+    if (!confirm('Hapus alamat ini?')) return;
+    try {
+      await fetch('/api/addresses/' + id, {
+        method: 'DELETE',
+        headers: { Authorization: 'Bearer ' + token }
+      });
+      toast('Alamat berhasil dihapus');
+      loadAddresses();
+    } catch {
+      toast('Gagal menghapus alamat', true);
+    }
+  };
+
+  document.getElementById('btn-add-address').addEventListener('click', () => {
+    editingAddressId = null;
+    document.getElementById('addr-editing-id').value = '';
+    ['addr-label','addr-recipient','addr-phone','addr-address','addr-province','addr-city','addr-district','addr-postal'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+    document.getElementById('addr-default').checked = false;
+    document.getElementById('address-form-title').textContent = 'Tambah Alamat Baru';
+    document.getElementById('address-form-wrap').classList.remove('hidden');
+    document.getElementById('address-form-wrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  document.getElementById('btn-cancel-address').addEventListener('click', () => {
+    document.getElementById('address-form-wrap').classList.add('hidden');
+  });
+
+  document.getElementById('btn-save-address').addEventListener('click', async () => {
+    const errEl = document.getElementById('addr-error');
+    errEl.classList.add('hidden');
+
+    const payload = {
+      id:             document.getElementById('addr-editing-id').value || undefined,
+      label:          document.getElementById('addr-label').value.trim() || 'Rumah',
+      recipient_name: document.getElementById('addr-recipient').value.trim(),
+      phone:          document.getElementById('addr-phone').value.trim(),
+      address:        document.getElementById('addr-address').value.trim(),
+      province:       document.getElementById('addr-province').value.trim(),
+      city:           document.getElementById('addr-city').value.trim(),
+      district:       document.getElementById('addr-district').value.trim(),
+      postal_code:    document.getElementById('addr-postal').value.trim(),
+      is_default:     document.getElementById('addr-default').checked ? 1 : 0,
+    };
+
+    if (!payload.recipient_name || !payload.phone || !payload.address || !payload.province || !payload.city || !payload.postal_code) {
+      errEl.textContent = 'Semua kolom wajib diisi kecuali kecamatan.';
+      errEl.classList.remove('hidden');
+      return;
+    }
+
+    try {
+      const btn = document.getElementById('btn-save-address');
+      btn.textContent = 'Menyimpan...';
+      btn.disabled = true;
+
+      const res  = await fetch('/api/addresses', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+
+      btn.textContent = 'Simpan Alamat';
+      btn.disabled = false;
+
+      if (data.ok) {
+        toast('Alamat berhasil disimpan!');
+        document.getElementById('address-form-wrap').classList.add('hidden');
+        loadAddresses();
+      } else {
+        errEl.textContent = data.error || 'Gagal menyimpan alamat.';
+        errEl.classList.remove('hidden');
+      }
+    } catch {
+      document.getElementById('btn-save-address').textContent = 'Simpan Alamat';
+      document.getElementById('btn-save-address').disabled = false;
+      errEl.textContent = 'Terjadi kesalahan, coba lagi.';
+      errEl.classList.remove('hidden');
+    }
+  });
+
+  // ── Init ─────────────────────────────────────────────────
+  loadOrders();
+  loadAddresses();
+})();
+</script>
+
+</body>
+</html>

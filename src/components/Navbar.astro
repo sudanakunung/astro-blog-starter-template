@@ -194,6 +194,7 @@ const { storeName = "NORDICS" } = Astro.props;
 
     if (token && customer && accountBtn) {
       accountBtn.title = `Hai, ${customer.name}`;
+      accountBtn.setAttribute('href', '/account/profile');
       // Show filled person icon when logged in
       accountBtn.querySelector("svg").setAttribute("fill", "currentColor");
       accountBtn.querySelector("svg").setAttribute("stroke", "none");

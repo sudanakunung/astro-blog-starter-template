@@ -4,6 +4,7 @@ import ShopFooter from '../components/ShopFooter.astro';
 import CartDrawer from '../components/CartDrawer.astro';
 import WishlistDrawer from '../components/WishlistDrawer.astro';
 import Toast from '../components/Toast.astro';
+import BackToTop from '../components/BackToTop.astro';
 
 interface Props {
   title?: string;
@@ -37,10 +38,14 @@ const {
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Work+Sans:200,400,500,600,700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
 
     <style is:global>
       .work-sans {
         font-family: 'Work Sans', sans-serif;
+      }
+      .font-serif {
+        font-family: 'Playfair Display', Georgia, Cambria, serif;
       }
       .hover\:grow {
         transition: all 0.3s;
@@ -65,5 +70,6 @@ const {
     <CartDrawer />
     <WishlistDrawer />
     <Toast />
+    <BackToTop />
   </body>
 </html>
