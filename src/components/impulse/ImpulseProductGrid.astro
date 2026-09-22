@@ -26,10 +26,10 @@ const {
 } = Astro.props;
 ---
 
-<section id={sectionId} class="py-12 sm:py-16 px-4 sm:px-8 lg:px-12 max-w-[1500px] mx-auto border-t border-neutral-100">
+<section id={sectionId} class="py-10 sm:py-16 px-3 sm:px-8 lg:px-12 max-w-[1500px] mx-auto border-t border-gray-100">
   <!-- Section Header -->
-  <div class="flex items-baseline justify-between mb-8 sm:mb-10">
-    <h2 class="font-serif text-2xl sm:text-3xl font-light tracking-wide text-neutral-900">
+  <div class="flex items-baseline justify-between mb-6 sm:mb-10 px-1">
+    <h2 class="font-serif text-xl sm:text-3xl font-light tracking-wide text-neutral-900">
       {title}
     </h2>
     <a
@@ -40,21 +40,25 @@ const {
     </a>
   </div>
 
-  <!-- 5-Column Grid / Mobile Horizontal Carousel -->
-  <div class="flex sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6 overflow-x-auto sm:overflow-x-visible pb-4 sm:pb-0 scrollbar-none snap-x">
+  <!-- 2-Column on Mobile, 3-Column on Tablet, 5-Column on Desktop -->
+  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-6">
     {products.map((p) => {
       const isSale = p.badge === 'Sale' && p.originalPrice && p.originalPrice > p.price;
       const savings = isSale ? (p.originalPrice! - p.price) : 0;
 
       return (
-        <div class="min-w-[220px] sm:min-w-0 flex-shrink-0 snap-start group relative flex flex-col justify-between">
-          <!-- Image Box with Hover Swap -->
-          <div class="relative aspect-[3/4] w-full overflow-hidden bg-[#F2EFE9] rounded-sm cursor-pointer">
+        <div class="group relative flex flex-col justify-between bg-transparent">
+          <!-- Image Box with 3:4 Portrait Ratio & Hover Swap -->
+          <div
+            class="relative w-full overflow-hidden bg-stone-100 rounded-sm cursor-pointer"
+            style="aspect-ratio: 3/4; position: relative;"
+          >
             <!-- Primary Image -->
             <img
               src={p.image1}
               alt={p.name}
               class="w-full h-full object-cover object-center transition-opacity duration-500 group-hover:opacity-0"
+              style="object-fit: cover; width: 100%; height: 100%;"
               loading="lazy"
             />
             <!-- Secondary Image (Hover Swap) -->
@@ -62,29 +66,32 @@ const {
               src={p.image2 || p.image1}
               alt={`${p.name} detail`}
               class="absolute inset-0 w-full h-full object-cover object-center opacity-0 transition-opacity duration-500 group-hover:opacity-100 scale-100 group-hover:scale-105 transition-transform duration-700"
+              style="object-fit: cover; width: 100%; height: 100%;"
               loading="lazy"
             />
 
             <!-- Badges -->
             {p.badge && (
-              <div class="absolute top-2.5 left-2.5 z-10">
+              <div class="absolute top-2 left-2 z-10">
                 <span
-                  class={`px-2.5 py-1 text-[10px] tracking-wider uppercase font-bold rounded-sm ${
+                  class={`px-2 py-0.5 text-[9px] sm:text-[10px] tracking-wider uppercase font-bold rounded-sm ${
                     p.badge === 'Sale'
-                      ? 'bg-[#D98270] text-white'
+                      ? 'bg-red-500 text-white'
                       : 'bg-black text-white'
                   }`}
+                  style={p.badge === 'Sale' ? 'background-color: #D98270 !important;' : 'background-color: #000000 !important;'}
                 >
                   {p.badge}
                 </span>
               </div>
             )}
 
-            <!-- Quick View Button (appears on hover) -->
-            <div class="absolute inset-x-3 bottom-3 z-10 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+            <!-- Quick View Button (desktop hover or mobile tap) -->
+            <div class="hidden sm:block absolute inset-x-3 bottom-3 z-10 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
               <button
                 type="button"
-                class="quick-view-trigger w-full bg-white/95 backdrop-blur text-black hover:bg-black hover:text-white py-2 text-[11px] font-bold tracking-widest uppercase rounded shadow transition-colors"
+                class="quick-view-trigger w-full bg-white text-black hover:bg-black hover:text-white py-2 text-[10px] sm:text-[11px] font-bold tracking-widest uppercase rounded shadow transition-colors"
+                style="background-color: #ffffff; color: #000000;"
                 data-id={p.id}
                 data-name={p.name}
                 data-price={p.price}
@@ -100,18 +107,18 @@ const {
           </div>
 
           <!-- Product Details -->
-          <div class="pt-3 text-left">
-            <h3 class="text-sm font-normal text-neutral-900 group-hover:text-neutral-600 transition-colors">
+          <div class="pt-2.5 sm:pt-3 text-left">
+            <h3 class="text-xs sm:text-sm font-normal text-neutral-900 group-hover:text-neutral-600 transition-colors line-clamp-1">
               {p.name}
             </h3>
 
             <!-- Price Block -->
-            <div class="mt-1 flex items-center space-x-2 text-[13px]">
+            <div class="mt-1 flex flex-wrap items-center gap-1.5 text-xs sm:text-[13px]">
               {isSale ? (
                 <>
-                  <span class="text-neutral-400 line-through">${p.originalPrice}</span>
-                  <span class="font-medium text-rose-700">${p.price}</span>
-                  <span class="text-[11px] text-[#D98270] font-medium">(Save ${savings})</span>
+                  <span class="text-neutral-400 line-through text-[11px] sm:text-xs">${p.originalPrice}</span>
+                  <span class="font-semibold text-rose-700">${p.price}</span>
+                  <span class="text-[10px] sm:text-[11px] text-amber-700 font-medium" style="color: #c26955;">(Save ${savings})</span>
                 </>
               ) : (
                 <span class="font-medium text-neutral-900">${p.price}</span>
@@ -122,14 +129,14 @@ const {
             <div class="mt-2">
               <button
                 type="button"
-                class="direct-add-btn text-[11px] tracking-widest uppercase font-semibold text-neutral-600 hover:text-black flex items-center space-x-1 group/btn"
+                class="direct-add-btn text-[10px] sm:text-[11px] tracking-widest uppercase font-semibold text-neutral-600 hover:text-black flex items-center space-x-1 group/btn py-0.5"
                 data-id={p.id}
                 data-name={p.name}
                 data-price={p.price}
                 data-image={p.image1}
               >
                 <span>+ Add to Bag</span>
-                <span class="opacity-0 group-hover/btn:opacity-100 transform -translate-x-1 group-hover/btn:translate-x-0 transition-all">→</span>
+                <span class="opacity-0 group-hover/btn:opacity-100 transform -translate-x-1 group-hover/btn:translate-x-0 transition-all hidden sm:inline">→</span>
               </button>
             </div>
           </div>

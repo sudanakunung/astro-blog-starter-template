@@ -55,29 +55,30 @@ const isImpulse = activeTheme === 'impulse' || activeTheme === 'theme2';
   )}
 
   <!-- Floating Theme Switcher Pill for Easy Live Preview & Testing -->
-  <div class="fixed bottom-5 right-5 z-50 bg-white/90 backdrop-blur-md border border-neutral-300 rounded-full shadow-2xl p-1.5 flex items-center space-x-1 transition-all hover:shadow-lg">
-    <span class="text-[10px] tracking-wider uppercase font-bold text-neutral-500 pl-2 pr-1 hidden sm:inline">Theme:</span>
+  <div class="fixed bottom-3 right-3 z-50 bg-white border border-gray-300 rounded-full shadow-lg p-1 flex items-center space-x-1" style="background-color: #ffffff !important;">
     <a
       href="?theme=nordic"
-      class={`px-3 py-1 rounded-full text-[11px] font-bold tracking-wider transition-all ${
+      class={`px-2.5 py-1 rounded-full text-[10px] sm:text-[11px] font-bold tracking-wider transition-all ${
         !isImpulse
           ? 'bg-black text-white shadow'
-          : 'text-neutral-700 hover:text-black hover:bg-neutral-100'
+          : 'text-gray-700 hover:text-black hover:bg-gray-100'
       }`}
+      style={!isImpulse ? 'background-color: #000000; color: #ffffff;' : ''}
       title="Switch to Theme 1 (Nordic Minimalist)"
     >
-      Theme 1 (Nordic)
+      Theme 1
     </a>
     <a
       href="?theme=impulse"
-      class={`px-3 py-1 rounded-full text-[11px] font-bold tracking-wider transition-all ${
+      class={`px-2.5 py-1 rounded-full text-[10px] sm:text-[11px] font-bold tracking-wider transition-all ${
         isImpulse
           ? 'bg-black text-white shadow'
-          : 'text-neutral-700 hover:text-black hover:bg-neutral-100'
+          : 'text-gray-700 hover:text-black hover:bg-gray-100'
       }`}
+      style={isImpulse ? 'background-color: #000000; color: #ffffff;' : ''}
       title="Switch to Theme 2 (Impulse Editorial Fashion)"
     >
-      Theme 2 (Impulse)
+      Theme 2
     </a>
   </div>
 </ShopLayout>

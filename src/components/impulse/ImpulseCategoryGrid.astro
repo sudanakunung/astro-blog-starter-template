@@ -33,11 +33,12 @@ const categories = [
     {categories.map((cat) => (
       <a href={cat.link} class="group block text-center">
         <!-- Image Container -->
-        <div class="relative aspect-[3/4] w-full overflow-hidden bg-[#F0ECE1] rounded-sm">
+        <div class="relative w-full overflow-hidden bg-stone-100 rounded-sm" style="aspect-ratio: 3/4;">
           <img
             src={cat.image}
             alt={cat.title}
             class="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
+            style="width: 100%; height: 100%; object-fit: cover;"
             loading="lazy"
           />
           <!-- Subtle hover overlay -->
