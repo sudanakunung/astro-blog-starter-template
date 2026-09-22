@@ -4,7 +4,6 @@ import CategoryGrid from '../components/CategoryGrid.astro';
 import ProductGrid from '../components/ProductGrid.astro';
 import FeaturedShowcase from '../components/FeaturedShowcase.astro';
 import TrustFeatures from '../components/TrustFeatures.astro';
-import AboutSection from '../components/AboutSection.astro';
 import type { D1Product } from '../types/d1';
 import type { CarouselSlide } from '../types/store';
 
@@ -30,6 +29,3 @@ const { products, slides } = Astro.props;
 
 <!-- Trust Features Section ("We offer the best!") -->
 <TrustFeatures />
-
-<!-- About Section -->
-<AboutSection title="About" />

@@ -169,3 +169,171 @@ const allNewProducts: ImpulseProduct[] = [
   <!-- Quick View Modal Interactive Popup -->
   <ImpulseQuickViewModal />
 </div>
+
+<!-- ============================================================ -->
+<!-- GLOBAL SCROLL REVEAL ANIMATIONS -->
+<!-- ============================================================ -->
+<style is:global>
+  /* ========== Scroll Reveal: Fade Up ========== */
+  @keyframes revealFadeUp {
+    0%   { opacity: 0; transform: translateY(50px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ========== Scroll Reveal: Fade In Scale ========== */
+  @keyframes revealFadeScale {
+    0%   { opacity: 0; transform: scale(0.92); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+
+  /* ========== Scroll Reveal: Slide In Left ========== */
+  @keyframes revealSlideLeft {
+    0%   { opacity: 0; transform: translateX(-60px); }
+    100% { opacity: 1; transform: translateX(0); }
+  }
+
+  /* ========== Scroll Reveal: Slide In Right ========== */
+  @keyframes revealSlideRight {
+    0%   { opacity: 0; transform: translateX(60px); }
+    100% { opacity: 1; transform: translateX(0); }
+  }
+
+  /* Elements waiting to be revealed */
+  .reveal-on-scroll {
+    opacity: 0;
+    will-change: opacity, transform;
+  }
+
+  /* When revealed via IntersectionObserver */
+  .reveal-on-scroll.revealed {
+    animation-fill-mode: both;
+  }
+
+  .reveal-on-scroll.revealed.reveal-fade-up {
+    animation: revealFadeUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .reveal-on-scroll.revealed.reveal-fade-scale {
+    animation: revealFadeScale 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .reveal-on-scroll.revealed.reveal-slide-left {
+    animation: revealSlideLeft 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .reveal-on-scroll.revealed.reveal-slide-right {
+    animation: revealSlideRight 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  /* Stagger children (product cards) */
+  .stagger-children.revealed > * {
+    opacity: 0;
+    animation: revealFadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .stagger-children.revealed > *:nth-child(1) { animation-delay: 0.05s; }
+  .stagger-children.revealed > *:nth-child(2) { animation-delay: 0.12s; }
+  .stagger-children.revealed > *:nth-child(3) { animation-delay: 0.19s; }
+  .stagger-children.revealed > *:nth-child(4) { animation-delay: 0.26s; }
+  .stagger-children.revealed > *:nth-child(5) { animation-delay: 0.33s; }
+  .stagger-children.revealed > *:nth-child(6) { animation-delay: 0.40s; }
+  .stagger-children.revealed > *:nth-child(7) { animation-delay: 0.47s; }
+  .stagger-children.revealed > *:nth-child(8) { animation-delay: 0.54s; }
+
+  /* Product image smooth load shimmer */
+  .impulse-theme-wrapper img {
+    transition: opacity 0.6s ease-in-out;
+  }
+  .impulse-theme-wrapper img[loading="lazy"] {
+    opacity: 0;
+  }
+  .impulse-theme-wrapper img.img-loaded {
+    opacity: 1 !important;
+  }
+</style>
+
+<script is:inline>
+(function() {
+  // ===== Scroll Reveal via IntersectionObserver =====
+  function initScrollReveal() {
+    const revealEls = document.querySelectorAll('.reveal-on-scroll');
+    if (!revealEls.length) return;
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('revealed');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.1,
+      rootMargin: '0px 0px -40px 0px',
+    });
+
+    revealEls.forEach(el => observer.observe(el));
+  }
+
+  // ===== Auto-tag sections with reveal classes =====
+  function autoTagSections() {
+    const wrapper = document.querySelector('.impulse-theme-wrapper');
+    if (!wrapper) return;
+
+    // Tag top-level sections for fade-up reveal
+    const sections = wrapper.querySelectorAll(':scope > section, :scope > div > section');
+    sections.forEach((section, i) => {
+      if (!section.classList.contains('reveal-on-scroll') && !section.closest('#impulse-hero-slideshow')) {
+        section.classList.add('reveal-on-scroll', 'reveal-fade-up');
+        // Add slight stagger delay based on position
+        section.style.animationDelay = '0.1s';
+      }
+    });
+
+    // Tag product grids for staggered children reveal
+    const productGrids = wrapper.querySelectorAll('.grid');
+    productGrids.forEach(grid => {
+      if (grid.children.length >= 2 && !grid.closest('header') && !grid.closest('footer') && !grid.closest('nav')) {
+        grid.classList.add('reveal-on-scroll', 'stagger-children');
+      }
+    });
+
+    // Tag full-width banner images for fade-scale
+    const bannerImgs = wrapper.querySelectorAll('section > div > img, section > div > div > img');
+    bannerImgs.forEach(img => {
+      const section = img.closest('section');
+      if (section && !section.classList.contains('reveal-on-scroll')) {
+        section.classList.add('reveal-on-scroll', 'reveal-fade-scale');
+      }
+    });
+  }
+
+  // ===== Smooth image loading (fade-in when loaded) =====
+  function initImageFadeIn() {
+    const lazyImgs = document.querySelectorAll('.impulse-theme-wrapper img[loading="lazy"]');
+    lazyImgs.forEach(img => {
+      if (img.complete) {
+        img.classList.add('img-loaded');
+      } else {
+        img.addEventListener('load', () => img.classList.add('img-loaded'), { once: true });
+        img.addEventListener('error', () => img.classList.add('img-loaded'), { once: true });
+      }
+    });
+
+    // Eager images should be visible immediately
+    const eagerImgs = document.querySelectorAll('.impulse-theme-wrapper img:not([loading="lazy"])');
+    eagerImgs.forEach(img => img.classList.add('img-loaded'));
+  }
+
+  // Run on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      autoTagSections();
+      initScrollReveal();
+      initImageFadeIn();
+    });
+  } else {
+    autoTagSections();
+    initScrollReveal();
+    initImageFadeIn();
+  }
+})();
+</script>

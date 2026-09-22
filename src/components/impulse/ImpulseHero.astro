@@ -1,155 +1,305 @@
 ---
-// Impulse Hero Section with Shoppable Hotspots
+// Impulse Hero Slideshow with Cinematic Ken Burns Effect & Shoppable Hotspots
+const heroSlides = [
+  {
+    image: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=2070&auto=format&fit=crop',
+    alt: 'Impulse Women Fashion Collection - Easy by Design',
+    headline: 'Easy by design',
+    subtext: 'Soft texture, effortless movement, warm-weather pieces designed to be worn on repeat.',
+    cta: 'SHOP LINEN',
+    ctaLink: '#catalog',
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=2070&auto=format&fit=crop',
+    alt: 'Warm Golden Hour - Effortless Summer Silhouettes',
+    headline: 'Warm by nature',
+    subtext: 'Effortless silhouettes in golden-hour light. Designed to be seen, felt, and lived in.',
+    cta: 'SHOP DRESSES',
+    ctaLink: '#catalog',
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=2070&auto=format&fit=crop',
+    alt: 'Minimalist Editorial - The New Collection',
+    headline: 'Less is always more',
+    subtext: 'Understated shapes, quiet luxury, and pieces that become the backbone of your wardrobe.',
+    cta: 'EXPLORE NEW',
+    ctaLink: '#all-new',
+  },
+];
 ---
 
-<section class="relative w-full overflow-hidden bg-[#F5F2EB]">
-  <!-- Hero Background Image (Lifestyle Fashion with warm natural light) -->
-  <div class="relative w-full h-[75vh] min-h-[580px] max-h-[860px]">
-    <img
-      src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=2070&auto=format&fit=crop"
-      alt="Impulse Women Fashion Collection - Easy by Design"
-      class="w-full h-full object-cover object-center brightness-[0.96]"
-      loading="eager"
-    />
+<section class="relative w-full overflow-hidden bg-stone-900">
+  <!-- Hero Slideshow Container -->
+  <div id="impulse-hero-slideshow" class="relative w-full" style="height: 75vh; min-height: 540px; max-height: 860px;">
 
-    <!-- Subtle Vignette / Gradient Overlay -->
-    <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent"></div>
-    <div class="absolute inset-0 bg-stone-900/10 mix-blend-multiply"></div>
-
-    <!-- ============================================================ -->
-    <!-- SHOPPABLE HOTSPOTS (+) -->
-    <!-- ============================================================ -->
-    
-    <!-- Hotspot 1: White Linen Blouse (Left Model) -->
-    <div class="absolute top-[38%] left-[22%] sm:left-[28%] z-20 group">
-      <button
-        class="hotspot-trigger w-8 h-8 rounded-full bg-white/90 hover:bg-white text-black shadow-lg flex items-center justify-center transition-all duration-300 transform group-hover:scale-110 focus:outline-none ring-4 ring-white/30 animate-pulse"
-        aria-label="View The Arden Linen Blouse"
+    {heroSlides.map((slide, idx) => (
+      <div
+        class={`hero-slide absolute inset-0 w-full h-full transition-opacity duration-[1800ms] ease-in-out ${idx === 0 ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
+        data-slide-index={idx}
       >
+        <!-- Image with Ken Burns zoom animation -->
+        <img
+          src={slide.image}
+          alt={slide.alt}
+          class={`w-full h-full object-cover object-center ${idx === 0 ? 'hero-ken-burns-active' : ''}`}
+          style="width: 100%; height: 100%; object-fit: cover; will-change: transform;"
+          loading={idx === 0 ? 'eager' : 'lazy'}
+        />
+
+        <!-- Gradient Overlays -->
+        <div class="absolute inset-0" style="background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.1) 40%, transparent 100%);"></div>
+        <div class="absolute inset-0" style="background: rgba(41,37,33,0.1); mix-blend-mode: multiply;"></div>
+
+        <!-- Overlay Text (Bottom Left) -->
+        <div class={`absolute bottom-8 left-5 sm:bottom-16 sm:left-12 lg:left-20 z-20 max-w-xl text-left text-white hero-slide-text ${idx === 0 ? 'hero-text-enter' : ''}`}>
+          <h1 class="font-serif text-3xl sm:text-5xl lg:text-6xl font-light tracking-wide leading-tight" style="text-shadow: 0 2px 20px rgba(0,0,0,0.3);">
+            {slide.headline}
+          </h1>
+          <p class="mt-3 sm:mt-4 text-sm sm:text-base text-neutral-100 font-light max-w-md leading-relaxed" style="text-shadow: 0 1px 8px rgba(0,0,0,0.2);">
+            {slide.subtext}
+          </p>
+          <div class="mt-5 sm:mt-8">
+            <a
+              href={slide.ctaLink}
+              class="inline-block px-8 py-3.5 rounded-full text-xs font-bold tracking-widest uppercase transition-all duration-300 transform hover:-translate-y-0.5 shadow-xl hover:shadow-2xl"
+              style="background-color: #000; color: #fff; border: 1px solid rgba(255,255,255,0.2);"
+            >
+              {slide.cta}
+            </a>
+          </div>
+        </div>
+      </div>
+    ))}
+
+    <!-- ============================================================ -->
+    <!-- SHOPPABLE HOTSPOTS (+) — only visible on first slide -->
+    <!-- ============================================================ -->
+
+    <!-- Hotspot 1 -->
+    <div class="absolute top-[38%] left-[22%] sm:left-[28%] z-20 group hero-hotspot" data-for-slide="0">
+      <button class="hotspot-trigger w-8 h-8 rounded-full text-black shadow-lg flex items-center justify-center transition-all duration-300 transform group-hover:scale-110 focus:outline-none animate-pulse" style="background-color: rgba(255,255,255,0.9); box-shadow: 0 0 0 6px rgba(255,255,255,0.3);" aria-label="View The Arden Linen Blouse">
         <span class="text-base font-bold leading-none">+</span>
       </button>
-
-      <!-- Hotspot Tooltip / Popover Card -->
-      <div class="opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible transition-all duration-300 absolute left-10 -top-12 z-30 w-64 bg-white/95 backdrop-blur-md p-3 rounded-lg shadow-2xl border border-neutral-200 pointer-events-auto">
+      <div class="opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible transition-all duration-300 absolute left-10 -top-12 z-30 w-64 p-3 rounded-lg shadow-2xl border pointer-events-auto" style="background-color: rgba(255,255,255,0.97); border-color: #e5e5e5;">
         <div class="flex space-x-3 items-center">
-          <img
-            src="https://images.unsplash.com/photo-1598554747436-c9293d6a588f?q=80&w=200&auto=format&fit=crop"
-            alt="The Arden Linen Blouse"
-            class="w-14 h-18 object-cover rounded bg-neutral-100"
-          />
+          <img src="https://images.unsplash.com/photo-1598554747436-c9293d6a588f?q=80&w=200&auto=format&fit=crop" alt="The Arden Co-ord" class="w-14 h-18 object-cover rounded" style="background: #f5f5f0;" />
           <div class="flex-1 text-left">
             <h4 class="text-xs font-serif font-bold text-neutral-900 leading-tight">The Arden Co-ord</h4>
-            <p class="text-[11px] text-neutral-500 mt-0.5">Airy pure linen</p>
+            <p class="text-neutral-500 mt-0.5" style="font-size: 11px;">Airy pure linen</p>
             <p class="text-xs font-semibold text-neutral-900 mt-1">$214</p>
-            <button
-              class="quick-add-btn mt-2 text-[10px] tracking-wider uppercase font-bold text-white bg-black hover:bg-neutral-800 px-3 py-1 rounded-full w-full transition-colors"
-              data-id="impulse-hero-1"
-              data-name="The Arden Co-ord"
-              data-price="214"
-              data-image="https://images.unsplash.com/photo-1598554747436-c9293d6a588f?q=80&w=400&auto=format&fit=crop"
-            >
-              + Quick Add
-            </button>
+            <button class="quick-add-btn mt-2 tracking-wider uppercase font-bold text-white px-3 py-1 rounded-full w-full transition-colors" style="font-size: 10px; background: #000;" data-id="impulse-hero-1" data-name="The Arden Co-ord" data-price="214" data-image="https://images.unsplash.com/photo-1598554747436-c9293d6a588f?q=80&w=400&auto=format&fit=crop">+ Quick Add</button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Hotspot 2: Sage Green Dress (Center Model) -->
-    <div class="absolute top-[48%] left-[50%] z-20 group -translate-x-1/2">
-      <button
-        class="hotspot-trigger w-8 h-8 rounded-full bg-white/90 hover:bg-white text-black shadow-lg flex items-center justify-center transition-all duration-300 transform group-hover:scale-110 focus:outline-none ring-4 ring-white/30 animate-pulse"
-        aria-label="View The Cove Flowy Dress"
-      >
+    <!-- Hotspot 2 -->
+    <div class="absolute top-[48%] left-[50%] z-20 group hero-hotspot -translate-x-1/2" data-for-slide="0">
+      <button class="hotspot-trigger w-8 h-8 rounded-full text-black shadow-lg flex items-center justify-center transition-all duration-300 transform group-hover:scale-110 focus:outline-none animate-pulse" style="background-color: rgba(255,255,255,0.9); box-shadow: 0 0 0 6px rgba(255,255,255,0.3);" aria-label="View The Cove Midi Dress">
         <span class="text-base font-bold leading-none">+</span>
       </button>
-
-      <!-- Popover Card -->
-      <div class="opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible transition-all duration-300 absolute left-1/2 -translate-x-1/2 -top-28 z-30 w-64 bg-white/95 backdrop-blur-md p-3 rounded-lg shadow-2xl border border-neutral-200 pointer-events-auto">
+      <div class="opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible transition-all duration-300 absolute left-1/2 -translate-x-1/2 -top-28 z-30 w-64 p-3 rounded-lg shadow-2xl border pointer-events-auto" style="background-color: rgba(255,255,255,0.97); border-color: #e5e5e5;">
         <div class="flex space-x-3 items-center">
-          <img
-            src="https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?q=80&w=200&auto=format&fit=crop"
-            alt="The Cove Flowy Dress"
-            class="w-14 h-18 object-cover rounded bg-neutral-100"
-          />
+          <img src="https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?q=80&w=200&auto=format&fit=crop" alt="The Cove Midi Dress" class="w-14 h-18 object-cover rounded" style="background: #f5f5f0;" />
           <div class="flex-1 text-left">
-            <span class="inline-block text-[9px] bg-black text-white px-1.5 py-0.5 rounded font-bold uppercase mb-1">New</span>
+            <span class="inline-block bg-black text-white px-1.5 py-0.5 rounded font-bold uppercase mb-1" style="font-size: 9px;">New</span>
             <h4 class="text-xs font-serif font-bold text-neutral-900 leading-tight">The Cove Midi Dress</h4>
-            <p class="text-[11px] text-neutral-500 mt-0.5">Sage washed cotton</p>
+            <p class="text-neutral-500 mt-0.5" style="font-size: 11px;">Sage washed cotton</p>
             <p class="text-xs font-semibold text-neutral-900 mt-1">$112</p>
-            <button
-              class="quick-add-btn mt-2 text-[10px] tracking-wider uppercase font-bold text-white bg-black hover:bg-neutral-800 px-3 py-1 rounded-full w-full transition-colors"
-              data-id="impulse-hero-2"
-              data-name="The Cove Midi Dress"
-              data-price="112"
-              data-image="https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?q=80&w=400&auto=format&fit=crop"
-            >
-              + Quick Add
-            </button>
+            <button class="quick-add-btn mt-2 tracking-wider uppercase font-bold text-white px-3 py-1 rounded-full w-full transition-colors" style="font-size: 10px; background: #000;" data-id="impulse-hero-2" data-name="The Cove Midi Dress" data-price="112" data-image="https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?q=80&w=400&auto=format&fit=crop">+ Quick Add</button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Hotspot 3: Relaxed Linen Overshirt (Right Model) -->
-    <div class="absolute top-[35%] right-[20%] sm:right-[26%] z-20 group">
-      <button
-        class="hotspot-trigger w-8 h-8 rounded-full bg-white/90 hover:bg-white text-black shadow-lg flex items-center justify-center transition-all duration-300 transform group-hover:scale-110 focus:outline-none ring-4 ring-white/30 animate-pulse"
-        aria-label="View The Brisa Overshirt"
-      >
+    <!-- Hotspot 3 -->
+    <div class="absolute top-[35%] right-[20%] sm:right-[26%] z-20 group hero-hotspot" data-for-slide="0">
+      <button class="hotspot-trigger w-8 h-8 rounded-full text-black shadow-lg flex items-center justify-center transition-all duration-300 transform group-hover:scale-110 focus:outline-none animate-pulse" style="background-color: rgba(255,255,255,0.9); box-shadow: 0 0 0 6px rgba(255,255,255,0.3);" aria-label="View The Brisa Overshirt">
         <span class="text-base font-bold leading-none">+</span>
       </button>
-
-      <!-- Popover Card -->
-      <div class="opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible transition-all duration-300 absolute right-10 -top-12 z-30 w-64 bg-white/95 backdrop-blur-md p-3 rounded-lg shadow-2xl border border-neutral-200 pointer-events-auto">
+      <div class="opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible transition-all duration-300 absolute right-10 -top-12 z-30 w-64 p-3 rounded-lg shadow-2xl border pointer-events-auto" style="background-color: rgba(255,255,255,0.97); border-color: #e5e5e5;">
         <div class="flex space-x-3 items-center">
-          <img
-            src="https://images.unsplash.com/photo-1554412933-514a83d2f3c8?q=80&w=200&auto=format&fit=crop"
-            alt="The Brisa Overshirt"
-            class="w-14 h-18 object-cover rounded bg-neutral-100"
-          />
+          <img src="https://images.unsplash.com/photo-1554412933-514a83d2f3c8?q=80&w=200&auto=format&fit=crop" alt="The Brisa Overshirt" class="w-14 h-18 object-cover rounded" style="background: #f5f5f0;" />
           <div class="flex-1 text-left">
             <h4 class="text-xs font-serif font-bold text-neutral-900 leading-tight">The Brisa Overshirt</h4>
-            <p class="text-[11px] text-neutral-500 mt-0.5">Warm oat tailored</p>
+            <p class="text-neutral-500 mt-0.5" style="font-size: 11px;">Warm oat tailored</p>
             <p class="text-xs font-semibold text-neutral-900 mt-1">$132</p>
-            <button
-              class="quick-add-btn mt-2 text-[10px] tracking-wider uppercase font-bold text-white bg-black hover:bg-neutral-800 px-3 py-1 rounded-full w-full transition-colors"
-              data-id="impulse-hero-3"
-              data-name="The Brisa Overshirt"
-              data-price="132"
-              data-image="https://images.unsplash.com/photo-1554412933-514a83d2f3c8?q=80&w=400&auto=format&fit=crop"
-            >
-              + Quick Add
-            </button>
+            <button class="quick-add-btn mt-2 tracking-wider uppercase font-bold text-white px-3 py-1 rounded-full w-full transition-colors" style="font-size: 10px; background: #000;" data-id="impulse-hero-3" data-name="The Brisa Overshirt" data-price="132" data-image="https://images.unsplash.com/photo-1554412933-514a83d2f3c8?q=80&w=400&auto=format&fit=crop">+ Quick Add</button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ============================================================ -->
-    <!-- OVERLAY TEXT (Bottom Left Editorial Box) -->
-    <!-- ============================================================ -->
-    <div class="absolute bottom-10 left-6 sm:bottom-16 sm:left-12 lg:left-20 z-20 max-w-xl text-left text-white">
-      <h1 class="font-serif text-3xl sm:text-5xl lg:text-6xl font-light tracking-wide leading-tight drop-shadow-md">
-        Easy by design
-      </h1>
-      <p class="mt-3 sm:mt-4 text-sm sm:text-base text-neutral-100 font-light max-w-md leading-relaxed drop-shadow">
-        Soft texture, effortless movement, warm-weather pieces designed to be worn on repeat.
-      </p>
-      <div class="mt-6 sm:mt-8">
-        <a
-          href="#catalog"
-          class="inline-block bg-black text-white hover:bg-neutral-900 px-8 py-3.5 rounded-full text-xs font-bold tracking-[0.2em] uppercase transition-all duration-300 transform hover:-translate-y-0.5 shadow-xl hover:shadow-2xl border border-white/20"
-        >
-          SHOP LINEN
-        </a>
+    <!-- Slide Indicators (bottom center dots) -->
+    <div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex items-center space-x-3">
+      {heroSlides.map((_, idx) => (
+        <button
+          class={`hero-dot w-2.5 h-2.5 rounded-full transition-all duration-500 focus:outline-none ${idx === 0 ? 'bg-white scale-110' : 'bg-white/40 hover:bg-white/70'}`}
+          style={idx === 0 ? 'box-shadow: 0 0 8px rgba(255,255,255,0.5);' : ''}
+          data-dot-index={idx}
+          aria-label={`Go to slide ${idx + 1}`}
+        ></button>
+      ))}
+      <!-- Progress bar underneath active dot -->
+      <div class="absolute -bottom-2 left-0 right-0 h-0.5 rounded-full overflow-hidden" style="background: rgba(255,255,255,0.15);">
+        <div id="hero-progress-bar" class="h-full rounded-full" style="width: 0%; background: rgba(255,255,255,0.7); transition: width linear;"></div>
       </div>
     </div>
+
   </div>
 </section>
 
+<!-- Ken Burns + Slideshow Animations -->
+<style is:global>
+  /* Ken Burns zoom: slow scale from 1.0 to 1.12 over 8 seconds */
+  @keyframes kenBurnsZoom {
+    0%   { transform: scale(1.0); }
+    100% { transform: scale(1.12); }
+  }
+  .hero-ken-burns-active {
+    animation: kenBurnsZoom 8s ease-out forwards;
+  }
+
+  /* Text entrance: slide up + fade in */
+  @keyframes heroTextSlideUp {
+    0%   { opacity: 0; transform: translateY(40px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  .hero-text-enter {
+    animation: heroTextSlideUp 1s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both;
+  }
+  .hero-text-enter h1 {
+    animation: heroTextSlideUp 1s cubic-bezier(0.22, 1, 0.36, 1) 0.4s both;
+  }
+  .hero-text-enter p {
+    animation: heroTextSlideUp 1s cubic-bezier(0.22, 1, 0.36, 1) 0.6s both;
+  }
+  .hero-text-enter a {
+    animation: heroTextSlideUp 1s cubic-bezier(0.22, 1, 0.36, 1) 0.8s both;
+  }
+</style>
+
 <script is:inline>
-  // Setup quick add listeners on hotspots
+(function() {
+  const slides = document.querySelectorAll('.hero-slide');
+  const dots = document.querySelectorAll('.hero-dot');
+  const hotspots = document.querySelectorAll('.hero-hotspot');
+  const progressBar = document.getElementById('hero-progress-bar');
+  const INTERVAL = 7000; // 7 seconds per slide
+  let currentSlide = 0;
+  let timer = null;
+  let progressStart = null;
+  let progressRAF = null;
+
+  function animateProgress() {
+    if (!progressBar) return;
+    progressStart = Date.now();
+    progressBar.style.transition = 'none';
+    progressBar.style.width = '0%';
+    // Force reflow
+    progressBar.offsetWidth;
+    progressBar.style.transition = 'width ' + INTERVAL + 'ms linear';
+    progressBar.style.width = '100%';
+  }
+
+  function goToSlide(index) {
+    if (index === currentSlide) return;
+    const prevSlide = currentSlide;
+    currentSlide = index;
+
+    slides.forEach((slide, i) => {
+      const img = slide.querySelector('img');
+      const textEl = slide.querySelector('.hero-slide-text');
+
+      if (i === currentSlide) {
+        slide.style.zIndex = '10';
+        slide.classList.remove('opacity-0');
+        slide.classList.add('opacity-100');
+        // Restart Ken Burns
+        if (img) {
+          img.classList.remove('hero-ken-burns-active');
+          void img.offsetWidth; // reflow
+          img.classList.add('hero-ken-burns-active');
+        }
+        // Restart text animation
+        if (textEl) {
+          textEl.classList.remove('hero-text-enter');
+          void textEl.offsetWidth;
+          textEl.classList.add('hero-text-enter');
+        }
+      } else {
+        slide.style.zIndex = '0';
+        slide.classList.remove('opacity-100');
+        slide.classList.add('opacity-0');
+        if (img) img.classList.remove('hero-ken-burns-active');
+        if (textEl) textEl.classList.remove('hero-text-enter');
+      }
+    });
+
+    // Update dots
+    dots.forEach((dot, i) => {
+      if (i === currentSlide) {
+        dot.style.backgroundColor = '#fff';
+        dot.style.transform = 'scale(1.1)';
+        dot.style.boxShadow = '0 0 8px rgba(255,255,255,0.5)';
+      } else {
+        dot.style.backgroundColor = 'rgba(255,255,255,0.4)';
+        dot.style.transform = 'scale(1)';
+        dot.style.boxShadow = 'none';
+      }
+    });
+
+    // Show/hide hotspots based on active slide
+    hotspots.forEach(h => {
+      const forSlide = parseInt(h.dataset.forSlide || '0', 10);
+      if (forSlide === currentSlide) {
+        h.style.opacity = '1';
+        h.style.pointerEvents = 'auto';
+        h.style.transition = 'opacity 0.6s ease 0.8s';
+      } else {
+        h.style.opacity = '0';
+        h.style.pointerEvents = 'none';
+        h.style.transition = 'opacity 0.4s ease';
+      }
+    });
+
+    animateProgress();
+  }
+
+  function nextSlide() {
+    const next = (currentSlide + 1) % slides.length;
+    goToSlide(next);
+  }
+
+  function startAutoplay() {
+    stopAutoplay();
+    animateProgress();
+    timer = setInterval(nextSlide, INTERVAL);
+  }
+
+  function stopAutoplay() {
+    if (timer) clearInterval(timer);
+    timer = null;
+  }
+
+  // Dot click navigation
+  dots.forEach((dot, i) => {
+    dot.addEventListener('click', () => {
+      goToSlide(i);
+      startAutoplay(); // Reset autoplay timer
+    });
+  });
+
+  // Initialize hotspot visibility
+  hotspots.forEach(h => {
+    const forSlide = parseInt(h.dataset.forSlide || '0', 10);
+    if (forSlide !== 0) {
+      h.style.opacity = '0';
+      h.style.pointerEvents = 'none';
+    }
+  });
+
+  // Quick add from hotspots
   document.querySelectorAll('.quick-add-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -157,26 +307,20 @@
       const name = btn.dataset.name;
       const price = parseInt(btn.dataset.price, 10);
       const image = btn.dataset.image;
-
       let cart = [];
       try { cart = JSON.parse(localStorage.getItem('cart') || '[]'); } catch(err) {}
       const existing = cart.find(item => item.id === id);
-      if (existing) {
-        existing.qty = (existing.qty || 1) + 1;
-      } else {
-        cart.push({ id, name, price, qty: 1, image });
-      }
+      if (existing) existing.qty = (existing.qty || 1) + 1;
+      else cart.push({ id, name, price, qty: 1, image });
       localStorage.setItem('cart', JSON.stringify(cart));
       window.dispatchEvent(new CustomEvent('cart-updated'));
-
-      // Trigger Toast
-      if (window.showToast) {
-        window.showToast(`Added ${name} to your cart.`);
-      }
-
-      // Open Cart Drawer
+      if (window.showToast) window.showToast('Added ' + name + ' to your cart.');
       const drawer = document.getElementById('cart-drawer');
       if (drawer) drawer.classList.remove('hidden');
     });
   });
+
+  // Start
+  startAutoplay();
+})();
 </script>
