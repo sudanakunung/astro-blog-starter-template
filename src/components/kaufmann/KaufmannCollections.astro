@@ -46,11 +46,15 @@ const collections = [
     {collections.map((col) => (
       <a href={col.href} class="group block overflow-hidden no-underline">
         <!-- Image Box with Aspect Ratio & Zoom Hover -->
-        <div class="relative w-full aspect-[4/5] bg-[#F5F2EC] overflow-hidden mb-4 rounded-xs">
+        <div
+          class="relative w-full bg-[#F5F2EC] overflow-hidden mb-4 rounded-xs"
+          style="aspect-ratio: 4 / 5; position: relative; width: 100%;"
+        >
           <img
             src={col.image}
             alt={col.name}
-            class="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-108"
+            class="transition-transform duration-700 ease-out group-hover:scale-108"
+            style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center;"
             loading="lazy"
           />
           <div class="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors duration-500"></div>
