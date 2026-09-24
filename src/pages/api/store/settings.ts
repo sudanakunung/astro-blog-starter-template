@@ -46,6 +46,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       store_id = 'jewellery',
       name = '',
       title = '',
+      theme = '',
       mayar_api_key = '',
       mayar_webhook_secret = '',
       biteship_api_key = '',
@@ -63,7 +64,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     // 2. Ambil data store yang ada jika ada field yang tidak diisi (supaya tidak menimpa key lama jika tidak diubah)
     const existingStore = await db
-      .prepare('SELECT mayar_api_key, mayar_webhook_secret, biteship_api_key, origin_postal_code, name, title FROM stores WHERE id = ?')
+      .prepare('SELECT mayar_api_key, mayar_webhook_secret, biteship_api_key, origin_postal_code, name, title, theme FROM stores WHERE id = ?')
       .bind(store_id)
       .first<any>();
 
@@ -88,15 +89,17 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     const storeName = name && name.trim() !== '' ? name.trim() : (existingStore?.name || 'Navanusa Jewellery');
     const storeTitle = title && title.trim() !== '' ? title.trim() : (existingStore?.title || `${storeName} - Nordic Minimalist Shop`);
+    const storeTheme = theme && theme.trim() !== '' ? (theme === 'impulse' || theme === 'theme2' ? 'impulse' : 'nordic') : (existingStore?.theme || 'nordic');
 
     // 3. Upsert (First-time setup / update aman)
     await db
       .prepare(
-        `INSERT INTO stores (id, name, title, mayar_api_key, mayar_webhook_secret, biteship_api_key, origin_postal_code, status, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, 'active', unixepoch())
+        `INSERT INTO stores (id, name, title, theme, mayar_api_key, mayar_webhook_secret, biteship_api_key, origin_postal_code, status, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'active', unixepoch())
          ON CONFLICT(id) DO UPDATE SET
            name = excluded.name,
            title = excluded.title,
+           theme = excluded.theme,
            mayar_api_key = excluded.mayar_api_key,
            mayar_webhook_secret = excluded.mayar_webhook_secret,
            biteship_api_key = excluded.biteship_api_key,
@@ -107,6 +110,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         store_id,
         storeName,
         storeTitle,
+        storeTheme,
         encryptedMayarKey,
         encryptedWebhookSecret,
         encryptedBiteshipKey,
@@ -149,7 +153,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
     const encryptionKey = env?.ENCRYPTION_KEY || process.env.ENCRYPTION_KEY;
 
     const store = await db
-      .prepare('SELECT id, name, title, domain, mayar_api_key, mayar_webhook_secret, biteship_api_key, origin_postal_code, status FROM stores WHERE id = ?')
+      .prepare('SELECT id, name, title, domain, theme, mayar_api_key, mayar_webhook_secret, biteship_api_key, origin_postal_code, status FROM stores WHERE id = ?')
       .bind(storeId)
       .first<any>();
 
@@ -160,6 +164,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
           store_id: storeId,
           name: 'Navanusa Jewellery',
           title: 'Navanusa Jewellery - Nordic Minimalist Shop',
+          theme: 'nordic',
           origin_postal_code: '80361',
           has_mayar_key: false,
           mayar_key_preview: '',
@@ -199,6 +204,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
         name: store.name || 'Navanusa Jewellery',
         title: store.title || store.name || 'Navanusa Jewellery - Nordic Minimalist Shop',
         domain: store.domain,
+        theme: store.theme || 'nordic',
         origin_postal_code: store.origin_postal_code || '80361',
         status: store.status,
         has_mayar_key: Boolean(store.mayar_api_key && store.mayar_api_key !== ''),

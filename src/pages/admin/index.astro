@@ -614,6 +614,70 @@ export const prerender = false;
       display: none !important;
     }
 
+    /* ── Theme Switcher Capsule & Options ── */
+    .theme-pill-container {
+      background-color: #ffffff !important;
+      border: 1px solid #d1d5db;
+      border-radius: 9999px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      padding: 3px;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .theme-pill-btn {
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      background-color: transparent;
+      color: #374151;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      user-select: none;
+    }
+
+    .theme-pill-btn:hover {
+      background-color: #f3f4f6;
+      color: #111827;
+    }
+
+    .theme-pill-btn.active {
+      background-color: #000000 !important;
+      color: #ffffff !important;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    }
+
+    .theme-card-option {
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.15rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      position: relative;
+    }
+
+    .theme-card-option:hover {
+      border-color: #94a3b8;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .theme-card-option.active {
+      border-color: #000000;
+      background-color: #fcfcfc;
+      box-shadow: 0 0 0 1px #000000, var(--shadow-md);
+    }
+
     @keyframes pulse {
       0%, 100% { opacity: 1; }
       50% { opacity: 0.5; }
@@ -735,6 +799,34 @@ export const prerender = false;
 
     <!-- Quick Status & Action Buttons -->
     <div class="nav-actions">
+      <!-- Theme Switcher Pill (Quick Switch Template) -->
+      <div class="theme-switcher-wrapper" style="display: flex; align-items: center; gap: 0.5rem; background: #ffffff; padding: 2px 4px 2px 8px; border-radius: 9999px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+        <span style="font-size: 0.725rem; font-weight: 700; color: var(--text-muted); display: flex; align-items: center; gap: 4px;">
+          <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path></svg>
+          Template:
+        </span>
+        <div id="admin-theme-switcher" class="theme-pill-container" title="Pilih template tampilan toko">
+          <button
+            type="button"
+            id="nav-theme-1"
+            class="theme-pill-btn active"
+            data-theme="nordic"
+            title="Gunakan Theme 1 (Nordic Minimalist)"
+          >
+            Theme 1
+          </button>
+          <button
+            type="button"
+            id="nav-theme-2"
+            class="theme-pill-btn"
+            data-theme="impulse"
+            title="Gunakan Theme 2 (Impulse Editorial)"
+          >
+            Theme 2
+          </button>
+        </div>
+      </div>
+
       <a href="/" target="_blank" class="btn btn-secondary" title="Buka Toko / Storefront">
         <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
         <span>Lihat Toko</span>
@@ -1018,6 +1110,73 @@ export const prerender = false;
           </div>
         </div>
 
+        <!-- Section: Pilihan Template / Storefront Theme -->
+        <div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.15rem; margin-bottom: 1.25rem;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.85rem; flex-wrap: wrap; gap: 0.5rem;">
+            <div>
+              <div style="font-weight: 800; font-size: 0.95rem; color: #0f172a; display: flex; align-items: center; gap: 6px;">
+                <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path></svg>
+                Pilihan Template Website (D1 Live DB)
+              </div>
+              <p style="font-size: 0.725rem; color: #64748b; margin-top: 2px;">
+                Pilih desain storefront yang aktif. Produk dan banner dari database D1 akan tampil di template yang dipilih.
+              </p>
+            </div>
+
+            <!-- Pill Switcher in Tab 3 -->
+            <div class="theme-pill-container" style="box-shadow: var(--shadow-sm);">
+              <button
+                type="button"
+                id="tab-pill-theme-1"
+                class="theme-pill-btn active"
+                data-theme="nordic"
+                title="Gunakan Theme 1 (Nordic Minimalist)"
+              >
+                Theme 1
+              </button>
+              <button
+                type="button"
+                id="tab-pill-theme-2"
+                class="theme-pill-btn"
+                data-theme="impulse"
+                title="Gunakan Theme 2 (Impulse Editorial)"
+              >
+                Theme 2
+              </button>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+            <!-- Option 1: Nordic Minimalist -->
+            <div id="theme-card-nordic" class="theme-card-option active" data-theme="nordic">
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <span style="font-weight: 800; font-size: 0.875rem; color: #0f172a;">Theme 1 — Nordic Minimalist</span>
+                <span id="badge-theme-nordic" class="badge" style="background: #000000; color: #ffffff; font-size: 0.625rem; padding: 2px 7px;">✓ SEDANG DIGUNAKAN</span>
+              </div>
+              <p style="font-size: 0.725rem; color: #64748b; line-height: 1.4;">
+                Desain minimalis bergaya Nordic. Dilengkapi Hero Carousel, Category Grid bertingkat, dan katalog produk standar e-commerce.
+              </p>
+              <button type="button" class="btn btn-secondary btn-apply-theme" data-theme="nordic" style="margin-top: auto; font-size: 0.725rem; padding: 0.35rem 0.5rem; justify-content: center;">
+                Gunakan Theme 1
+              </button>
+            </div>
+
+            <!-- Option 2: Impulse Editorial -->
+            <div id="theme-card-impulse" class="theme-card-option" data-theme="impulse">
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <span style="font-weight: 800; font-size: 0.875rem; color: #0f172a;">Theme 2 — Impulse Editorial</span>
+                <span id="badge-theme-impulse" class="badge" style="background: #e2e8f0; color: #475569; font-size: 0.625rem; padding: 2px 7px;">Pilih Template</span>
+              </div>
+              <p style="font-size: 0.725rem; color: #64748b; line-height: 1.4;">
+                Gaya Shopify Impulse untuk boutique fashion &amp; lifestyle. Dilengkapi Hero Cinematic, Editorial Split Promos, Quick View Popup, dan Add to Bag instan.
+              </p>
+              <button type="button" class="btn btn-secondary btn-apply-theme" data-theme="impulse" style="margin-top: auto; font-size: 0.725rem; padding: 0.35rem 0.5rem; justify-content: center;">
+                Gunakan Theme 2
+              </button>
+            </div>
+          </div>
+        </div>
+
         <form id="page-settings-form" style="display: flex; flex-direction: column; gap: 0.875rem;">
           <div class="form-group">
             <label class="form-label">Nama Toko (Store Name) <span style="color: #ef4444;">*</span></label>
@@ -1120,6 +1279,29 @@ export const prerender = false;
               </div>
             </div>
             <p style="font-size: 0.7rem; color: #94a3b8; margin-top: 0.35rem;">* Tampilan header persis seperti yang tampil di bagian atas storefront.</p>
+          </div>
+
+          <!-- 3. Active Template Info Mockup -->
+          <div>
+            <label class="form-label" style="margin-bottom: 0.5rem;">3. Status Template Aktif Saat Ini:</label>
+            <div style="border: 1px solid #e2e8f0; border-radius: 10px; background: #ffffff; padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,0.04); gap: 0.75rem;">
+              <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <div style="width: 2.5rem; height: 2.5rem; border-radius: 8px; background: #0f172a; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; font-weight: 800;">
+                  🎨
+                </div>
+                <div>
+                  <div id="preview-active-theme-title" style="font-weight: 800; font-size: 0.95rem; color: #0f172a;">
+                    Theme 1: Nordic Minimalist
+                  </div>
+                  <p id="preview-active-theme-sub" style="font-size: 0.725rem; color: #64748b;">
+                    Katalog &amp; carousel terhubung langsung ke database D1.
+                  </p>
+                </div>
+              </div>
+              <a href="/" target="_blank" class="btn btn-secondary" style="font-size: 0.75rem; padding: 0.4rem 0.85rem; flex-shrink: 0;">
+                <span>Lihat Storefront &rarr;</span>
+              </a>
+            </div>
           </div>
         </div>
       </section>
@@ -1260,6 +1442,7 @@ export const prerender = false;
       store_id: 'jewellery',
       store_name: 'Navanusa Jewellery',
       store_title: 'Navanusa Jewellery - Nordic Minimalist Shop',
+      theme: 'nordic',
       worker_url: window.location.origin,
       internal_token: '',
       deploy_hook_url: ''
@@ -1267,6 +1450,18 @@ export const prerender = false;
 
     let productsList = [];
     let bannersList = [];
+
+    // DOM Elements - Theme Switcher
+    const navTheme1 = document.getElementById('nav-theme-1');
+    const navTheme2 = document.getElementById('nav-theme-2');
+    const tabPillTheme1 = document.getElementById('tab-pill-theme-1');
+    const tabPillTheme2 = document.getElementById('tab-pill-theme-2');
+    const themeCardNordic = document.getElementById('theme-card-nordic');
+    const themeCardImpulse = document.getElementById('theme-card-impulse');
+    const badgeThemeNordic = document.getElementById('badge-theme-nordic');
+    const badgeThemeImpulse = document.getElementById('badge-theme-impulse');
+    const previewActiveThemeTitle = document.getElementById('preview-active-theme-title');
+    const previewActiveThemeSub = document.getElementById('preview-active-theme-sub');
 
     // DOM Elements - Tab Switching
     const tabBtnProducts = document.getElementById('tab-btn-products');
@@ -1402,6 +1597,103 @@ export const prerender = false;
       if (previewTabTitle) previewTabTitle.textContent = title;
     }
 
+    function applyThemeUI(themeName) {
+      const isImpulse = (themeName === 'impulse' || themeName === 'theme2');
+
+      // 1. Top Navbar Buttons
+      if (navTheme1 && navTheme2) {
+        if (!isImpulse) {
+          navTheme1.classList.add('active');
+          navTheme2.classList.remove('active');
+        } else {
+          navTheme2.classList.add('active');
+          navTheme1.classList.remove('active');
+        }
+      }
+
+      // 2. Tab 3 Pill Buttons
+      if (tabPillTheme1 && tabPillTheme2) {
+        if (!isImpulse) {
+          tabPillTheme1.classList.add('active');
+          tabPillTheme2.classList.remove('active');
+        } else {
+          tabPillTheme2.classList.add('active');
+          tabPillTheme1.classList.remove('active');
+        }
+      }
+
+      // 3. Tab 3 Option Cards & Badges
+      if (themeCardNordic && themeCardImpulse) {
+        if (!isImpulse) {
+          themeCardNordic.classList.add('active');
+          themeCardImpulse.classList.remove('active');
+          if (badgeThemeNordic) {
+            badgeThemeNordic.textContent = '✓ SEDANG DIGUNAKAN';
+            badgeThemeNordic.style.background = '#000000';
+            badgeThemeNordic.style.color = '#ffffff';
+          }
+          if (badgeThemeImpulse) {
+            badgeThemeImpulse.textContent = 'Pilih Template';
+            badgeThemeImpulse.style.background = '#e2e8f0';
+            badgeThemeImpulse.style.color = '#475569';
+          }
+        } else {
+          themeCardImpulse.classList.add('active');
+          themeCardNordic.classList.remove('active');
+          if (badgeThemeImpulse) {
+            badgeThemeImpulse.textContent = '✓ SEDANG DIGUNAKAN';
+            badgeThemeImpulse.style.background = '#000000';
+            badgeThemeImpulse.style.color = '#ffffff';
+          }
+          if (badgeThemeNordic) {
+            badgeThemeNordic.textContent = 'Pilih Template';
+            badgeThemeNordic.style.background = '#e2e8f0';
+            badgeThemeNordic.style.color = '#475569';
+          }
+        }
+      }
+
+      // 4. Right Preview Mockup
+      if (previewActiveThemeTitle) {
+        previewActiveThemeTitle.textContent = isImpulse ? 'Theme 2: Impulse Editorial' : 'Theme 1: Nordic Minimalist';
+      }
+      if (previewActiveThemeSub) {
+        previewActiveThemeSub.textContent = isImpulse
+          ? 'Katalog fashion minimalis, editorial banner & quick view terhubung langsung ke database D1.'
+          : 'Katalog perhiasan & hero carousel terhubung langsung ke database D1.';
+      }
+    }
+
+    async function switchTheme(targetTheme) {
+      const normalized = (targetTheme === 'impulse' || targetTheme === 'theme2') ? 'impulse' : 'nordic';
+      currentConfig.theme = normalized;
+      saveConfig(currentConfig);
+      applyThemeUI(normalized);
+
+      showToast(`Menerapkan ${normalized === 'impulse' ? 'Theme 2 (Impulse Editorial)' : 'Theme 1 (Nordic Minimalist)'}...`, 'success');
+
+      try {
+        const base = (currentConfig.worker_url || window.location.origin).replace(/\/+$/, '');
+        const res = await fetch(`${base}/api/store/theme`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            store_id: currentConfig.store_id || 'jewellery',
+            theme: normalized
+          })
+        });
+
+        const data = await res.json();
+        if (data.ok) {
+          showToast(`Berhasil! Toko sekarang menggunakan ${normalized === 'impulse' ? 'Theme 2 (Impulse Editorial)' : 'Theme 1 (Nordic Minimalist)'}`, 'success');
+        } else {
+          showToast(data.error || 'Gagal menyimpan tema ke database', 'error');
+        }
+      } catch (err) {
+        showToast('Tema aktif di lokal. (D1 sync offline: ' + err.message + ')', 'success');
+      }
+    }
+
     function loadConfig() {
       try {
         const saved = localStorage.getItem(STORAGE_KEY);
@@ -1428,6 +1720,7 @@ export const prerender = false;
       if (tabCfgDeployHook) tabCfgDeployHook.value = currentConfig.deploy_hook_url || '';
 
       updateLivePreviews();
+      applyThemeUI(currentConfig.theme || 'nordic');
     }
 
     function saveConfig(cfg) {
@@ -1452,6 +1745,10 @@ export const prerender = false;
               currentConfig.store_title = data.title;
               if (cfgStoreTitle) cfgStoreTitle.value = data.title;
               if (tabCfgStoreTitle) tabCfgStoreTitle.value = data.title;
+            }
+            if (data.theme) {
+              currentConfig.theme = data.theme;
+              applyThemeUI(data.theme);
             }
             saveConfig(currentConfig);
             updateLivePreviews();
@@ -1480,12 +1777,13 @@ export const prerender = false;
             store_id: newCfg.store_id,
             name: newCfg.store_name,
             title: newCfg.store_title,
+            theme: newCfg.theme || currentConfig.theme || 'nordic',
           })
         });
 
         const data = await res.json();
         if (data.ok) {
-          showToast('Nama toko & title halaman berhasil disimpan ke database D1!', 'success');
+          showToast('Nama toko, title & template berhasil disimpan ke database D1!', 'success');
         } else {
           showToast(data.error || 'Gagal menyimpan ke D1 (tersimpan di lokal)', 'error');
         }
@@ -1958,6 +2256,30 @@ export const prerender = false;
         if (e.key === 'Escape') {
           closeSettings();
           closeIntegrations();
+        }
+      });
+
+      // Template Switcher (Theme 1 / Theme 2)
+      document.querySelectorAll('#nav-theme-1, #nav-theme-2, #tab-pill-theme-1, #tab-pill-theme-2, .btn-apply-theme').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const targetTheme = btn.dataset.theme;
+          if (targetTheme) {
+            switchTheme(targetTheme);
+          }
+        });
+      });
+
+      [themeCardNordic, themeCardImpulse].forEach(card => {
+        if (card) {
+          card.addEventListener('click', (e) => {
+            if (e.target.closest('button')) return;
+            const targetTheme = card.dataset.theme;
+            if (targetTheme) {
+              switchTheme(targetTheme);
+            }
+          });
         }
       });
 

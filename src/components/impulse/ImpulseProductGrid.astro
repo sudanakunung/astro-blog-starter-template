@@ -116,12 +116,20 @@ const {
             <div class="mt-1 flex flex-wrap items-center gap-1.5 text-xs sm:text-[13px]">
               {isSale ? (
                 <>
-                  <span class="text-neutral-400 line-through text-[11px] sm:text-xs">${p.originalPrice}</span>
-                  <span class="font-semibold text-rose-700">${p.price}</span>
-                  <span class="text-[10px] sm:text-[11px] text-amber-700 font-medium" style="color: #c26955;">(Save ${savings})</span>
+                  <span class="text-neutral-400 line-through text-[11px] sm:text-xs">
+                    {p.originalPrice! >= 1000 ? `Rp ${p.originalPrice!.toLocaleString('id-ID')}` : `$${p.originalPrice}`}
+                  </span>
+                  <span class="font-semibold text-rose-700">
+                    {p.price >= 1000 ? `Rp ${p.price.toLocaleString('id-ID')}` : `$${p.price}`}
+                  </span>
+                  <span class="text-[10px] sm:text-[11px] text-amber-700 font-medium" style="color: #c26955;">
+                    (Hemat {savings >= 1000 ? `Rp ${savings.toLocaleString('id-ID')}` : `$${savings}`})
+                  </span>
                 </>
               ) : (
-                <span class="font-medium text-neutral-900">${p.price}</span>
+                <span class="font-medium text-neutral-900">
+                  {p.price >= 1000 ? `Rp ${p.price.toLocaleString('id-ID')}` : `$${p.price}`}
+                </span>
               )}
             </div>
 

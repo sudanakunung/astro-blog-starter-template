@@ -1,9 +1,17 @@
 ---
+import type { CarouselSlide } from '../../types/store';
+
+interface Props {
+  slides?: CarouselSlide[];
+}
+
+const { slides = [] } = Astro.props;
+
 // Impulse Hero Slideshow with Cinematic Ken Burns Effect & Shoppable Hotspots
-const heroSlides = [
+const defaultSlides = [
   {
     image: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=2070&auto=format&fit=crop',
-    alt: 'Impulse Women Fashion Collection - Easy by Design',
+    alt: 'Impulse Fashion Collection - Easy by Design',
     headline: 'Easy by design',
     subtext: 'Soft texture, effortless movement, warm-weather pieces designed to be worn on repeat.',
     cta: 'SHOP LINEN',
@@ -11,7 +19,7 @@ const heroSlides = [
   },
   {
     image: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=2070&auto=format&fit=crop',
-    alt: 'Warm Golden Hour - Effortless Summer Silhouettes',
+    alt: 'Warm Golden Hour - Effortless Silhouettes',
     headline: 'Warm by nature',
     subtext: 'Effortless silhouettes in golden-hour light. Designed to be seen, felt, and lived in.',
     cta: 'SHOP DRESSES',
@@ -26,6 +34,17 @@ const heroSlides = [
     ctaLink: '#all-new',
   },
 ];
+
+const heroSlides = slides && slides.length > 0
+  ? slides.map((s, idx) => ({
+      image: s.image_url,
+      alt: s.title,
+      headline: s.title,
+      subtext: 'Koleksi eksklusif dengan kualitas terbaik untuk melengkapi gaya elegan Anda.',
+      cta: s.link_text || 'BELANJA SEKARANG',
+      ctaLink: s.link_url || '#catalog',
+    }))
+  : defaultSlides;
 ---
 
 <section class="relative w-full overflow-hidden bg-stone-900">

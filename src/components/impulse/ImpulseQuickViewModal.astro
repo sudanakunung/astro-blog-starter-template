@@ -137,18 +137,20 @@
 
         currentItem = { id, name, price, origPrice, badge, image, desc };
 
+        const formatCurrency = (val) => val >= 1000 ? `Rp ${val.toLocaleString('id-ID')}` : `$${val}`;
+
         if (qvImg) qvImg.src = image;
         if (qvName) qvName.textContent = name;
-        if (qvPrice) qvPrice.textContent = `$${price}`;
+        if (qvPrice) qvPrice.textContent = formatCurrency(price);
         if (qvDesc) qvDesc.textContent = desc || 'Crafted with premium natural fiber and tailored with minimal timeless cuts.';
 
         if (origPrice && origPrice > price) {
           if (qvOrigPrice) {
-            qvOrigPrice.textContent = `$${origPrice}`;
+            qvOrigPrice.textContent = formatCurrency(origPrice);
             qvOrigPrice.classList.remove('hidden');
           }
           if (qvSavings) {
-            qvSavings.textContent = `(Save $${origPrice - price})`;
+            qvSavings.textContent = `(Hemat ${formatCurrency(origPrice - price)})`;
             qvSavings.classList.remove('hidden');
           }
         } else {

@@ -14,13 +14,15 @@ import ImpulseValueProps from '../components/impulse/ImpulseValueProps.astro';
 import ImpulseFooter from '../components/impulse/ImpulseFooter.astro';
 import ImpulseQuickViewModal from '../components/impulse/ImpulseQuickViewModal.astro';
 import type { D1Product } from '../types/d1';
+import type { CarouselSlide } from '../types/store';
 
 interface Props {
   brandName?: string;
   dbProducts?: D1Product[];
+  slides?: CarouselSlide[];
 }
 
-const { brandName = 'IMPULSE' } = Astro.props;
+const { brandName = 'IMPULSE', dbProducts = [], slides = [] } = Astro.props;
 
 // Section 5 Products: Everyday Essentials
 const everydayEssentials: ImpulseProduct[] = [
@@ -116,6 +118,23 @@ const allNewProducts: ImpulseProduct[] = [
     description: 'V-neck knit cardigan with deep ribbed hems, designed to be worn buttoned or draped open.',
   },
 ];
+
+// Map real products from D1 Database if available
+const mappedDbProducts: ImpulseProduct[] = dbProducts && dbProducts.length > 0
+  ? dbProducts.map((p, idx) => ({
+      id: p.id,
+      name: p.name,
+      price: p.price,
+      originalPrice: p.price >= 1000 ? Math.round(p.price * 1.15) : (p.price > 50 ? Math.round(p.price * 1.25) : undefined),
+      badge: idx % 3 === 0 ? 'Sale' : (idx % 2 === 0 ? 'New' : undefined),
+      image1: p.image_url || 'https://images.unsplash.com/photo-1591195853828-11db59a44f6b?q=80&w=800&auto=format&fit=crop',
+      image2: p.image_url || 'https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=800&auto=format&fit=crop',
+      description: p.description || '',
+    }))
+  : [];
+
+const displayEssentials = mappedDbProducts.length > 0 ? mappedDbProducts.slice(0, 5) : everydayEssentials;
+const displayAllNew = mappedDbProducts.length > 5 ? mappedDbProducts.slice(5, 10) : (mappedDbProducts.length > 0 ? mappedDbProducts : allNewProducts);
 ---
 
 <div class="impulse-theme-wrapper w-full bg-[#FAF8F5] text-neutral-800 font-sans antialiased selection:bg-neutral-800 selection:text-white">
@@ -125,26 +144,26 @@ const allNewProducts: ImpulseProduct[] = [
   <!-- 2. Header -->
   <ImpulseHeader brandName={brandName} />
 
-  <!-- 3. Hero Section with Shoppable Hotspots -->
-  <ImpulseHero />
+  <!-- 3. Hero Section with Shoppable Hotspots & Database Banners -->
+  <ImpulseHero slides={slides} />
 
   <!-- 4. Category Grid (4 Columns) -->
   <ImpulseCategoryGrid />
 
-  <!-- 5. Product Grid — "Everyday Essentials" (5 Cards) -->
+  <!-- 5. Product Grid — "Everyday Essentials" (from Database) -->
   <ImpulseProductGrid
     title="Everyday Essentials"
-    products={everydayEssentials}
+    products={displayEssentials}
     sectionId="catalog"
   />
 
   <!-- 6. Promo Banner 2 Kolom (50/50) -->
   <ImpulsePromoSplit />
 
-  <!-- 7. Product Grid — "All New" (5 Cards) -->
+  <!-- 7. Product Grid — "All New" (from Database) -->
   <ImpulseProductGrid
     title="All New"
-    products={allNewProducts}
+    products={displayAllNew}
     sectionId="all-new"
   />
 

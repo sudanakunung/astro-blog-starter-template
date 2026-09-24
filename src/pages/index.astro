@@ -37,7 +37,7 @@ if (db) {
 // 3. Dynamic Theme Detection: Query param ?theme=impulse | ?theme=nordic | store.theme
 const url = new URL(Astro.request.url);
 const themeParam = url.searchParams.get('theme')?.toLowerCase();
-const activeTheme = themeParam || store.theme || 'impulse';
+const activeTheme = themeParam || store.theme || 'nordic';
 const isImpulse = activeTheme === 'impulse' || activeTheme === 'theme2';
 ---
 
@@ -49,36 +49,8 @@ const isImpulse = activeTheme === 'impulse' || activeTheme === 'theme2';
   hideFooter={isImpulse}
 >
   {isImpulse ? (
-    <HomeImpulse brandName={store.name || 'IMPULSE'} dbProducts={products} />
+    <HomeImpulse brandName={store.name || 'IMPULSE'} dbProducts={products} slides={slides} />
   ) : (
     <HomeNordic products={products} slides={slides} />
   )}
-
-  <!-- Floating Theme Switcher Pill for Easy Live Preview & Testing -->
-  <div class="fixed bottom-3 right-3 z-50 bg-white border border-gray-300 rounded-full shadow-lg p-1 flex items-center space-x-1" style="background-color: #ffffff !important;">
-    <a
-      href="?theme=nordic"
-      class={`px-2.5 py-1 rounded-full text-[10px] sm:text-[11px] font-bold tracking-wider transition-all ${
-        !isImpulse
-          ? 'bg-black text-white shadow'
-          : 'text-gray-700 hover:text-black hover:bg-gray-100'
-      }`}
-      style={!isImpulse ? 'background-color: #000000; color: #ffffff;' : ''}
-      title="Switch to Theme 1 (Nordic Minimalist)"
-    >
-      Theme 1
-    </a>
-    <a
-      href="?theme=impulse"
-      class={`px-2.5 py-1 rounded-full text-[10px] sm:text-[11px] font-bold tracking-wider transition-all ${
-        isImpulse
-          ? 'bg-black text-white shadow'
-          : 'text-gray-700 hover:text-black hover:bg-gray-100'
-      }`}
-      style={isImpulse ? 'background-color: #000000; color: #ffffff;' : ''}
-      title="Switch to Theme 2 (Impulse Editorial Fashion)"
-    >
-      Theme 2
-    </a>
-  </div>
 </ShopLayout>

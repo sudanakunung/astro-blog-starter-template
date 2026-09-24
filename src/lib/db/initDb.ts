@@ -126,6 +126,13 @@ export async function initDatabase(db: D1Database): Promise<{ success: boolean; 
     }
   }
 
+  // Add theme column to stores if missing (safe ALTER)
+  try {
+    await db.prepare(`ALTER TABLE stores ADD COLUMN theme TEXT DEFAULT 'nordic'`).run();
+  } catch (e) {
+    // Column already exists — safe to ignore
+  }
+
   // Add origin_postal_code column to stores if missing (safe ALTER)
   try {
     await db.prepare(`ALTER TABLE stores ADD COLUMN origin_postal_code TEXT DEFAULT '80361'`).run();
@@ -162,8 +169,8 @@ export async function initDatabase(db: D1Database): Promise<{ success: boolean; 
   // Ensure default store 'jewellery' exists
   try {
     await db.prepare(`
-      INSERT OR IGNORE INTO stores (id, name, title, status, origin_postal_code, created_at, updated_at) 
-      VALUES ('jewellery', 'Navanusa Jewellery', 'Navanusa Jewellery - Nordic Minimalist Shop', 'active', '80361', unixepoch(), unixepoch())
+      INSERT OR IGNORE INTO stores (id, name, title, theme, status, origin_postal_code, created_at, updated_at) 
+      VALUES ('jewellery', 'Navanusa Jewellery', 'Navanusa Jewellery - Nordic Minimalist Shop', 'nordic', 'active', '80361', unixepoch(), unixepoch())
     `).run();
   } catch (e) {}
 
