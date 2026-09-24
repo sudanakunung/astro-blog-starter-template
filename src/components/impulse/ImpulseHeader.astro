@@ -6,52 +6,51 @@ interface Props {
 const { brandName = 'IMPULSE' } = Astro.props;
 ---
 
-<header class="sticky top-0 z-40 bg-white border-b border-gray-200 transition-all duration-300 shadow-sm" style="background-color: #ffffff !important;">
-  <div class="max-w-[1500px] mx-auto px-4 sm:px-8 lg:px-12 h-20 flex items-center justify-between">
+<header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-neutral-200 transition-all duration-300 shadow-xs" style="background-color: #ffffff !important;">
+  <div class="max-w-[1500px] mx-auto px-4 sm:px-8 lg:px-12 h-16 sm:h-20 flex items-center justify-between">
     
-    <!-- Left Column: Search & Mobile Menu Button -->
+    <!-- Left Column: Simple Clean Navigation (like Nordic) -->
     <div class="flex items-center space-x-6 flex-1 justify-start">
-      <!-- Mobile Menu Toggle -->
-      <button id="impulse-mobile-menu-btn" class="lg:hidden p-2 text-black hover:opacity-70 focus:outline-none" aria-label="Toggle Navigation">
+      <!-- Mobile Menu Toggle Button -->
+      <button id="impulse-mobile-menu-btn" class="md:hidden p-2 -ml-2 text-neutral-800 hover:text-black focus:outline-none" aria-label="Toggle Navigation">
         <svg class="w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" d="M4 6h16M4 12h16M4 18h16"></path>
         </svg>
       </button>
 
-      <!-- Search Trigger -->
-      <button id="impulse-search-btn" class="flex items-center space-x-2 text-neutral-800 hover:text-black transition-colors group focus:outline-none">
-        <svg class="w-5 h-5 stroke-current transition-transform group-hover:scale-110" fill="none" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-        </svg>
-        <span class="hidden sm:inline text-[13px] tracking-widest uppercase font-medium">Search</span>
-      </button>
-
-      <!-- Desktop Left Navigation -->
-      <nav class="hidden lg:flex items-center space-x-7 pl-4 text-[13px] tracking-[0.15em] uppercase font-medium text-neutral-800">
-        <a href="#catalog" class="hover:text-black border-b border-transparent hover:border-black pb-0.5 transition-all">New</a>
-        <a href="#catalog" class="hover:text-black border-b border-transparent hover:border-black pb-0.5 transition-all">Clothing</a>
+      <!-- Desktop Clean Navigation Links -->
+      <nav class="hidden md:flex items-center space-x-7 lg:space-x-8 text-[12px] sm:text-[13px] tracking-[0.2em] uppercase font-medium text-neutral-800">
+        <a href="#catalog" class="hover:text-black border-b border-transparent hover:border-black pb-0.5 transition-all">Shop</a>
+        <a href="#about" class="hover:text-black border-b border-transparent hover:border-black pb-0.5 transition-all">About</a>
         <a href="#catalog" class="text-rose-700 hover:text-rose-900 border-b border-transparent hover:border-rose-900 pb-0.5 transition-all">Sale</a>
       </nav>
     </div>
 
-    <!-- Center Column: Bold Editorial Logo -->
-    <div class="flex-shrink-0 text-center">
-      <a href="/" class="inline-block">
-        <span class="font-serif text-2xl sm:text-3xl lg:text-4xl tracking-[0.25em] font-light uppercase text-black hover:opacity-90 transition-opacity">
+    <!-- Center Column: Bold Editorial Logo (Spacious & Clean, No Collisions) -->
+    <div class="flex-shrink-0 text-center px-4">
+      <a href="/" class="inline-block tracking-wide no-underline hover:no-underline">
+        <span class="font-serif text-xl sm:text-2xl lg:text-3xl tracking-[0.2em] font-light uppercase text-black hover:opacity-85 transition-opacity whitespace-nowrap">
           {brandName}
         </span>
       </a>
     </div>
 
-    <!-- Right Column: Editorial Links, Account, Wishlist, Cart -->
-    <div class="flex items-center space-x-4 sm:space-x-6 flex-1 justify-end">
-      <nav class="hidden xl:flex items-center space-x-7 pr-2 text-[13px] tracking-[0.15em] uppercase font-medium text-neutral-700">
-        <a href="#lookbook" class="hover:text-black transition-colors">The Lookbook</a>
-        <a href="#journal" class="hover:text-black transition-colors">Journal</a>
-        <a href="#collections" class="hover:text-black transition-colors">Theme Features</a>
-      </nav>
+    <!-- Right Column: Action Icons (Search, Account, Wishlist, Cart) -->
+    <div class="flex items-center space-x-2 sm:space-x-3 flex-1 justify-end">
+      <!-- Search Trigger Icon -->
+      <a
+        href="#catalog"
+        id="impulse-search-btn"
+        class="p-2 relative inline-flex items-center text-neutral-800 hover:text-black transition-colors focus:outline-none"
+        aria-label="Cari Produk"
+        title="Cari Produk"
+      >
+        <svg class="w-5 h-5 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+      </a>
 
-      <!-- Account Link -->
+      <!-- Account Button -->
       <a
         id="impulse-nav-account-btn"
         href="/account/login"
@@ -127,29 +126,39 @@ const { brandName = 'IMPULSE' } = Astro.props;
   </div>
 
   <!-- Mobile Drawer Menu Overlay -->
-  <div id="impulse-mobile-menu" class="hidden lg:hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm transition-opacity">
+  <div id="impulse-mobile-menu" class="hidden md:hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm transition-opacity">
     <div class="fixed inset-y-0 left-0 max-w-xs w-full bg-white shadow-2xl p-6 flex flex-col justify-between overflow-y-auto">
       <div>
         <div class="flex items-center justify-between pb-6 border-b border-neutral-100">
           <span class="font-serif text-xl tracking-[0.2em] uppercase font-bold">{brandName}</span>
-          <button id="impulse-close-mobile-menu" class="p-2 text-neutral-500 hover:text-black">
+          <button id="impulse-close-mobile-menu" class="p-2 text-neutral-500 hover:text-black" aria-label="Close Menu">
             <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
           </button>
         </div>
 
-        <nav class="py-6 flex flex-col space-y-5 text-[15px] tracking-widest uppercase font-medium text-neutral-900">
-          <a href="#catalog" class="hover:text-neutral-500 py-1 border-b border-neutral-100">New Arrivals</a>
-          <a href="#catalog" class="hover:text-neutral-500 py-1 border-b border-neutral-100">Clothing</a>
-          <a href="#catalog" class="text-rose-700 py-1 border-b border-neutral-100">Sale Up to 40%</a>
-          <a href="#lookbook" class="hover:text-neutral-500 py-1 border-b border-neutral-100">The Lookbook</a>
-          <a href="#journal" class="hover:text-neutral-500 py-1 border-b border-neutral-100">Inside The Journal</a>
-          <a id="impulse-mobile-account-link" href="/account/login" class="hover:text-neutral-500 py-1 border-b border-neutral-100">Akun Saya / Login</a>
+        <nav class="py-6 flex flex-col space-y-4 text-[13px] tracking-[0.18em] uppercase font-medium text-neutral-900">
+          <a href="#catalog" class="hover:text-neutral-500 py-2 border-b border-neutral-100 flex items-center justify-between">
+            <span>Shop</span>
+            <span class="text-neutral-400">&rarr;</span>
+          </a>
+          <a href="#about" class="hover:text-neutral-500 py-2 border-b border-neutral-100 flex items-center justify-between">
+            <span>About</span>
+            <span class="text-neutral-400">&rarr;</span>
+          </a>
+          <a href="#catalog" class="text-rose-700 hover:text-rose-900 py-2 border-b border-neutral-100 flex items-center justify-between">
+            <span>Sale</span>
+            <span class="text-[10px] bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full font-bold">Promo</span>
+          </a>
+          <a id="impulse-mobile-account-link" href="/account/login" class="hover:text-neutral-500 py-2 border-b border-neutral-100 flex items-center justify-between">
+            <span>Akun Saya</span>
+            <span class="text-neutral-400">&rarr;</span>
+          </a>
         </nav>
       </div>
 
-      <div class="pt-6 border-t border-neutral-200 text-xs text-neutral-500 space-y-2">
-        <p>Customer Support: support@impulse.com</p>
-        <p>Mon - Fri: 9:00 AM - 6:00 PM EST</p>
+      <div class="pt-6 border-t border-neutral-200 text-xs text-neutral-500 space-y-1">
+        <p class="font-semibold text-neutral-700">{brandName}</p>
+        <p>Minimalist Editorial Collection</p>
       </div>
     </div>
   </div>
