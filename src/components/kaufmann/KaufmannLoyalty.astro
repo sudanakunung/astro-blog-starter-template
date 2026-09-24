@@ -1,0 +1,67 @@
+---
+// Section 10: "BECOME A [BRAND] INSIDER" — LOYALTY SECTION
+interface Props {
+  brandName?: string;
+}
+
+const { brandName = 'SUSANNE KAUFMANN' } = Astro.props;
+---
+
+<section class="w-full bg-white border-b border-[#E8E4DC] overflow-hidden">
+  <div class="max-w-[1540px] mx-auto grid grid-cols-1 lg:grid-cols-2 min-h-[580px] items-stretch">
+    
+    <!-- Left Column: Loyalty Benefits Text -->
+    <div class="p-8 sm:p-14 lg:p-20 flex flex-col justify-center max-w-xl">
+      <span class="text-[11px] tracking-[0.25em] uppercase font-light text-neutral-500 mb-3 block">
+        Exclusive Member Privileges
+      </span>
+
+      <h2 class="font-serif text-3xl sm:text-5xl font-light text-[#111111] tracking-tight leading-[1.18]">
+        Become a {brandName} Insider
+      </h2>
+
+      <p class="mt-5 text-sm sm:text-base font-light text-neutral-700 leading-relaxed">
+        Join our inner circle of mindful beauty. Experience tailored skincare consultations, member-only formulations, and complimentary bespoke treats with every seasonal order.
+      </p>
+
+      <ul class="mt-6 space-y-3 text-xs sm:text-sm font-light text-neutral-600">
+        <li class="flex items-center space-x-3">
+          <span class="text-neutral-400 font-serif text-base">&bull;</span>
+          <span>Earn reward points for every ritual product added to your vanity</span>
+        </li>
+        <li class="flex items-center space-x-3">
+          <span class="text-neutral-400 font-serif text-base">&bull;</span>
+          <span>Refer a friend and both receive 20% off your next purchase</span>
+        </li>
+        <li class="flex items-center space-x-3">
+          <span class="text-neutral-400 font-serif text-base">&bull;</span>
+          <span>Early access to limited seasonal botanical releases &amp; gift sets</span>
+        </li>
+      </ul>
+
+      <div class="mt-8 sm:mt-10">
+        <a
+          href="/account/register"
+          class="inline-block bg-[#111111] text-white hover:bg-neutral-800 px-8 sm:px-10 py-3.5 text-[11px] sm:text-xs tracking-[0.25em] uppercase font-medium transition-colors shadow-xs"
+        >
+          Join Now
+        </a>
+      </div>
+    </div>
+
+    <!-- Right Column: Alpine Nature Forest Visual -->
+    <div class="relative w-full h-[360px] lg:h-auto min-h-[420px] overflow-hidden bg-[#2D2A26]">
+      <img
+        src="https://images.unsplash.com/photo-1511497584788-87676104235f?q=80&w=1600&auto=format&fit=crop"
+        alt="Alpine Forest and Pristine Nature"
+        class="w-full h-full object-cover object-center filter brightness-95"
+        loading="lazy"
+      />
+      <div class="absolute inset-0 bg-black/10"></div>
+      <div class="absolute bottom-6 right-6 text-white text-[10px] tracking-[0.22em] uppercase font-light bg-black/30 backdrop-blur-xs px-3 py-1.5 border border-white/20">
+        Bregenzerwald Alpine Woods &bull; Pure Provenance
+      </div>
+    </div>
+
+  </div>
+</section>

@@ -1,0 +1,66 @@
+---
+// Section 3: HERO SECTION (VIDEO BACKGROUND)
+interface Props {
+  brandName?: string;
+}
+
+const { brandName = 'SUSANNE KAUFMANN' } = Astro.props;
+---
+
+<section class="relative w-full h-[85vh] min-h-[580px] max-h-[920px] overflow-hidden bg-[#2D2A26] flex items-center">
+  <!-- Video Background with Autoplay & Fallback Poster -->
+  <video
+    autoplay
+    muted
+    loop
+    playsinline
+    poster="https://images.unsplash.com/photo-1556228720-195a672e8a03?q=80&w=1920&auto=format&fit=crop"
+    class="absolute inset-0 w-full h-full object-cover object-center"
+    style="filter: brightness(0.88) contrast(1.05);"
+  >
+    <source src="https://assets.mixkit.co/videos/preview/mixkit-hands-applying-lotion-to-face-41135-large.mp4" type="video/mp4" />
+  </video>
+
+  <!-- Editorial Warm Tint Gradient Overlays -->
+  <div class="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent pointer-events-none"></div>
+  <div class="absolute inset-0 bg-[#2b2520]/20 mix-blend-multiply pointer-events-none"></div>
+
+  <!-- Content Overlay on Left -->
+  <div class="relative z-10 max-w-[1540px] mx-auto w-full px-6 sm:px-12 lg:px-20">
+    <div class="max-w-xl text-left text-white">
+      
+      <!-- Sub-caption -->
+      <span class="inline-block text-[11px] sm:text-xs tracking-[0.3em] uppercase font-light text-neutral-200 mb-3 sm:mb-4">
+        An Ode to You
+      </span>
+
+      <!-- Headline -->
+      <h1 class="font-serif text-3xl sm:text-5xl lg:text-6xl font-light tracking-tight leading-[1.15] text-white">
+        New: Body Wash &amp; Body Scrub for the Senses
+      </h1>
+
+      <!-- Scent Notes & Description -->
+      <p class="mt-4 sm:mt-6 text-sm sm:text-base font-light text-neutral-200 leading-relaxed max-w-lg">
+        Enriched with soothing alpine botanicals and delicate botanical oils. Notes of calming lavender, floral ylang ylang, and grounding patchouli create a deeply restorative bath ritual.
+      </p>
+
+      <!-- Outline Buttons -->
+      <div class="mt-8 sm:mt-10 flex flex-wrap items-center gap-4">
+        <a
+          href="#ritual"
+          class="inline-block border border-white text-white hover:bg-white hover:text-black px-7 sm:px-9 py-3 text-[11px] sm:text-xs tracking-[0.25em] uppercase font-medium transition-all duration-300"
+        >
+          Shop Now
+        </a>
+
+        <a
+          href="#scent"
+          class="inline-block border border-white/60 text-white/90 hover:border-white hover:text-white px-7 sm:px-9 py-3 text-[11px] sm:text-xs tracking-[0.25em] uppercase font-medium transition-all duration-300 backdrop-blur-xs"
+        >
+          Discover the ritual
+        </a>
+      </div>
+
+    </div>
+  </div>
+</section>

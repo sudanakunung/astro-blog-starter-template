@@ -69,7 +69,12 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const { store_id = 'jewellery', theme = 'nordic' } = body;
 
     // Normalisasi nama tema
-    const normalizedTheme = theme === 'impulse' || theme === 'theme2' ? 'impulse' : 'nordic';
+    const normalizedTheme =
+      theme === 'kaufmann' || theme === 'theme3'
+        ? 'kaufmann'
+        : theme === 'impulse' || theme === 'theme2'
+        ? 'impulse'
+        : 'nordic';
 
     if (!db) {
       return new Response(
@@ -103,12 +108,19 @@ export const POST: APIRoute = async ({ request, locals }) => {
         .run();
     }
 
+    const themeLabel =
+      normalizedTheme === 'kaufmann'
+        ? 'Theme 3 (Susanne Kaufmann Skincare)'
+        : normalizedTheme === 'impulse'
+        ? 'Theme 2 (Impulse Editorial)'
+        : 'Theme 1 (Nordic Minimalist)';
+
     return new Response(
       JSON.stringify({
         ok: true,
         store_id,
         theme: normalizedTheme,
-        message: `Template berhasil diubah ke ${normalizedTheme === 'impulse' ? 'Theme 2 (Impulse Editorial)' : 'Theme 1 (Nordic Minimalist)'}`,
+        message: `Template berhasil diubah ke ${themeLabel}`,
       }),
       { status: 200, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
     );

@@ -1,0 +1,76 @@
+---
+// Section 7: "SHOP BY COLLECTION"
+const collections = [
+  {
+    name: 'Face Care',
+    subtitle: 'Nourishing cleansers, serums & masks',
+    image: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?q=80&w=800&auto=format&fit=crop',
+    href: '#ritual',
+  },
+  {
+    name: 'Body Care',
+    subtitle: 'Rich balms, exfoliants & lotions',
+    image: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=800&auto=format&fit=crop',
+    href: '#ritual',
+  },
+  {
+    name: 'Bath',
+    subtitle: 'Aromatic soaks & sensorial bath oils',
+    image: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=800&auto=format&fit=crop',
+    href: '#ritual',
+  },
+  {
+    name: 'Sets',
+    subtitle: 'Curated gift boxes & daily travel rituals',
+    image: 'https://images.unsplash.com/photo-1512290900672-1f4a974b7861?q=80&w=800&auto=format&fit=crop',
+    href: '#ritual',
+  },
+];
+---
+
+<section id="collections" class="py-16 sm:py-24 px-4 sm:px-8 lg:px-12 max-w-[1540px] mx-auto bg-white">
+  <!-- Heading Left -->
+  <div class="mb-8 sm:mb-12 border-b border-[#E8E4DC] pb-4 flex items-baseline justify-between">
+    <div>
+      <span class="text-[11px] tracking-[0.25em] uppercase font-light text-neutral-500 block mb-1">
+        Curated Formulations
+      </span>
+      <h2 class="font-serif text-2xl sm:text-4xl font-light tracking-tight text-[#111111]">
+        Shop by Collection
+      </h2>
+    </div>
+  </div>
+
+  <!-- 4-Column Category Grid with Zoom Hover Effect -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+    {collections.map((col) => (
+      <a href={col.href} class="group block overflow-hidden no-underline">
+        <!-- Image Box with Aspect Ratio & Zoom Hover -->
+        <div class="relative w-full aspect-[4/5] bg-[#F5F2EC] overflow-hidden mb-4 rounded-xs">
+          <img
+            src={col.image}
+            alt={col.name}
+            class="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-108"
+            loading="lazy"
+          />
+          <div class="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors duration-500"></div>
+        </div>
+
+        <!-- Caption Below Photo -->
+        <div class="pt-1 flex items-center justify-between">
+          <div>
+            <h3 class="font-serif text-lg sm:text-xl font-normal text-[#111111] group-hover:text-neutral-600 transition-colors">
+              {col.name}
+            </h3>
+            <p class="text-xs text-neutral-500 font-light mt-0.5">
+              {col.subtitle}
+            </p>
+          </div>
+          <span class="text-neutral-400 group-hover:text-black group-hover:translate-x-1 transition-all duration-300 text-sm">
+            &rarr;
+          </span>
+        </div>
+      </a>
+    ))}
+  </div>
+</section>

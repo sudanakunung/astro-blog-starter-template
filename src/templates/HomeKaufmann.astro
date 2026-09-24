@@ -1,0 +1,85 @@
+---
+import KaufmannTopBar from '../components/kaufmann/KaufmannTopBar.astro';
+import KaufmannNavbar from '../components/kaufmann/KaufmannNavbar.astro';
+import KaufmannHero from '../components/kaufmann/KaufmannHero.astro';
+import KaufmannTrustBar from '../components/kaufmann/KaufmannTrustBar.astro';
+import KaufmannRitualGrid from '../components/kaufmann/KaufmannRitualGrid.astro';
+import KaufmannScentSection from '../components/kaufmann/KaufmannScentSection.astro';
+import KaufmannCollections from '../components/kaufmann/KaufmannCollections.astro';
+import KaufmannStory from '../components/kaufmann/KaufmannStory.astro';
+import KaufmannReviews from '../components/kaufmann/KaufmannReviews.astro';
+import KaufmannLoyalty from '../components/kaufmann/KaufmannLoyalty.astro';
+import KaufmannNewsletter from '../components/kaufmann/KaufmannNewsletter.astro';
+import KaufmannFooter from '../components/kaufmann/KaufmannFooter.astro';
+import type { D1Product } from '../types/d1';
+import type { CarouselSlide } from '../types/store';
+
+interface Props {
+  brandName?: string;
+  dbProducts?: D1Product[];
+  slides?: CarouselSlide[];
+}
+
+const {
+  brandName = 'SUSANNE KAUFMANN',
+  dbProducts = [],
+  slides = [],
+} = Astro.props;
+---
+
+<div class="kaufmann-theme min-h-screen bg-white text-[#111111] antialiased selection:bg-[#E8E4DC] selection:text-black">
+  <!-- 1. TOP BAR (Announcement bar hitam full-width: 10% OFF) -->
+  <KaufmannTopBar />
+
+  <!-- 2. NAVBAR (Logo brand kiri, Menu tengah, Search/Wishlist/Account/Cart kanan) -->
+  <KaufmannNavbar brandName={brandName} />
+
+  <!-- 3. HERO SECTION (Video Background - Body care application, left text overlay, 2 outline buttons) -->
+  <KaufmannHero brandName={brandName} />
+
+  <!-- 4. TRUST BAR (3 poin horizontal: Natural Ingredients, Complimentary Shipping, Made in Austria/Switzerland) -->
+  <KaufmannTrustBar />
+
+  <!-- 5. "BUILD YOUR RITUAL" — PRODUCT GRID (4 columns, stars, wishlist, NEW badge, € prices) -->
+  <KaufmannRitualGrid dbProducts={dbProducts} />
+
+  <!-- 6. "THE SCENT OF THE RITUAL" (Vertical video, scent notes, cut-off brand overlay) -->
+  <KaufmannScentSection brandName={brandName} />
+
+  <!-- 7. "SHOP BY COLLECTION" (4 columns category cards with zoom hover) -->
+  <KaufmannCollections />
+
+  <!-- 8. "OUR STORY" (Full-width spa ambient video background, text on right) -->
+  <KaufmannStory />
+
+  <!-- 9. "WHAT OUR CUSTOMERS SAY" (Horizontal scrollable/swipeable review carousel) -->
+  <KaufmannReviews />
+
+  <!-- 10. "BECOME A [BRAND] INSIDER" (2 cols loyalty benefits + nature visual) -->
+  <KaufmannLoyalty brandName={brandName} />
+
+  <!-- 11. NEWSLETTER SUBSCRIBE SECTION (Input email + 4 photo lifestyle strip) -->
+  <KaufmannNewsletter />
+
+  <!-- 12. FOOTER (4 link columns, language/currency selectors, social & payment icons) -->
+  <KaufmannFooter brandName={brandName} />
+</div>
+
+<style is:global>
+  /* Import editorial serif font Playfair Display for Kaufmann theme */
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@200;300;400;500;600&display=swap');
+
+  .kaufmann-theme {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: #111111;
+  }
+
+  .kaufmann-theme h1,
+  .kaufmann-theme h2,
+  .kaufmann-theme h3,
+  .kaufmann-theme h4,
+  .kaufmann-theme .font-serif {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-feature-settings: "kern" 1, "liga" 1;
+  }
+</style>

@@ -824,6 +824,15 @@ export const prerender = false;
           >
             Theme 2
           </button>
+          <button
+            type="button"
+            id="nav-theme-3"
+            class="theme-pill-btn"
+            data-theme="kaufmann"
+            title="Gunakan Theme 3 (Susanne Kaufmann Skincare)"
+          >
+            Theme 3
+          </button>
         </div>
       </div>
 
@@ -1143,10 +1152,19 @@ export const prerender = false;
               >
                 Theme 2
               </button>
+              <button
+                type="button"
+                id="tab-pill-theme-3"
+                class="theme-pill-btn"
+                data-theme="kaufmann"
+                title="Gunakan Theme 3 (Susanne Kaufmann Skincare)"
+              >
+                Theme 3
+              </button>
             </div>
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0.75rem;">
             <!-- Option 1: Nordic Minimalist -->
             <div id="theme-card-nordic" class="theme-card-option active" data-theme="nordic">
               <div style="display: flex; align-items: center; justify-content: space-between;">
@@ -1172,6 +1190,20 @@ export const prerender = false;
               </p>
               <button type="button" class="btn btn-secondary btn-apply-theme" data-theme="impulse" style="margin-top: auto; font-size: 0.725rem; padding: 0.35rem 0.5rem; justify-content: center;">
                 Gunakan Theme 2
+              </button>
+            </div>
+
+            <!-- Option 3: Susanne Kaufmann Skincare & Beauty Editorial -->
+            <div id="theme-card-kaufmann" class="theme-card-option" data-theme="kaufmann">
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <span style="font-weight: 800; font-size: 0.875rem; color: #0f172a;">Theme 3 — Skincare Editorial</span>
+                <span id="badge-theme-kaufmann" class="badge" style="background: #e2e8f0; color: #475569; font-size: 0.625rem; padding: 2px 7px;">Pilih Template</span>
+              </div>
+              <p style="font-size: 0.725rem; color: #64748b; line-height: 1.4;">
+                Inspirasi Susanne Kaufmann untuk skincare &amp; wellness premium. Video Hero &amp; Spa Background, Scent of Ritual, Customer Testimonial Slider, &amp; Insider Loyalty.
+              </p>
+              <button type="button" class="btn btn-secondary btn-apply-theme" data-theme="kaufmann" style="margin-top: auto; font-size: 0.725rem; padding: 0.35rem 0.5rem; justify-content: center;">
+                Gunakan Theme 3
               </button>
             </div>
           </div>
@@ -1454,12 +1486,16 @@ export const prerender = false;
     // DOM Elements - Theme Switcher
     const navTheme1 = document.getElementById('nav-theme-1');
     const navTheme2 = document.getElementById('nav-theme-2');
+    const navTheme3 = document.getElementById('nav-theme-3');
     const tabPillTheme1 = document.getElementById('tab-pill-theme-1');
     const tabPillTheme2 = document.getElementById('tab-pill-theme-2');
+    const tabPillTheme3 = document.getElementById('tab-pill-theme-3');
     const themeCardNordic = document.getElementById('theme-card-nordic');
     const themeCardImpulse = document.getElementById('theme-card-impulse');
+    const themeCardKaufmann = document.getElementById('theme-card-kaufmann');
     const badgeThemeNordic = document.getElementById('badge-theme-nordic');
     const badgeThemeImpulse = document.getElementById('badge-theme-impulse');
+    const badgeThemeKaufmann = document.getElementById('badge-theme-kaufmann');
     const previewActiveThemeTitle = document.getElementById('preview-active-theme-title');
     const previewActiveThemeSub = document.getElementById('preview-active-theme-sub');
 
@@ -1597,80 +1633,90 @@ export const prerender = false;
       if (previewTabTitle) previewTabTitle.textContent = title;
     }
 
+    function getThemeLabel(t) {
+      if (t === 'kaufmann' || t === 'theme3') return 'Theme 3 (Susanne Kaufmann Skincare)';
+      if (t === 'impulse' || t === 'theme2') return 'Theme 2 (Impulse Editorial)';
+      return 'Theme 1 (Nordic Minimalist)';
+    }
+
     function applyThemeUI(themeName) {
+      const isKaufmann = (themeName === 'kaufmann' || themeName === 'theme3');
       const isImpulse = (themeName === 'impulse' || themeName === 'theme2');
 
       // 1. Top Navbar Buttons
-      if (navTheme1 && navTheme2) {
-        if (!isImpulse) {
-          navTheme1.classList.add('active');
-          navTheme2.classList.remove('active');
-        } else {
-          navTheme2.classList.add('active');
-          navTheme1.classList.remove('active');
-        }
+      [navTheme1, navTheme2, navTheme3].forEach(btn => btn?.classList.remove('active'));
+      if (isKaufmann) {
+        navTheme3?.classList.add('active');
+      } else if (isImpulse) {
+        navTheme2?.classList.add('active');
+      } else {
+        navTheme1?.classList.add('active');
       }
 
       // 2. Tab 3 Pill Buttons
-      if (tabPillTheme1 && tabPillTheme2) {
-        if (!isImpulse) {
-          tabPillTheme1.classList.add('active');
-          tabPillTheme2.classList.remove('active');
-        } else {
-          tabPillTheme2.classList.add('active');
-          tabPillTheme1.classList.remove('active');
-        }
+      [tabPillTheme1, tabPillTheme2, tabPillTheme3].forEach(btn => btn?.classList.remove('active'));
+      if (isKaufmann) {
+        tabPillTheme3?.classList.add('active');
+      } else if (isImpulse) {
+        tabPillTheme2?.classList.add('active');
+      } else {
+        tabPillTheme1?.classList.add('active');
       }
 
       // 3. Tab 3 Option Cards & Badges
-      if (themeCardNordic && themeCardImpulse) {
-        if (!isImpulse) {
-          themeCardNordic.classList.add('active');
-          themeCardImpulse.classList.remove('active');
-          if (badgeThemeNordic) {
-            badgeThemeNordic.textContent = '✓ SEDANG DIGUNAKAN';
-            badgeThemeNordic.style.background = '#000000';
-            badgeThemeNordic.style.color = '#ffffff';
-          }
-          if (badgeThemeImpulse) {
-            badgeThemeImpulse.textContent = 'Pilih Template';
-            badgeThemeImpulse.style.background = '#e2e8f0';
-            badgeThemeImpulse.style.color = '#475569';
+      const updateCardBadge = (card, badge, isActive) => {
+        if (!card) return;
+        if (isActive) {
+          card.classList.add('active');
+          if (badge) {
+            badge.textContent = '✓ SEDANG DIGUNAKAN';
+            badge.style.background = '#000000';
+            badge.style.color = '#ffffff';
           }
         } else {
-          themeCardImpulse.classList.add('active');
-          themeCardNordic.classList.remove('active');
-          if (badgeThemeImpulse) {
-            badgeThemeImpulse.textContent = '✓ SEDANG DIGUNAKAN';
-            badgeThemeImpulse.style.background = '#000000';
-            badgeThemeImpulse.style.color = '#ffffff';
-          }
-          if (badgeThemeNordic) {
-            badgeThemeNordic.textContent = 'Pilih Template';
-            badgeThemeNordic.style.background = '#e2e8f0';
-            badgeThemeNordic.style.color = '#475569';
+          card.classList.remove('active');
+          if (badge) {
+            badge.textContent = 'Pilih Template';
+            badge.style.background = '#e2e8f0';
+            badge.style.color = '#475569';
           }
         }
-      }
+      };
+
+      updateCardBadge(themeCardNordic, badgeThemeNordic, !isImpulse && !isKaufmann);
+      updateCardBadge(themeCardImpulse, badgeThemeImpulse, isImpulse);
+      updateCardBadge(themeCardKaufmann, badgeThemeKaufmann, isKaufmann);
 
       // 4. Right Preview Mockup
       if (previewActiveThemeTitle) {
-        previewActiveThemeTitle.textContent = isImpulse ? 'Theme 2: Impulse Editorial' : 'Theme 1: Nordic Minimalist';
+        previewActiveThemeTitle.textContent = isKaufmann
+          ? 'Theme 3: Kaufmann Skincare & Beauty'
+          : isImpulse
+          ? 'Theme 2: Impulse Editorial'
+          : 'Theme 1: Nordic Minimalist';
       }
       if (previewActiveThemeSub) {
-        previewActiveThemeSub.textContent = isImpulse
+        previewActiveThemeSub.textContent = isKaufmann
+          ? 'Katalog skincare organik, video hero/spa ambient & scents terhubung langsung ke database D1.'
+          : isImpulse
           ? 'Katalog fashion minimalis, editorial banner & quick view terhubung langsung ke database D1.'
           : 'Katalog perhiasan & hero carousel terhubung langsung ke database D1.';
       }
     }
 
     async function switchTheme(targetTheme) {
-      const normalized = (targetTheme === 'impulse' || targetTheme === 'theme2') ? 'impulse' : 'nordic';
+      const normalized = (targetTheme === 'kaufmann' || targetTheme === 'theme3')
+        ? 'kaufmann'
+        : (targetTheme === 'impulse' || targetTheme === 'theme2')
+        ? 'impulse'
+        : 'nordic';
+
       currentConfig.theme = normalized;
       saveConfig(currentConfig);
       applyThemeUI(normalized);
 
-      showToast(`Menerapkan ${normalized === 'impulse' ? 'Theme 2 (Impulse Editorial)' : 'Theme 1 (Nordic Minimalist)'}...`, 'success');
+      const label = getThemeLabel(normalized);
+      showToast(`Menerapkan ${label}...`, 'success');
 
       try {
         const base = (currentConfig.worker_url || window.location.origin).replace(/\/+$/, '');
@@ -1685,7 +1731,7 @@ export const prerender = false;
 
         const data = await res.json();
         if (data.ok) {
-          showToast(`Berhasil! Toko sekarang menggunakan ${normalized === 'impulse' ? 'Theme 2 (Impulse Editorial)' : 'Theme 1 (Nordic Minimalist)'}`, 'success');
+          showToast(`Berhasil! Toko sekarang menggunakan ${label}`, 'success');
         } else {
           showToast(data.error || 'Gagal menyimpan tema ke database', 'error');
         }
@@ -2259,8 +2305,8 @@ export const prerender = false;
         }
       });
 
-      // Template Switcher (Theme 1 / Theme 2)
-      document.querySelectorAll('#nav-theme-1, #nav-theme-2, #tab-pill-theme-1, #tab-pill-theme-2, .btn-apply-theme').forEach(btn => {
+      // Template Switcher (Theme 1 / Theme 2 / Theme 3)
+      document.querySelectorAll('#nav-theme-1, #nav-theme-2, #nav-theme-3, #tab-pill-theme-1, #tab-pill-theme-2, #tab-pill-theme-3, .btn-apply-theme').forEach(btn => {
         btn.addEventListener('click', (e) => {
           e.preventDefault();
           e.stopPropagation();
@@ -2271,7 +2317,7 @@ export const prerender = false;
         });
       });
 
-      [themeCardNordic, themeCardImpulse].forEach(card => {
+      [themeCardNordic, themeCardImpulse, themeCardKaufmann].forEach(card => {
         if (card) {
           card.addEventListener('click', (e) => {
             if (e.target.closest('button')) return;

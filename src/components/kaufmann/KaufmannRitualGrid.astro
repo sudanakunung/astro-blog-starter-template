@@ -1,0 +1,222 @@
+---
+// Section 5: "BUILD YOUR RITUAL" — PRODUCT GRID
+import type { D1Product } from '../../types/d1';
+
+interface Props {
+  dbProducts?: D1Product[];
+}
+
+const { dbProducts = [] } = Astro.props;
+
+// Curated default Susanne Kaufmann ritual products
+const defaultRitualProducts = [
+  {
+    id: 'kaufmann-1',
+    name: 'Body Butter for the Senses',
+    price: 68,
+    isNew: true,
+    rating: 5,
+    reviewsCount: 142,
+    description: 'Nourishing shea butter, honey and olive oil create long-lasting hydration and velvet softness.',
+    image: 'https://images.unsplash.com/photo-1608248597359-5b77c5e2ef9a?q=80&w=800&auto=format&fit=crop',
+  },
+  {
+    id: 'kaufmann-2',
+    name: 'Nutrient Serum',
+    price: 135,
+    isNew: false,
+    rating: 5,
+    reviewsCount: 89,
+    description: 'A concentrated daily booster of alpine botanicals, hyaluronic acid, and botanical vitamin complex.',
+    image: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=800&auto=format&fit=crop',
+  },
+  {
+    id: 'kaufmann-3',
+    name: 'Purifying Cleansing Gel',
+    price: 52,
+    isNew: true,
+    rating: 5,
+    reviewsCount: 64,
+    description: 'Gentle plant-derived cleansing base that purifies pores while respecting the natural lipid barrier.',
+    image: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?q=80&w=800&auto=format&fit=crop',
+  },
+  {
+    id: 'kaufmann-4',
+    name: 'Bath Oil for the Senses',
+    price: 74,
+    isNew: false,
+    rating: 5,
+    reviewsCount: 198,
+    description: 'Velvety essential oils of lavender and ylang ylang to calm the nervous system and nourish dry skin.',
+    image: 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?q=80&w=800&auto=format&fit=crop',
+  },
+];
+
+// Map real D1 products if provided
+const productsToDisplay = dbProducts && dbProducts.length > 0
+  ? dbProducts.slice(0, 8).map((p, idx) => ({
+      id: p.id,
+      name: p.name,
+      price: p.price,
+      isNew: idx % 2 === 0,
+      rating: 5,
+      reviewsCount: 30 + (idx * 17),
+      description: p.description || 'Formulated with organic alpine ingredients for supreme skin radiance and balance.',
+      image: p.image_url || 'https://images.unsplash.com/photo-1608248597359-5b77c5e2ef9a?q=80&w=800&auto=format&fit=crop',
+    }))
+  : defaultRitualProducts;
+---
+
+<section id="ritual" class="py-16 sm:py-24 px-4 sm:px-8 lg:px-12 max-w-[1540px] mx-auto bg-white">
+  <!-- Section Header -->
+  <div class="flex items-baseline justify-between mb-8 sm:mb-12 border-b border-[#E8E4DC] pb-4">
+    <div>
+      <span class="text-[11px] tracking-[0.25em] uppercase font-light text-neutral-500 block mb-1">
+        Daily Botanical Care
+      </span>
+      <h2 class="font-serif text-2xl sm:text-4xl font-light tracking-tight text-[#111111]">
+        Build your ritual
+      </h2>
+    </div>
+
+    <a
+      href="/products"
+      class="text-[11px] sm:text-xs tracking-[0.22em] uppercase font-medium text-neutral-800 hover:text-black border-b border-black pb-0.5 transition-all inline-flex items-center space-x-1 group"
+    >
+      <span>Shop All</span>
+      <span class="group-hover:translate-x-1 transition-transform">&rarr;</span>
+    </a>
+  </div>
+
+  <!-- 4-Column Product Grid (Responsive: Horizontal scroll on mobile, 4-col on desktop) -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+    {productsToDisplay.map((p) => {
+      const priceFormatted = typeof p.price === 'number'
+        ? (p.price >= 1000 ? `Rp ${p.price.toLocaleString('id-ID')}` : `€${p.price}`)
+        : p.price;
+
+      return (
+        <div class="group flex flex-col justify-between bg-white border border-transparent hover:border-[#E8E4DC] p-3 sm:p-4 transition-all duration-300">
+          <div>
+            <!-- Image Card with Badges and Wishlist -->
+            <div class="relative w-full aspect-square bg-[#F5F2EC] overflow-hidden mb-4 rounded-xs">
+              <img
+                src={p.image}
+                alt={p.name}
+                class="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                loading="lazy"
+              />
+
+              <!-- NEW Badge -->
+              {p.isNew && (
+                <span class="absolute top-3 left-3 bg-[#111111] text-white text-[9px] tracking-[0.2em] uppercase px-2.5 py-1 font-medium">
+                  NEW
+                </span>
+              )}
+
+              <!-- Wishlist Heart Button -->
+              <button
+                type="button"
+                class="kaufmann-wishlist-trigger absolute top-3 right-3 p-2 rounded-full bg-white/80 hover:bg-white text-neutral-700 hover:text-red-600 transition-all opacity-0 group-hover:opacity-100 shadow-xs focus:opacity-100"
+                aria-label="Save to Wishlist"
+                data-id={p.id}
+                data-name={p.name}
+                data-price={p.price}
+                data-image={p.image}
+              >
+                <svg class="w-4 h-4 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+              </button>
+
+              <!-- Quick Add to Bag hover button on desktop -->
+              <div class="absolute inset-x-3 bottom-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden sm:block">
+                <button
+                  type="button"
+                  class="kaufmann-quick-add w-full bg-[#111111] hover:bg-black text-white text-[11px] tracking-[0.22em] uppercase font-light py-2.5 transition-colors shadow-sm"
+                  data-id={p.id}
+                  data-name={p.name}
+                  data-price={p.price}
+                  data-image={p.image}
+                >
+                  + Add to Bag
+                </button>
+              </div>
+            </div>
+
+            <!-- Star Rating + Reviews Count -->
+            <div class="flex items-center space-x-1.5 mb-1.5">
+              <div class="flex text-amber-500 text-xs">
+                {'★'.repeat(5)}
+              </div>
+              <span class="text-[11px] text-neutral-400 font-light">
+                ({p.reviewsCount})
+              </span>
+            </div>
+
+            <!-- Product Title -->
+            <h3 class="font-serif text-base sm:text-lg font-normal text-[#111111] group-hover:text-neutral-600 transition-colors line-clamp-1">
+              {p.name}
+            </h3>
+
+            <!-- Price -->
+            <div class="mt-1 text-xs sm:text-sm font-light text-neutral-800 tracking-wider">
+              {priceFormatted}
+            </div>
+
+            <!-- Short Description (1-2 lines) -->
+            <p class="mt-2 text-xs text-neutral-500 font-light leading-relaxed line-clamp-2">
+              {p.description}
+            </p>
+          </div>
+
+          <!-- Mobile Add to Bag Button -->
+          <button
+            type="button"
+            class="kaufmann-quick-add sm:hidden mt-4 w-full border border-neutral-900 text-neutral-900 hover:bg-neutral-900 hover:text-white text-[10px] tracking-[0.2em] uppercase font-medium py-2 transition-colors"
+            data-id={p.id}
+            data-name={p.name}
+            data-price={p.price}
+            data-image={p.image}
+          >
+            + Add to Bag
+          </button>
+        </div>
+      );
+    })}
+  </div>
+</section>
+
+<script is:inline>
+  (function() {
+    // Add to cart buttons integration
+    document.querySelectorAll('.kaufmann-quick-add').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const id = btn.dataset.id;
+        const name = btn.dataset.name;
+        const price = parseInt(btn.dataset.price, 10);
+        const image = btn.dataset.image;
+
+        if (window.NordicCart) {
+          window.NordicCart.addItem({ id, name, price, image, qty: 1 });
+        }
+      });
+    });
+
+    // Wishlist buttons integration
+    document.querySelectorAll('.kaufmann-wishlist-trigger').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const id = btn.dataset.id;
+        const name = btn.dataset.name;
+        const price = parseInt(btn.dataset.price, 10);
+        const image = btn.dataset.image;
+
+        if (window.NordicWishlist) {
+          window.NordicWishlist.toggleItem({ id, name, price, image });
+        }
+      });
+    });
+  })();
+</script>

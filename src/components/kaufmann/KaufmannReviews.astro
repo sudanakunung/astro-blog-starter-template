@@ -1,0 +1,140 @@
+---
+// Section 9: "WHAT OUR CUSTOMERS SAY" — HORIZONTAL SLIDESHOW/CAROUSEL
+const reviews = [
+  {
+    productName: 'Body Butter for the Senses',
+    rating: 5,
+    quote: 'The fragrance alone transforms an ordinary evening shower into a five-star Austrian alpine retreat. Truly velvety without feeling greasy.',
+    customerName: 'Elena V. — Vienna, Austria',
+    productImage: 'https://images.unsplash.com/photo-1608248597359-5b77c5e2ef9a?q=80&w=400&auto=format&fit=crop',
+  },
+  {
+    productName: 'Nutrient Serum',
+    rating: 5,
+    quote: 'My skin has never felt this calm, plumper, and illuminated. A staple on my bathroom vanity that I repurchase continuously.',
+    customerName: 'Charlotte M. — Zurich, Switzerland',
+    productImage: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=400&auto=format&fit=crop',
+  },
+  {
+    productName: 'Purifying Cleansing Gel',
+    rating: 5,
+    quote: 'Incredible texture that emulsifies into micro-foam. Cleanses SPF and makeup without any tightness or irritation.',
+    customerName: 'Sophie L. — Paris, France',
+    productImage: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?q=80&w=400&auto=format&fit=crop',
+  },
+  {
+    productName: 'Bath Oil for the Senses',
+    rating: 5,
+    quote: 'Unrivaled scent notes. The blend of lavender and ylang ylang relaxes tight shoulders after stressful work days.',
+    customerName: 'Marcus T. — Berlin, Germany',
+    productImage: 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?q=80&w=400&auto=format&fit=crop',
+  },
+  {
+    productName: 'Eye Rescue Serum',
+    rating: 5,
+    quote: 'Immediate cooling sensation with visible depuffing effect. The roller applicator makes morning skincare feel luxurious.',
+    customerName: 'Isabella K. — London, UK',
+    productImage: 'https://images.unsplash.com/photo-1512290900672-1f4a974b7861?q=80&w=400&auto=format&fit=crop',
+  },
+];
+---
+
+<section class="py-16 sm:py-24 bg-[#FAF8F5] border-t border-b border-[#E8E4DC] overflow-hidden">
+  <div class="max-w-[1540px] mx-auto px-4 sm:px-8 lg:px-12">
+    
+    <!-- Section Header with Left Heading and Right Carousel Arrows -->
+    <div class="flex items-end justify-between mb-8 sm:mb-12 border-b border-[#E8E4DC] pb-4">
+      <div>
+        <span class="text-[11px] tracking-[0.25em] uppercase font-light text-neutral-500 block mb-1">
+          Real Experiences
+        </span>
+        <h2 class="font-serif text-2xl sm:text-4xl font-light tracking-tight text-[#111111]">
+          What Our Customers Say
+        </h2>
+      </div>
+
+      <!-- Navigation Arrows -->
+      <div class="flex items-center space-x-2">
+        <button
+          id="kaufmann-prev-review"
+          type="button"
+          class="w-10 h-10 border border-neutral-300 hover:border-black rounded-full flex items-center justify-center text-neutral-800 hover:text-black transition-colors bg-white focus:outline-none"
+          aria-label="Previous review"
+        >
+          <svg class="w-4 h-4 stroke-current" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <button
+          id="kaufmann-next-review"
+          type="button"
+          class="w-10 h-10 border border-neutral-300 hover:border-black rounded-full flex items-center justify-center text-neutral-800 hover:text-black transition-colors bg-white focus:outline-none"
+          aria-label="Next review"
+        >
+          <svg class="w-4 h-4 stroke-current" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Horizontal Swipeable / Scrollable Slider (Partially Cut-off on Right) -->
+    <div
+      id="kaufmann-reviews-track"
+      class="flex gap-6 overflow-x-auto scroll-smooth pb-6 pt-2 -mx-4 px-4 sm:-mx-8 sm:px-8 lg:-mx-12 lg:px-12 snap-x snap-mandatory no-scrollbar"
+      style="scrollbar-width: none; -ms-overflow-style: none;"
+    >
+      {reviews.map((rev) => (
+        <div class="flex-shrink-0 w-[300px] sm:w-[380px] lg:w-[420px] bg-white border border-[#E8E4DC] p-6 sm:p-8 flex flex-col justify-between snap-start shadow-2xs hover:shadow-xs transition-shadow duration-300">
+          <div>
+            <!-- Star Rating -->
+            <div class="flex text-amber-500 text-sm mb-3">
+              {'★'.repeat(rev.rating)}
+            </div>
+
+            <!-- Product Name -->
+            <span class="text-[11px] tracking-[0.2em] uppercase font-light text-neutral-500 block mb-2">
+              {rev.productName}
+            </span>
+
+            <!-- Quote -->
+            <p class="font-serif text-base sm:text-lg font-light text-neutral-900 leading-relaxed italic">
+              "{rev.quote}"
+            </p>
+          </div>
+
+          <!-- Customer Info & Small Product Thumbnail Below -->
+          <div class="pt-6 mt-6 border-t border-[#F5F2EC] flex items-center justify-between">
+            <span class="text-xs font-light tracking-wider text-neutral-600">
+              {rev.customerName}
+            </span>
+
+            <img
+              src={rev.productImage}
+              alt={rev.productName}
+              class="w-10 h-10 object-cover rounded-xs border border-[#E8E4DC] bg-[#FAF8F5]"
+              loading="lazy"
+            />
+          </div>
+        </div>
+      ))}
+    </div>
+
+  </div>
+</section>
+
+<script is:inline>
+  (function() {
+    const track = document.getElementById('kaufmann-reviews-track');
+    const prevBtn = document.getElementById('kaufmann-prev-review');
+    const nextBtn = document.getElementById('kaufmann-next-review');
+
+    if (!track) return;
+
+    const scrollAmount = 380;
+
+    prevBtn?.addEventListener('click', () => {
+      track.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    });
+
+    nextBtn?.addEventListener('click', () => {
+      track.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    });
+  })();
+</script>

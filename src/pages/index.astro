@@ -4,6 +4,7 @@ export const prerender = false; // SSR di Cloudflare Workers
 import ShopLayout from '../layouts/ShopLayout.astro';
 import HomeNordic from '../templates/HomeNordic.astro';
 import HomeImpulse from '../templates/HomeImpulse.astro';
+import HomeKaufmann from '../templates/HomeKaufmann.astro';
 import { getActiveProducts } from '../lib/db/productRepo';
 import { getActiveBanners } from '../lib/db/bannerRepo';
 import type { D1Product, Store } from '../types/d1';
@@ -34,21 +35,36 @@ if (db) {
   slides = await getActiveBanners();
 }
 
-// 3. Dynamic Theme Detection: Query param ?theme=impulse | ?theme=nordic | store.theme
+// 3. Dynamic Theme Detection: Query param ?theme=kaufmann | ?theme=impulse | ?theme=nordic | store.theme
 const url = new URL(Astro.request.url);
 const themeParam = url.searchParams.get('theme')?.toLowerCase();
 const activeTheme = themeParam || store.theme || 'nordic';
 const isImpulse = activeTheme === 'impulse' || activeTheme === 'theme2';
+const isKaufmann = activeTheme === 'kaufmann' || activeTheme === 'theme3';
 ---
 
 <ShopLayout
-  title={isImpulse ? (store.title || 'IMPULSE — Minimalist Editorial Fashion') : (store.title || `${store.name} - Nordic Minimalist Shop`)}
-  description={isImpulse ? 'Warm neutral, timeless silhouettes and minimalist fashion editorial collection.' : `Katalog belanja online di ${store.name}`}
+  title={
+    isKaufmann
+      ? (store.title || `${store.name || 'SUSANNE KAUFMANN'} — Holistic Skincare & Spa Rituals`)
+      : isImpulse
+      ? (store.title || 'IMPULSE — Minimalist Editorial Fashion')
+      : (store.title || `${store.name} - Nordic Minimalist Shop`)
+  }
+  description={
+    isKaufmann
+      ? 'Organic alpine botanicals, targeted natural active ingredients and sensory body rituals.'
+      : isImpulse
+      ? 'Warm neutral, timeless silhouettes and minimalist fashion editorial collection.'
+      : `Katalog belanja online di ${store.name}`
+  }
   storeName={store.name}
-  hideNavbar={isImpulse}
-  hideFooter={isImpulse}
+  hideNavbar={isImpulse || isKaufmann}
+  hideFooter={isImpulse || isKaufmann}
 >
-  {isImpulse ? (
+  {isKaufmann ? (
+    <HomeKaufmann brandName={store.name || 'SUSANNE KAUFMANN'} dbProducts={products} slides={slides} />
+  ) : isImpulse ? (
     <HomeImpulse brandName={store.name || 'IMPULSE'} dbProducts={products} slides={slides} />
   ) : (
     <HomeNordic products={products} slides={slides} />

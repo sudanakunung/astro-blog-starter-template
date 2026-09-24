@@ -1,0 +1,72 @@
+---
+// Section 6: "THE SCENT OF THE RITUAL" SECTION (VIDEO BACKGROUND)
+interface Props {
+  brandName?: string;
+}
+
+const { brandName = 'SUSANNE KAUFMANN' } = Astro.props;
+---
+
+<section id="scent" class="w-full bg-[#FAF8F5] border-t border-b border-[#E8E4DC] overflow-hidden">
+  <div class="max-w-[1540px] mx-auto grid grid-cols-1 lg:grid-cols-2 min-h-[640px] items-stretch">
+    
+    <!-- Left Column: Poetic Narrative Text -->
+    <div class="p-8 sm:p-14 lg:p-20 flex flex-col justify-center max-w-xl">
+      <span class="text-[11px] tracking-[0.25em] uppercase font-light text-neutral-500 mb-3 block">
+        Sensorial Botanical Harmony
+      </span>
+
+      <h2 class="font-serif text-3xl sm:text-5xl font-light text-[#111111] tracking-tight leading-[1.18]">
+        The scent of the ritual
+      </h2>
+
+      <p class="mt-6 text-sm sm:text-base font-light text-neutral-700 leading-relaxed">
+        A bespoke blend of soothing French lavender, sun-drenched ylang ylang, and grounding Indonesian patchouli. Crafted in the Bregenzerwald alpine region, each formulation unlocks tension in the mind while drenching the skin in concentrated botanical moisture.
+      </p>
+
+      <p class="mt-4 text-xs sm:text-sm font-light text-neutral-500 leading-relaxed italic">
+        "Fragrance is not merely a finishing touch; it is the bridge between the skin and the soul."
+      </p>
+
+      <div class="mt-8 sm:mt-10">
+        <a
+          href="#ritual"
+          class="inline-block border border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-white px-8 sm:px-10 py-3 text-[11px] sm:text-xs tracking-[0.25em] uppercase font-medium transition-all duration-300"
+        >
+          Discover the ritual
+        </a>
+      </div>
+    </div>
+
+    <!-- Right Column: Vertical Cinematic Video with Artistic Cut-off Brand Overlay -->
+    <div class="relative w-full h-[420px] lg:h-auto min-h-[460px] overflow-hidden bg-[#2D2A26] flex items-center justify-center">
+      <!-- Full-Height Slow-Motion Vertical Video -->
+      <video
+        autoplay
+        muted
+        loop
+        playsinline
+        poster="https://images.unsplash.com/photo-1608248597359-5b77c5e2ef9a?q=80&w=1200&auto=format&fit=crop"
+        class="absolute inset-0 w-full h-full object-cover object-center"
+      >
+        <source src="https://assets.mixkit.co/videos/preview/mixkit-close-up-of-skin-care-serum-dropper-41138-large.mp4" type="video/mp4" />
+      </video>
+
+      <!-- Editorial Tint Overlays -->
+      <div class="absolute inset-0 bg-black/25 pointer-events-none"></div>
+
+      <!-- Large Artistic Cut-Off Brand Overlay Text ("USANNE UFMANN for the Senses") -->
+      <div class="absolute inset-0 flex items-center justify-end overflow-hidden pointer-events-none select-none">
+        <div class="font-serif text-[4.5rem] sm:text-[7rem] lg:text-[8.5rem] font-light text-white/15 tracking-[0.1em] uppercase whitespace-nowrap transform translate-x-12 sm:translate-x-20 rotate-90 lg:rotate-0 leading-none">
+          USANNE UFMANN <span class="font-sans text-xs sm:text-sm tracking-[0.3em] font-light block mt-2 text-white/40">for the Senses</span>
+        </div>
+      </div>
+
+      <!-- Subtle Bottom Left Label -->
+      <div class="absolute bottom-6 left-6 z-10 text-white/90 text-[10px] tracking-[0.25em] uppercase font-light bg-black/30 backdrop-blur-sm px-3 py-1.5 border border-white/20">
+        Pure Botanical Extraction &bull; Slow Craft
+      </div>
+    </div>
+
+  </div>
+</section>

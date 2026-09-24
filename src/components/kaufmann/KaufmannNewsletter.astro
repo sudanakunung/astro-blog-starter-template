@@ -1,0 +1,93 @@
+---
+// Section 11: NEWSLETTER SUBSCRIBE SECTION
+const previewPhotos = [
+  {
+    title: 'Morning Lymphatic Facial Massage',
+    image: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=400&auto=format&fit=crop',
+  },
+  {
+    title: 'Alpine Flora Harvesting in June',
+    image: 'https://images.unsplash.com/photo-1511497584788-87676104235f?q=80&w=400&auto=format&fit=crop',
+  },
+  {
+    title: 'The Art of Sensorial Bathing',
+    image: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=400&auto=format&fit=crop',
+  },
+  {
+    title: 'Biomimetic Barrier Hydration',
+    image: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=400&auto=format&fit=crop',
+  },
+];
+---
+
+<section class="py-16 sm:py-24 px-4 sm:px-8 lg:px-12 max-w-[1540px] mx-auto bg-[#FAF8F5]">
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
+    
+    <!-- Left Column: Newsletter Form (5 Cols) -->
+    <div class="lg:col-span-5 max-w-lg">
+      <span class="text-[11px] tracking-[0.25em] uppercase font-light text-neutral-500 mb-2 block">
+        The Botanical Journal
+      </span>
+
+      <h2 class="font-serif text-2xl sm:text-4xl font-light text-[#111111] tracking-tight">
+        Subscribe to our newsletter
+      </h2>
+
+      <p class="mt-4 text-xs sm:text-sm font-light text-neutral-600 leading-relaxed">
+        Receive 10% off your first ritual order, bespoke seasonal skincare recommendations, and early access to limited alpine formulations.
+      </p>
+
+      <form id="kaufmann-newsletter-form" class="mt-6 flex flex-col sm:flex-row gap-2.5">
+        <input
+          type="email"
+          required
+          placeholder="Enter your email address"
+          class="flex-1 bg-white border border-[#E8E4DC] px-4 py-3 text-xs tracking-wider text-neutral-900 placeholder-neutral-400 focus:outline-none focus:border-black font-light transition-colors"
+        />
+        <button
+          type="submit"
+          class="bg-[#111111] hover:bg-black text-white text-[11px] tracking-[0.25em] uppercase font-medium px-7 py-3 transition-colors shadow-xs"
+        >
+          Subscribe
+        </button>
+      </form>
+
+      <p class="mt-3 text-[10px] text-neutral-400 font-light">
+        By subscribing, you agree to our Privacy Policy. Unsubscribe anytime.
+      </p>
+    </div>
+
+    <!-- Right Column: Strip of 4 Editorial / Lifestyle Preview Photos (7 Cols) -->
+    <div class="lg:col-span-7">
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+        {previewPhotos.map((photo) => (
+          <div class="group relative overflow-hidden bg-white border border-[#E8E4DC] aspect-[3/4] rounded-xs cursor-pointer">
+            <img
+              src={photo.image}
+              alt={photo.title}
+              class="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-108"
+              loading="lazy"
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-3 flex items-end">
+              <span class="text-white text-[10px] tracking-wider font-light leading-snug line-clamp-2">
+                {photo.title}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<script is:inline>
+  (function() {
+    const form = document.getElementById('kaufmann-newsletter-form');
+    form?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      alert('Thank you for subscribing! Your 10% discount code has been sent to your email.');
+      form.reset();
+    });
+  })();
+</script>
