@@ -1,5 +1,7 @@
 ---
 export const prerender = false;
+const store = Astro.locals.store;
+const storeName = store?.name || 'Navanusa Jewellery';
 ---
 
 <!DOCTYPE html>
@@ -7,7 +9,7 @@ export const prerender = false;
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Profil Saya</title>
+  <title>Profil Saya | {storeName}</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="stylesheet" href="https://unpkg.com/tailwindcss@2.2.19/dist/tailwind.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
@@ -41,7 +43,7 @@ export const prerender = false;
     .address-card:hover { border-color:#6b7280; }
   </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
+<body class="bg-gray-50 min-h-screen" data-store-name={storeName}>
 
   <!-- Navbar minimal -->
   <header class="bg-white border-b border-gray-200 sticky top-0 z-30">
@@ -50,7 +52,7 @@ export const prerender = false;
         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
           <path d="M5,22h14c1.103,0,2-0.897,2-2V9c0-0.553-0.447-1-1-1h-3V7c0-2.757-2.243-5-5-5S7,4.243,7,7v1H4C3.447,8,3,8.447,3,9v11C3,21.103,3.897,22,5,22z M9,7c0-1.654,1.346-3,3-3s3,1.346,3,3v1H9V7z M5,10h2v2h2v-2h6v2h2v-2h2l0.002,10H5V10z"/>
         </svg>
-        <span id="store-name-header">Toko</span>
+        <span id="store-name-header">{storeName}</span>
       </a>
       <button id="btn-logout" class="text-sm text-gray-500 hover:text-red-600 transition-colors font-medium flex items-center gap-1">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
@@ -227,6 +229,14 @@ export const prerender = false;
     el.classList.remove('hidden');
     setTimeout(() => el.classList.add('hidden'), 3000);
   }
+  window.toast = toast;
+
+  window.copyOrderId = function(id) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(id);
+    }
+    toast('ID Pesanan disalin: ' + id);
+  };
 
   function formatRp(n) {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(n);
@@ -326,6 +336,59 @@ export const prerender = false;
       .map(i => `${i.product_name} ×${i.qty}`)
       .join(', ');
 
+    // Action & guidance for pending orders
+    let pendingPaymentHtml = '';
+    if (isOngoing && o.status === 'pending') {
+      const currentStoreName = document.body.dataset.storeName || 'Toko';
+      const custName = customer.name || o.customer_name || '';
+      const textMsg = `Halo Admin ${currentStoreName}, saya ingin konfirmasi pembayaran untuk pesanan #${o.id}.\nTotal Tagihan: ${formatRp(o.total_amount)}\nNama Pemesan: ${custName}\nMohon informasi rekening pembayaran / verifikasi transaksi saya. Terima kasih!`;
+      const waLink = `https://wa.me/6281234567890?text=${encodeURIComponent(textMsg)}`;
+
+      pendingPaymentHtml = `
+        <div class="mt-3.5 bg-amber-50 border border-amber-200 rounded-xl p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+          <div class="flex items-start gap-3">
+            <div class="w-8 h-8 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center shrink-0 mt-0.5 text-base">
+              💳
+            </div>
+            <div>
+              <p class="text-xs font-bold text-amber-900">Menunggu Pembayaran</p>
+              <p class="text-xs text-amber-800 mt-0.5 leading-relaxed">
+                Silakan selesaikan pembayaran sebesar <span class="font-bold text-gray-900">${formatRp(o.total_amount)}</span> dan klik tombol konfirmasi untuk menghubungi admin toko.
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 self-end sm:self-center shrink-0">
+            <a
+              href="${waLink}"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center justify-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-semibold px-4 py-2.5 rounded-lg transition-all shadow-sm whitespace-nowrap"
+            >
+              <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+              </svg>
+              <span>Konfirmasi via WhatsApp</span>
+            </a>
+          </div>
+        </div>`;
+    }
+
+    // Status: paid info banner
+    let paidInfoHtml = '';
+    if (isOngoing && o.status === 'paid') {
+      paidInfoHtml = `
+        <div class="mt-3 bg-blue-50 border border-blue-100 rounded-xl p-3 flex items-center gap-2.5">
+          <div class="text-blue-600 shrink-0">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <p class="text-xs text-blue-900 leading-relaxed">
+            Pembayaran telah berhasil diverifikasi. Pesanan Anda sedang disiapkan oleh tim toko.
+          </p>
+        </div>`;
+    }
+
     // Tracking info for ongoing orders
     let trackingHtml = '';
     if (isOngoing && (o.status === 'shipped' || o.tracking_number)) {
@@ -356,6 +419,11 @@ export const prerender = false;
           <div class="min-w-0">
             <div class="flex items-center gap-2 flex-wrap">
               <span class="text-xs font-mono font-bold text-gray-900">${o.id}</span>
+              <button onclick="copyOrderId('${o.id}')" title="Salin ID Pesanan" class="text-gray-400 hover:text-gray-700 transition-colors p-0.5 rounded">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                </svg>
+              </button>
               ${statusBadge(o.status)}
             </div>
             <p class="text-xs text-gray-400 mt-0.5">${formatDate(o.created_at)}</p>
@@ -369,6 +437,8 @@ export const prerender = false;
         ${itemsSummary ? `<p class="text-xs text-gray-500 mt-2 truncate">${itemsSummary}</p>` : ''}
         ${addr && addr !== '-' ? `<p class="text-xs text-gray-400 mt-1 truncate">📍 ${addr}</p>` : ''}
 
+        ${pendingPaymentHtml}
+        ${paidInfoHtml}
         ${trackingHtml}
       </div>`;
   }
