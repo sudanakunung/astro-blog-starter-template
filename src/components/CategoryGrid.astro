@@ -1,40 +1,40 @@
 ---
-// CategoryGrid.astro - Variative category showcase grid for Navanusa Jewellery
+// CategoryGrid.astro - Showcase kategori perhiasan (1 kolom di mobile, asimetris 3 kolom di desktop)
 const categories = [
   {
     name: 'Kalung',
     description: 'Liontin & Rantai Elegan',
     image: '/cat-necklace.jpg',
     badge: 'Koleksi Terbaru',
-    size: 'large',
+    slug: 'Kalung',
   },
   {
     name: 'Cincin',
     description: 'Cincin Berlian & Emas',
     image: '/cat-ring.jpg',
     badge: 'Pilihan Terbaik',
-    size: 'small',
+    slug: 'Cincin',
   },
   {
     name: 'Gelang',
     description: 'Gelang Mewah & Bangle',
     image: '/cat-bracelet.jpg',
     badge: 'Eksklusif',
-    size: 'small',
+    slug: 'Gelang',
   },
   {
     name: 'Anting',
     description: 'Stud, Drop & Hoop',
     image: '/cat-earring.jpg',
     badge: 'Tren Musim Ini',
-    size: 'wide',
+    slug: 'Anting',
   },
 ];
 ---
 
-<section class="w-full bg-white py-12 px-4 sm:px-6">
+<section class="w-full bg-white py-8 sm:py-12 px-4 sm:px-6">
   <!-- Section Header -->
-  <div class="container mx-auto px-4 sm:px-6 mb-8 text-center">
+  <div class="container mx-auto px-2 sm:px-6 mb-6 sm:mb-8 text-center">
     <div class="flex items-center gap-4 mb-3">
       <div class="h-px flex-1 bg-gray-200"></div>
       <p class="text-xs uppercase tracking-[0.25em] text-gray-400 font-medium whitespace-nowrap">Koleksi Kami</p>
@@ -45,23 +45,22 @@ const categories = [
     </h2>
   </div>
 
-  <!-- Asymmetric Grid -->
-  <div class="container mx-auto px-4 sm:px-6" style="display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: auto auto; gap: 12px;">
+  <!-- Category Grid: 1 Grid di Mobile, Asymmetric di Desktop -->
+  <div class="container mx-auto px-2 sm:px-6 category-grid-wrapper">
 
-    <!-- 1. KALUNG — large, spans 2 rows (left side) -->
+    <!-- 1. KALUNG -->
     <a href="/products?category=Kalung"
-       class="group relative overflow-hidden rounded-2xl bg-gray-100"
-       style="grid-column: 1; grid-row: 1 / span 2; min-height: 460px;"
+       class="cat-card cat-card-kalung group relative overflow-hidden rounded-2xl bg-gray-100 block"
     >
       <img src="/cat-necklace.jpg" alt="Kalung"
            class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
            loading="lazy" />
-      <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-      <div class="absolute bottom-0 left-0 right-0 p-6">
-        <p class="text-white/65 text-[10px] uppercase tracking-widest mb-1">Koleksi Terbaru</p>
-        <h3 class="text-white text-2xl font-semibold tracking-tight mb-1">Kalung</h3>
-        <p class="text-white/80 text-xs mb-4">Liontin &amp; Rantai Elegan</p>
-        <span class="inline-flex items-center gap-1.5 bg-white text-gray-900 text-xs font-bold px-4 py-2 rounded-full uppercase tracking-wider group-hover:bg-gray-900 group-hover:text-white transition-colors duration-200">
+      <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent"></div>
+      <div class="absolute bottom-0 left-0 right-0 p-5 sm:p-6">
+        <p class="text-white/70 text-[10px] sm:text-xs uppercase tracking-widest mb-1">Koleksi Terbaru</p>
+        <h3 class="text-white text-xl sm:text-2xl font-semibold tracking-tight mb-1">Kalung</h3>
+        <p class="text-white/80 text-xs mb-3">Liontin &amp; Rantai Elegan</p>
+        <span class="inline-flex items-center gap-1.5 bg-white text-gray-900 text-xs font-bold px-4 py-2 rounded-full uppercase tracking-wider group-hover:bg-gray-900 group-hover:text-white transition-colors duration-200 shadow-md">
           Lihat Semua
           <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
@@ -70,57 +69,54 @@ const categories = [
       </div>
     </a>
 
-    <!-- 2. CINCIN — small, top center -->
+    <!-- 2. CINCIN -->
     <a href="/products?category=Cincin"
-       class="group relative overflow-hidden rounded-2xl bg-gray-100"
-       style="grid-column: 2; grid-row: 1; min-height: 220px;"
+       class="cat-card cat-card-cincin group relative overflow-hidden rounded-2xl bg-gray-100 block"
     >
       <img src="/cat-ring.jpg" alt="Cincin"
            class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
            loading="lazy" />
-      <div class="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-transparent"></div>
       <div class="absolute bottom-0 left-0 right-0 p-5">
-        <p class="text-white/65 text-[10px] uppercase tracking-widest mb-0.5">Pilihan Terbaik</p>
-        <h3 class="text-white text-lg font-semibold">Cincin</h3>
-        <p class="text-white/75 text-xs">Cincin Berlian &amp; Emas</p>
-      </div>
-      <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-        <span class="bg-white text-gray-900 text-xs font-bold px-4 py-2 rounded-full uppercase tracking-wider shadow-lg">Lihat Koleksi</span>
+        <p class="text-white/70 text-[10px] sm:text-xs uppercase tracking-widest mb-0.5">Pilihan Terbaik</p>
+        <h3 class="text-white text-lg sm:text-xl font-semibold">Cincin</h3>
+        <p class="text-white/80 text-xs mb-2">Cincin Berlian &amp; Emas</p>
+        <span class="inline-flex items-center gap-1.5 text-white/90 text-xs font-semibold group-hover:text-white transition-colors">
+          Lihat Koleksi →
+        </span>
       </div>
     </a>
 
-    <!-- 3. GELANG — small, top right -->
+    <!-- 3. GELANG -->
     <a href="/products?category=Gelang"
-       class="group relative overflow-hidden rounded-2xl bg-gray-100"
-       style="grid-column: 3; grid-row: 1; min-height: 220px;"
+       class="cat-card cat-card-gelang group relative overflow-hidden rounded-2xl bg-gray-100 block"
     >
       <img src="/cat-bracelet.jpg" alt="Gelang"
            class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
            loading="lazy" />
-      <div class="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-transparent"></div>
       <div class="absolute bottom-0 left-0 right-0 p-5">
-        <p class="text-white/65 text-[10px] uppercase tracking-widest mb-0.5">Eksklusif</p>
-        <h3 class="text-white text-lg font-semibold">Gelang</h3>
-        <p class="text-white/75 text-xs">Gelang Mewah &amp; Bangle</p>
-      </div>
-      <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-        <span class="bg-white text-gray-900 text-xs font-bold px-4 py-2 rounded-full uppercase tracking-wider shadow-lg">Lihat Koleksi</span>
+        <p class="text-white/70 text-[10px] sm:text-xs uppercase tracking-widest mb-0.5">Eksklusif</p>
+        <h3 class="text-white text-lg sm:text-xl font-semibold">Gelang</h3>
+        <p class="text-white/80 text-xs mb-2">Gelang Mewah &amp; Bangle</p>
+        <span class="inline-flex items-center gap-1.5 text-white/90 text-xs font-semibold group-hover:text-white transition-colors">
+          Lihat Koleksi →
+        </span>
       </div>
     </a>
 
-    <!-- 4. ANTING — wide, spans 2 cols bottom right -->
+    <!-- 4. ANTING -->
     <a href="/products?category=Anting"
-       class="group relative overflow-hidden rounded-2xl bg-gray-100"
-       style="grid-column: 2 / span 2; grid-row: 2; min-height: 220px;"
+       class="cat-card cat-card-anting group relative overflow-hidden rounded-2xl bg-gray-100 block"
     >
       <img src="/cat-earring.jpg" alt="Anting"
            class="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
            loading="lazy" />
-      <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent"></div>
-      <div class="absolute bottom-0 left-0 p-6">
-        <p class="text-white/65 text-[10px] uppercase tracking-widest mb-1">Tren Musim Ini</p>
-        <h3 class="text-white text-xl font-semibold mb-1">Anting</h3>
-        <p class="text-white/75 text-xs mb-3">Stud, Drop &amp; Hoop</p>
+      <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent"></div>
+      <div class="absolute bottom-0 left-0 right-0 p-5 sm:p-6">
+        <p class="text-white/70 text-[10px] sm:text-xs uppercase tracking-widest mb-1">Tren Musim Ini</p>
+        <h3 class="text-white text-lg sm:text-xl font-semibold mb-1">Anting</h3>
+        <p class="text-white/80 text-xs mb-3">Stud, Drop &amp; Hoop</p>
         <span class="inline-flex items-center gap-1.5 bg-white/20 border border-white/50 text-white text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider group-hover:bg-white group-hover:text-gray-900 transition-all duration-200 backdrop-blur-sm">
           Lihat Semua
           <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -131,25 +127,51 @@ const categories = [
     </a>
 
   </div>
-
-  <!-- Mobile fallback: stack as 2-col grid on sm, 1-col on xs -->
-  <style>
-    @media (max-width: 767px) {
-      section .max-w-6xl > div[style*="grid-template-columns"] {
-        display: grid !important;
-        grid-template-columns: 1fr 1fr !important;
-        grid-template-rows: auto !important;
-      }
-      section .max-w-6xl > div[style*="grid-template-columns"] > a {
-        grid-column: auto !important;
-        grid-row: auto !important;
-        min-height: 180px !important;
-      }
-    }
-    @media (max-width: 480px) {
-      section .max-w-6xl > div[style*="grid-template-columns"] {
-        grid-template-columns: 1fr !important;
-      }
-    }
-  </style>
 </section>
+
+<style>
+  /* ── Mobile: 1 Kolom Grid (1 card per baris) ───────────── */
+  .category-grid-wrapper {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .cat-card {
+    min-height: 190px;
+    width: 100%;
+  }
+
+  /* ── Desktop (md: >= 768px): Asymmetric 3-Column Grid ──── */
+  @media (min-width: 768px) {
+    .category-grid-wrapper {
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: auto auto;
+      gap: 14px;
+    }
+
+    .cat-card-kalung {
+      grid-column: 1;
+      grid-row: 1 / span 2;
+      min-height: 460px;
+    }
+
+    .cat-card-cincin {
+      grid-column: 2;
+      grid-row: 1;
+      min-height: 220px;
+    }
+
+    .cat-card-gelang {
+      grid-column: 3;
+      grid-row: 1;
+      min-height: 220px;
+    }
+
+    .cat-card-anting {
+      grid-column: 2 / span 2;
+      grid-row: 2;
+      min-height: 220px;
+    }
+  }
+</style>

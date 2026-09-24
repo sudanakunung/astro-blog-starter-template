@@ -31,6 +31,9 @@ const pPrice = document.getElementById('p-price');
 const pStock = document.getElementById('p-stock');
 const pWeight = document.getElementById('p-weight');
 const pImage = document.getElementById('p-image');
+const pImageFile = document.getElementById('p-image-file');
+const btnUploadPImage = document.getElementById('btn-upload-p-image');
+const btnUploadPText = document.getElementById('btn-upload-p-text');
 const pDesc = document.getElementById('p-desc');
 const imagePreview = document.getElementById('image-preview');
 const imagePreviewContainer = document.getElementById('image-preview-container');
@@ -58,6 +61,9 @@ const bannerForm = document.getElementById('banner-form');
 const bId = document.getElementById('b-id');
 const bTitle = document.getElementById('b-title');
 const bImage = document.getElementById('b-image');
+const bImageFile = document.getElementById('b-image-file');
+const btnUploadBImage = document.getElementById('btn-upload-b-image');
+const btnUploadBText = document.getElementById('btn-upload-b-text');
 const bLink = document.getElementById('b-link');
 const bLinkText = document.getElementById('b-link-text');
 const bOrder = document.getElementById('b-order');
@@ -553,6 +559,59 @@ function setupEventListeners() {
       }
     }
   });
+
+  // MinIO Image Upload Handler
+  async function uploadFileToMinio(file, targetInput, previewImg, previewContainer, btnTextEl, defaultText) {
+    if (!file || !file.type.startsWith('image/')) {
+      showToast('Pilih file gambar yang valid (JPG, PNG, WebP)', 'error');
+      return;
+    }
+
+    btnTextEl.textContent = 'Mengunggah...';
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const res = await fetch('https://minio.navanusa.com/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (!data.ok || !data.data?.url) {
+        throw new Error(data.error || 'Gagal mengunggah gambar');
+      }
+
+      targetInput.value = data.data.url;
+      previewImg.src = data.data.url;
+      previewContainer.classList.remove('hidden');
+      showToast('Gambar berhasil diunggah ke MinIO!', 'success');
+    } catch (err) {
+      showToast('Gagal upload: ' + err.message, 'error');
+    } finally {
+      btnTextEl.textContent = defaultText;
+    }
+  }
+
+  if (btnUploadPImage && pImageFile) {
+    btnUploadPImage.addEventListener('click', () => pImageFile.click());
+    pImageFile.addEventListener('change', (e) => {
+      if (e.target.files && e.target.files.length > 0) {
+        uploadFileToMinio(e.target.files[0], pImage, imagePreview, imagePreviewContainer, btnUploadPText, 'Upload ke MinIO');
+        pImageFile.value = '';
+      }
+    });
+  }
+
+  if (btnUploadBImage && bImageFile) {
+    btnUploadBImage.addEventListener('click', () => bImageFile.click());
+    bImageFile.addEventListener('change', (e) => {
+      if (e.target.files && e.target.files.length > 0) {
+        uploadFileToMinio(e.target.files[0], bImage, bannerImagePreview, bannerImagePreviewContainer, btnUploadBText, 'Upload ke MinIO');
+        bImageFile.value = '';
+      }
+    });
+  }
 
   pImage.addEventListener('input', () => {
     const url = pImage.value.trim();
