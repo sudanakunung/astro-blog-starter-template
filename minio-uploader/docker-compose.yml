@@ -6,11 +6,11 @@ services:
     container_name: minio_storage
     restart: always
     ports:
-      - "9000:9000"   # MinIO S3 API Endpoint
-      - "9001:9001"   # MinIO Web Console Dashboard
+      - "9000:9000" # MinIO S3 API Endpoint
+      - "9001:9001" # MinIO Web Console Dashboard
     environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_ROOT_USER: admin_tokoku
+      MINIO_ROOT_PASSWORD: PasswordKuat123!
     volumes:
       - minio_data:/data
     command: server /data --console-address ":9001"
