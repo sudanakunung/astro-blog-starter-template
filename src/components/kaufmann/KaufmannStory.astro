@@ -1,20 +1,42 @@
 ---
-// Section 8: "OUR STORY" SECTION (VIDEO BACKGROUND, FULL-WIDTH)
+interface Props {
+  storyMedia?: string;
+}
+
+const { storyMedia } = Astro.props;
+
+function isVideoUrl(url?: string): boolean {
+  if (!url) return true;
+  const clean = url.split('?')[0].toLowerCase();
+  return clean.endsWith('.mp4') || clean.endsWith('.webm') || clean.endsWith('.mov') || clean.endsWith('.ogg') || clean.endsWith('.mkv');
+}
+
+const mediaSrc = storyMedia || 'https://assets.mixkit.co/videos/preview/mixkit-indoor-pool-with-warm-lighting-in-a-spa-41883-large.mp4';
+const isVideo = isVideoUrl(mediaSrc);
 ---
 
 <section id="story" class="relative w-full h-[75vh] min-h-[520px] max-h-[820px] overflow-hidden bg-[#2D2A26] flex items-center justify-end">
-  <!-- Full-Width Spa Ambient Background Video -->
-  <video
-    autoplay
-    muted
-    loop
-    playsinline
-    poster="https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=1920&auto=format&fit=crop"
-    class="absolute inset-0 w-full h-full object-cover object-center"
-    style="filter: brightness(0.85);"
-  >
-    <source src="https://assets.mixkit.co/videos/preview/mixkit-indoor-pool-with-warm-lighting-in-a-spa-41883-large.mp4" type="video/mp4" />
-  </video>
+  <!-- Full-Width Spa Ambient Background Video or Photo -->
+  {isVideo ? (
+    <video
+      autoplay
+      muted
+      loop
+      playsinline
+      poster="https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=1920&auto=format&fit=crop"
+      class="absolute inset-0 w-full h-full object-cover object-center"
+      style="filter: brightness(0.85);"
+    >
+      <source src={mediaSrc} type="video/mp4" />
+    </video>
+  ) : (
+    <img
+      src={mediaSrc}
+      alt="Our Story"
+      class="absolute inset-0 w-full h-full object-cover object-center"
+      style="filter: brightness(0.85);"
+    />
+  )}
 
   <!-- Editorial Warm Gradient Overlay -->
   <div class="absolute inset-0 bg-gradient-to-l from-black/75 via-black/40 to-transparent pointer-events-none"></div>

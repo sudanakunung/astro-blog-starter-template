@@ -3,9 +3,16 @@ import type { CarouselSlide } from '../../types/store';
 
 interface Props {
   slides?: CarouselSlide[];
+  customHeroMedia?: string;
 }
 
-const { slides = [] } = Astro.props;
+const { slides = [], customHeroMedia } = Astro.props;
+
+function isVideoUrl(url?: string): boolean {
+  if (!url) return false;
+  const clean = url.split('?')[0].toLowerCase();
+  return clean.endsWith('.mp4') || clean.endsWith('.webm') || clean.endsWith('.mov') || clean.endsWith('.ogg') || clean.endsWith('.mkv');
+}
 
 // Impulse Hero Slideshow with Cinematic Ken Burns Effect & Shoppable Hotspots
 const defaultSlides = [
@@ -16,6 +23,7 @@ const defaultSlides = [
     subtext: 'Soft texture, effortless movement, warm-weather pieces designed to be worn on repeat.',
     cta: 'SHOP LINEN',
     ctaLink: '#catalog',
+    isVideo: false,
   },
   {
     image: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=2070&auto=format&fit=crop',
@@ -24,6 +32,7 @@ const defaultSlides = [
     subtext: 'Effortless silhouettes in golden-hour light. Designed to be seen, felt, and lived in.',
     cta: 'SHOP DRESSES',
     ctaLink: '#catalog',
+    isVideo: false,
   },
   {
     image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=2070&auto=format&fit=crop',
@@ -32,10 +41,11 @@ const defaultSlides = [
     subtext: 'Understated shapes, quiet luxury, and pieces that become the backbone of your wardrobe.',
     cta: 'EXPLORE NEW',
     ctaLink: '#all-new',
+    isVideo: false,
   },
 ];
 
-const heroSlides = slides && slides.length > 0
+let heroSlides = slides && slides.length > 0
   ? slides.map((s: any, idx) => ({
       image: s.image || s.image_url,
       alt: s.title,
@@ -43,8 +53,20 @@ const heroSlides = slides && slides.length > 0
       subtext: 'Koleksi eksklusif dengan kualitas terbaik untuk melengkapi gaya elegan Anda.',
       cta: s.linkText || s.link_text || 'BELANJA SEKARANG',
       ctaLink: s.link || s.link_url || '#catalog',
+      isVideo: isVideoUrl(s.image || s.image_url),
     }))
   : defaultSlides;
+
+if (customHeroMedia) {
+  heroSlides = [
+    {
+      ...heroSlides[0],
+      image: customHeroMedia,
+      isVideo: isVideoUrl(customHeroMedia),
+    },
+    ...heroSlides.slice(1),
+  ];
+}
 ---
 
 <section class="relative w-full overflow-hidden bg-stone-900">
@@ -56,14 +78,25 @@ const heroSlides = slides && slides.length > 0
         class={`hero-slide absolute inset-0 w-full h-full transition-opacity duration-[1800ms] ease-in-out ${idx === 0 ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
         data-slide-index={idx}
       >
-        <!-- Image with Ken Burns zoom animation -->
-        <img
-          src={slide.image}
-          alt={slide.alt}
-          class={`w-full h-full object-cover object-center ${idx === 0 ? 'hero-ken-burns-active' : ''}`}
-          style="width: 100%; height: 100%; object-fit: cover; will-change: transform;"
-          loading={idx === 0 ? 'eager' : 'lazy'}
-        />
+        <!-- Media (Video or Image with Ken Burns) -->
+        {slide.isVideo ? (
+          <video
+            src={slide.image}
+            autoplay
+            muted
+            loop
+            playsinline
+            class="w-full h-full object-cover object-center"
+          ></video>
+        ) : (
+          <img
+            src={slide.image}
+            alt={slide.alt}
+            class={`w-full h-full object-cover object-center ${idx === 0 ? 'hero-ken-burns-active' : ''}`}
+            style="width: 100%; height: 100%; object-fit: cover; will-change: transform;"
+            loading={idx === 0 ? 'eager' : 'lazy'}
+          />
+        )}
 
         <!-- Gradient Overlays -->
         <div class="absolute inset-0" style="background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.1) 40%, transparent 100%);"></div>

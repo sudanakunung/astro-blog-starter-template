@@ -6,6 +6,10 @@ export function DeleteBanner(arg1) {
   return window['go']['main']['App']['DeleteBanner'](arg1);
 }
 
+export function DeleteMediaItem(arg1) {
+  return window['go']['main']['App']['DeleteMediaItem'](arg1);
+}
+
 export function FetchBanners() {
   return window['go']['main']['App']['FetchBanners']();
 }
@@ -26,12 +30,20 @@ export function GetConfig() {
   return window['go']['main']['App']['GetConfig']();
 }
 
+export function GetMediaList() {
+  return window['go']['main']['App']['GetMediaList']();
+}
+
 export function GetStoreSettingsStatus() {
   return window['go']['main']['App']['GetStoreSettingsStatus']();
 }
 
 export function SaveConfig(arg1) {
   return window['go']['main']['App']['SaveConfig'](arg1);
+}
+
+export function SaveMediaItem(arg1) {
+  return window['go']['main']['App']['SaveMediaItem'](arg1);
 }
 
 export function SaveStoreSettings(arg1) {

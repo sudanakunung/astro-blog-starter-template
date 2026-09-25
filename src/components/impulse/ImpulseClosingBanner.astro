@@ -1,16 +1,41 @@
 ---
 // Full-width Closing Banner with Warm Golden Hour Light
+interface Props {
+  mediaUrl?: string;
+}
+
+const { mediaUrl } = Astro.props;
+
+function isVideoUrl(url?: string): boolean {
+  if (!url) return false;
+  const clean = url.split('?')[0].toLowerCase();
+  return clean.endsWith('.mp4') || clean.endsWith('.webm') || clean.endsWith('.mov') || clean.endsWith('.ogg') || clean.endsWith('.mkv');
+}
+
+const src = mediaUrl || 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=2000&auto=format&fit=crop';
+const isVideo = isVideoUrl(src);
 ---
 
 <section class="relative w-full overflow-hidden bg-[#2D2A26] my-10 sm:my-16">
   <div class="relative w-full h-[60vh] min-h-[460px] max-h-[700px]">
-    <!-- Golden Hour Close-up Model Photo -->
-    <img
-      src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=2000&auto=format&fit=crop"
-      alt="Easy to wear, easy to return to - Golden Hour Collection"
-      class="w-full h-full object-cover object-center brightness-[0.88]"
-      loading="lazy"
-    />
+    <!-- Golden Hour Close-up Model Photo or Video -->
+    {isVideo ? (
+      <video
+        src={src}
+        autoplay
+        muted
+        loop
+        playsinline
+        class="w-full h-full object-cover object-center brightness-[0.88]"
+      ></video>
+    ) : (
+      <img
+        src={src}
+        alt="Easy to wear, easy to return to - Golden Hour Collection"
+        class="w-full h-full object-cover object-center brightness-[0.88]"
+        loading="lazy"
+      />
+    )}
 
     <!-- Warm Gradient Overlay -->
     <div class="absolute inset-0 bg-gradient-to-t from-stone-900/60 via-stone-900/20 to-stone-900/40"></div>

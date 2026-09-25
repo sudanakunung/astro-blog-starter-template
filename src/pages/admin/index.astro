@@ -9,7 +9,7 @@ export const prerender = false;
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Dashboard - Astro, D1 Sync & Integrasi</title>
-  <style>
+  <style is:global>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
     :root {
@@ -678,6 +678,96 @@ export const prerender = false;
       box-shadow: 0 0 0 1px #000000, var(--shadow-md);
     }
 
+    /* ── Tab 3 Settings & Media Layout ──────────────────────── */
+    .tab-settings-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .settings-two-col-grid {
+      display: grid;
+      grid-template-columns: 400px 1fr;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    @media (max-width: 1060px) {
+      .settings-two-col-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .theme-media-group {
+      display: flex;
+      flex-direction: column;
+      gap: 1.15rem;
+    }
+    .theme-media-item {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 1.15rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+    .theme-media-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+    .theme-media-title {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: #0f172a;
+    }
+    .theme-media-desc {
+      font-size: 0.725rem;
+      color: #64748b;
+      margin-top: 0.2rem;
+      line-height: 1.4;
+    }
+    .theme-media-input-row {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    .theme-media-preview-container {
+      width: 100%;
+      height: 170px;
+      background: #0f172a;
+      border-radius: 8px;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #e2e8f0;
+    }
+    .theme-media-preview-container img,
+    .theme-media-preview-container video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .theme-media-empty-preview {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      color: #94a3b8;
+      font-size: 0.75rem;
+      height: 100%;
+      width: 100%;
+      background: #f8fafc;
+      text-align: center;
+      padding: 1rem;
+    }
+
     @keyframes pulse {
       0%, 100% { opacity: 1; }
       50% { opacity: 0.5; }
@@ -778,6 +868,362 @@ export const prerender = false;
       background: #f1f5f9;
     }
 
+    /* ======================================================== */
+    /* GALLERY & MEDIA LIBRARY STYLES */
+    /* ======================================================== */
+    .gallery-dropzone {
+      border: 2px dashed #cbd5e1;
+      border-radius: var(--radius-md);
+      padding: 1.5rem 1rem;
+      text-align: center;
+      background-color: #f8fafc;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .gallery-dropzone:hover, .gallery-dropzone.drag-over {
+      border-color: var(--primary);
+      background-color: var(--primary-light);
+    }
+
+    .gallery-dropzone-icon {
+      width: 2.75rem;
+      height: 2.75rem;
+      border-radius: 50%;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 0.25rem;
+    }
+
+    .gallery-filter-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .filter-pills {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: #f1f5f9;
+      padding: 0.2rem;
+      border-radius: 9999px;
+    }
+
+    .filter-pill {
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .filter-pill.active {
+      background: white;
+      color: var(--primary);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 1rem;
+      max-height: 620px;
+      overflow-y: auto;
+      padding-right: 0.25rem;
+    }
+
+    .media-card {
+      background: white;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+      min-width: 0;
+    }
+
+    .media-card:hover {
+      border-color: var(--primary);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      transform: translateY(-2px);
+    }
+
+    .media-thumb-wrap {
+      width: 100%;
+      height: 140px;
+      background-color: #0f172a;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .media-thumb-wrap img,
+    .media-thumb-img {
+      width: 100% !important;
+      height: 100% !important;
+      max-width: 100% !important;
+      max-height: 100% !important;
+      object-fit: cover !important;
+      display: block !important;
+      transition: transform 0.25s ease;
+    }
+
+    .media-thumb-wrap video {
+      width: 100% !important;
+      height: 100% !important;
+      max-width: 100% !important;
+      max-height: 100% !important;
+      object-fit: cover !important;
+      display: block !important;
+    }
+
+    .media-card:hover .media-thumb-img {
+      transform: scale(1.05);
+    }
+
+    .media-type-badge {
+      position: absolute;
+      top: 0.5rem;
+      left: 0.5rem;
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      background: rgba(15, 23, 42, 0.75);
+      color: white;
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      z-index: 2;
+    }
+
+    .media-type-badge.video {
+      background: rgba(225, 29, 72, 0.85);
+    }
+
+    .media-thumb-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.4);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      z-index: 3;
+    }
+
+    .media-card:hover .media-thumb-overlay {
+      opacity: 1;
+    }
+
+    .media-action-circle {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      background: white;
+      color: #0f172a;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+
+    .media-action-circle:hover {
+      transform: scale(1.1);
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .media-card-body {
+      padding: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      flex: 1;
+    }
+
+    .media-name {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .media-meta {
+      font-size: 0.6875rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .media-card-footer {
+      padding: 0.5rem 0.75rem 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      border-top: 1px solid #f1f5f9;
+      background-color: #fafbfc;
+    }
+
+    .media-use-btn-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.35rem;
+    }
+
+    .btn-use-media {
+      padding: 0.3rem 0.4rem;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      border-radius: var(--radius-sm);
+      border: 1px solid transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.25rem;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .btn-use-product {
+      background: #ecfdf5;
+      color: #047857;
+      border-color: #a7f3d0;
+    }
+    .btn-use-product:hover {
+      background: #10b981;
+      color: white;
+    }
+
+    .btn-use-banner {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border-color: #bfdbfe;
+    }
+    .btn-use-banner:hover {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .media-bottom-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 0.15rem;
+    }
+
+    .btn-media-link {
+      font-size: 0.6875rem;
+      color: var(--text-muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.15rem 0.25rem;
+    }
+    .btn-media-link:hover {
+      color: var(--primary);
+      text-decoration: underline;
+    }
+
+    .btn-media-delete {
+      font-size: 0.6875rem;
+      color: #ef4444;
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2rem;
+      padding: 0.15rem 0.25rem;
+    }
+    .btn-media-delete:hover {
+      color: #b91c1c;
+    }
+
+    /* Modal Media Picker & Preview */
+    .picker-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 0.75rem;
+      max-height: 400px;
+      overflow-y: auto;
+      padding: 0.5rem 0.25rem;
+    }
+
+    .picker-item {
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      cursor: pointer;
+      background: white;
+      transition: all 0.15s ease;
+      position: relative;
+      text-align: center;
+    }
+
+    .picker-item:hover {
+      border-color: var(--primary);
+      box-shadow: var(--shadow-sm);
+      transform: translateY(-1px);
+    }
+
+    .picker-item-thumb {
+      width: 100%;
+      height: 85px;
+      object-fit: cover;
+      background-color: #0f172a;
+      display: block;
+    }
+
+    .picker-item-title {
+      padding: 0.35rem 0.5rem;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
   </style>
 </head>
 <body>
@@ -878,6 +1324,11 @@ export const prerender = false;
       <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
       <span>Hero Carousel (Banner)</span>
     </button>
+    <button id="tab-btn-gallery" class="tab-btn">
+      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+      <span>Galeri Media (Foto &amp; Video)</span>
+      <span id="gallery-count-badge" class="badge-count" style="margin-left: 0.35rem; font-size: 0.68rem; padding: 0.1rem 0.45rem; background: #e0e7ff; color: #4338ca; border-radius: 9999px; font-weight: 700;">0</span>
+    </button>
     <button id="tab-btn-settings" class="tab-btn">
       <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
       <span>Pengaturan Halaman &amp; Toko</span>
@@ -945,11 +1396,15 @@ export const prerender = false;
             <div class="form-group col-span-2">
               <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.35rem;">
                 <label class="form-label" style="margin-bottom: 0;">URL Foto Produk</label>
-                <div style="display: flex; gap: 0.5rem; align-items: center;">
-                  <input type="file" id="p-image-file" accept="image/*" style="display: none;" />
+                <div style="display: flex; gap: 0.4rem; align-items: center;">
+                  <button type="button" id="btn-gallery-pick-product" class="btn" style="padding: 0.2rem 0.55rem; font-size: 0.72rem; background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; display: inline-flex; align-items: center; gap: 0.35rem; border-radius: 0.375rem; cursor: pointer; font-weight: 600;" title="Pilih foto/video dari koleksi galeri">
+                    <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    <span>Pilih dari Galeri</span>
+                  </button>
+                  <input type="file" id="p-image-file" accept="image/*,video/*" style="display: none;" />
                   <button type="button" id="btn-upload-p-image" class="btn" style="padding: 0.2rem 0.55rem; font-size: 0.72rem; background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; display: inline-flex; align-items: center; gap: 0.35rem; border-radius: 0.375rem; cursor: pointer; font-weight: 600;">
                     <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
-                    <span id="btn-upload-p-text">Upload ke MinIO</span>
+                    <span id="btn-upload-p-text">Upload MinIO</span>
                   </button>
                 </div>
               </div>
@@ -1054,11 +1509,15 @@ export const prerender = false;
             <div class="form-group col-span-2">
               <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.35rem;">
                 <label class="form-label" style="margin-bottom: 0;">URL Foto Banner (Landscape 1600x800) <span style="color: #ef4444;">*</span></label>
-                <div style="display: flex; gap: 0.5rem; align-items: center;">
-                  <input type="file" id="b-image-file" accept="image/*" style="display: none;" />
+                <div style="display: flex; gap: 0.4rem; align-items: center;">
+                  <button type="button" id="btn-gallery-pick-banner" class="btn" style="padding: 0.2rem 0.55rem; font-size: 0.72rem; background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; display: inline-flex; align-items: center; gap: 0.35rem; border-radius: 0.375rem; cursor: pointer; font-weight: 600;" title="Pilih foto/video dari koleksi galeri">
+                    <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    <span>Pilih dari Galeri</span>
+                  </button>
+                  <input type="file" id="b-image-file" accept="image/*,video/*" style="display: none;" />
                   <button type="button" id="btn-upload-b-image" class="btn" style="padding: 0.2rem 0.55rem; font-size: 0.72rem; background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; display: inline-flex; align-items: center; gap: 0.35rem; border-radius: 0.375rem; cursor: pointer; font-weight: 600;">
                     <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
-                    <span id="btn-upload-b-text">Upload ke MinIO</span>
+                    <span id="btn-upload-b-text">Upload MinIO</span>
                   </button>
                 </div>
               </div>
@@ -1127,231 +1586,567 @@ export const prerender = false;
     <!-- ======================================================== -->
     <!-- TAB 3: STORE & PAGE SETTINGS -->
     <!-- ======================================================== -->
-    <div id="tab-settings-content" class="tab-pane-grid hidden">
-      <!-- Left Column: Settings Form -->
+    <div id="tab-settings-content" class="tab-settings-wrapper hidden">
+      <!-- 1. FULL-WIDTH: STOREFRONT THEME SELECTOR -->
       <section class="card">
-        <div class="card-header">
+        <div class="card-header" style="flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.75rem;">
           <div>
-            <h2 class="card-title">Pengaturan Nama &amp; Title Halaman</h2>
-            <p class="card-sub">Ubah identitas toko dan judul halaman yang tampil di website</p>
-          </div>
-        </div>
-
-        <!-- Section: Pilihan Template / Storefront Theme -->
-        <div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.15rem; margin-bottom: 1.25rem;">
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.85rem; flex-wrap: wrap; gap: 0.5rem;">
-            <div>
-              <div style="font-weight: 800; font-size: 0.95rem; color: #0f172a; display: flex; align-items: center; gap: 6px;">
-                <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path></svg>
-                Pilihan Template Website (D1 Live DB)
-              </div>
-              <p style="font-size: 0.725rem; color: #64748b; margin-top: 2px;">
-                Pilih desain storefront yang aktif. Produk dan banner dari database D1 akan tampil di template yang dipilih.
-              </p>
-            </div>
-
-            <!-- Pill Switcher in Tab 3 -->
-            <div class="theme-pill-container" style="box-shadow: var(--shadow-sm);">
-              <button
-                type="button"
-                id="tab-pill-theme-1"
-                class="theme-pill-btn active"
-                data-theme="nordic"
-                title="Gunakan Theme 1 (Nordic Minimalist)"
-              >
-                Theme 1
-              </button>
-              <button
-                type="button"
-                id="tab-pill-theme-2"
-                class="theme-pill-btn"
-                data-theme="impulse"
-                title="Gunakan Theme 2 (Impulse Editorial)"
-              >
-                Theme 2
-              </button>
-              <button
-                type="button"
-                id="tab-pill-theme-3"
-                class="theme-pill-btn"
-                data-theme="kaufmann"
-                title="Gunakan Theme 3 (Susanne Kaufmann Skincare)"
-              >
-                Theme 3
-              </button>
-            </div>
+            <h2 class="card-title" style="display: flex; align-items: center; gap: 0.5rem;">
+              <span>🎨</span>
+              <span>Pilihan Template Toko (Live D1 Multi-Theme)</span>
+            </h2>
+            <p class="card-sub">Pilih desain storefront yang aktif. Produk dan banner dari database D1 akan tampil menyesuaikan tema yang dipilih.</p>
           </div>
 
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0.75rem;">
-            <!-- Option 1: Nordic Minimalist -->
-            <div id="theme-card-nordic" class="theme-card-option active" data-theme="nordic">
-              <div style="display: flex; align-items: center; justify-content: space-between;">
-                <span style="font-weight: 800; font-size: 0.875rem; color: #0f172a;">Theme 1 — Nordic Minimalist</span>
-                <span id="badge-theme-nordic" class="badge" style="background: #000000; color: #ffffff; font-size: 0.625rem; padding: 2px 7px;">✓ SEDANG DIGUNAKAN</span>
-              </div>
-              <p style="font-size: 0.725rem; color: #64748b; line-height: 1.4;">
-                Desain minimalis bergaya Nordic. Dilengkapi Hero Carousel, Category Grid bertingkat, dan katalog produk standar e-commerce.
-              </p>
-              <button type="button" class="btn btn-secondary btn-apply-theme" data-theme="nordic" style="margin-top: auto; font-size: 0.725rem; padding: 0.35rem 0.5rem; justify-content: center;">
-                Gunakan Theme 1
-              </button>
-            </div>
-
-            <!-- Option 2: Impulse Editorial -->
-            <div id="theme-card-impulse" class="theme-card-option" data-theme="impulse">
-              <div style="display: flex; align-items: center; justify-content: space-between;">
-                <span style="font-weight: 800; font-size: 0.875rem; color: #0f172a;">Theme 2 — Impulse Editorial</span>
-                <span id="badge-theme-impulse" class="badge" style="background: #e2e8f0; color: #475569; font-size: 0.625rem; padding: 2px 7px;">Pilih Template</span>
-              </div>
-              <p style="font-size: 0.725rem; color: #64748b; line-height: 1.4;">
-                Gaya Shopify Impulse untuk boutique fashion &amp; lifestyle. Dilengkapi Hero Cinematic, Editorial Split Promos, Quick View Popup, dan Add to Bag instan.
-              </p>
-              <button type="button" class="btn btn-secondary btn-apply-theme" data-theme="impulse" style="margin-top: auto; font-size: 0.725rem; padding: 0.35rem 0.5rem; justify-content: center;">
-                Gunakan Theme 2
-              </button>
-            </div>
-
-            <!-- Option 3: Susanne Kaufmann Skincare & Beauty Editorial -->
-            <div id="theme-card-kaufmann" class="theme-card-option" data-theme="kaufmann">
-              <div style="display: flex; align-items: center; justify-content: space-between;">
-                <span style="font-weight: 800; font-size: 0.875rem; color: #0f172a;">Theme 3 — Skincare Editorial</span>
-                <span id="badge-theme-kaufmann" class="badge" style="background: #e2e8f0; color: #475569; font-size: 0.625rem; padding: 2px 7px;">Pilih Template</span>
-              </div>
-              <p style="font-size: 0.725rem; color: #64748b; line-height: 1.4;">
-                Inspirasi Susanne Kaufmann untuk skincare &amp; wellness premium. Video Hero &amp; Spa Background, Scent of Ritual, Customer Testimonial Slider, &amp; Insider Loyalty.
-              </p>
-              <button type="button" class="btn btn-secondary btn-apply-theme" data-theme="kaufmann" style="margin-top: auto; font-size: 0.725rem; padding: 0.35rem 0.5rem; justify-content: center;">
-                Gunakan Theme 3
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <form id="page-settings-form" style="display: flex; flex-direction: column; gap: 0.875rem;">
-          <div class="form-group">
-            <label class="form-label">Nama Toko (Store Name) <span style="color: #ef4444;">*</span></label>
-            <input type="text" id="tab-cfg-store-name" required placeholder="Navanusa Jewellery" class="input-field" />
-            <p style="font-size: 0.6875rem; color: #64748b; margin-top: 0.25rem;">
-              Ditampilkan pada <strong>Logo Navbar Header</strong> (misal: NAVANUSA JEWELLERY) dan <strong>Footer</strong> toko.
-            </p>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Judul Halaman (Page Title / SEO) <span style="color: #ef4444;">*</span></label>
-            <input type="text" id="tab-cfg-store-title" required placeholder="Navanusa Jewellery - Nordic Minimalist Shop" class="input-field" />
-            <p style="font-size: 0.6875rem; color: #64748b; margin-top: 0.25rem;">
-              Ditampilkan pada <strong>Tab Browser</strong> dan tag <code>&lt;title&gt;</code> halaman utama.
-            </p>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Store ID (D1 Database ID) <span style="color: #ef4444;">*</span></label>
-            <input type="text" id="tab-cfg-store-id" required placeholder="jewellery" class="input-field input-mono" style="font-size: 0.8rem;" />
-            <p style="font-size: 0.6875rem; color: #64748b; margin-top: 0.25rem;">ID unik toko di database D1 multi-tenant.</p>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Worker / API Base URL</label>
-            <input type="url" id="tab-cfg-worker-url" required placeholder="http://localhost:4321" class="input-field input-mono" style="font-size: 0.75rem;" />
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Internal API Token (Bearer Token)</label>
-            <input type="password" id="tab-cfg-token" placeholder="INTERNAL_API_TOKEN" class="input-field input-mono" style="font-size: 0.75rem;" />
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Cloudflare Pages Deploy Hook URL</label>
-            <input type="url" id="tab-cfg-deploy-hook" placeholder="https://api.cloudflare.com/client/v4/pages/webhooks/deploy_hooks/..." class="input-field input-mono" style="font-size: 0.75rem;" />
-          </div>
-
-          <div style="padding-top: 0.5rem; border-top: 1px solid #f1f5f9;">
-            <button type="submit" id="btn-save-page-settings" class="btn btn-primary btn-sync-large">
-              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
-              <span>Simpan Pengaturan ke Database (D1)</span>
+          <!-- Pill Switcher -->
+          <div class="theme-pill-container" style="box-shadow: var(--shadow-sm);">
+            <button
+              type="button"
+              id="tab-pill-theme-1"
+              class="theme-pill-btn active"
+              data-theme="nordic"
+              title="Gunakan Theme 1 (Nordic Minimalist)"
+            >
+              Theme 1
+            </button>
+            <button
+              type="button"
+              id="tab-pill-theme-2"
+              class="theme-pill-btn"
+              data-theme="impulse"
+              title="Gunakan Theme 2 (Impulse Editorial)"
+            >
+              Theme 2
+            </button>
+            <button
+              type="button"
+              id="tab-pill-theme-3"
+              class="theme-pill-btn"
+              data-theme="kaufmann"
+              title="Gunakan Theme 3 (Susanne Kaufmann Skincare)"
+            >
+              Theme 3
             </button>
           </div>
-        </form>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin-top: 0.25rem;">
+          <!-- Option 1: Nordic Minimalist -->
+          <div id="theme-card-nordic" class="theme-card-option active" data-theme="nordic">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <span style="font-weight: 800; font-size: 0.925rem; color: #0f172a;">Theme 1 — Nordic Minimalist</span>
+              <span id="badge-theme-nordic" class="badge" style="background: #000000; color: #ffffff; font-size: 0.625rem; padding: 2px 7px;">✓ SEDANG DIGUNAKAN</span>
+            </div>
+            <p style="font-size: 0.75rem; color: #64748b; line-height: 1.45;">
+              Desain minimalis bergaya Nordic. Dilengkapi Hero Carousel, Category Grid bertingkat, dan katalog produk perhiasan standar e-commerce.
+            </p>
+            <button type="button" class="btn btn-secondary btn-apply-theme" data-theme="nordic" style="margin-top: auto; font-size: 0.75rem; padding: 0.4rem 0.6rem; justify-content: center;">
+              Gunakan Theme 1
+            </button>
+          </div>
+
+          <!-- Option 2: Impulse Editorial -->
+          <div id="theme-card-impulse" class="theme-card-option" data-theme="impulse">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <span style="font-weight: 800; font-size: 0.925rem; color: #0f172a;">Theme 2 — Impulse Editorial</span>
+              <span id="badge-theme-impulse" class="badge" style="background: #e2e8f0; color: #475569; font-size: 0.625rem; padding: 2px 7px;">Pilih Template</span>
+            </div>
+            <p style="font-size: 0.75rem; color: #64748b; line-height: 1.45;">
+              Gaya Shopify Impulse untuk boutique fashion &amp; lifestyle. Dilengkapi Hero Cinematic, Editorial Split Promos, Quick View Popup, dan Add to Bag instan.
+            </p>
+            <button type="button" class="btn btn-secondary btn-apply-theme" data-theme="impulse" style="margin-top: auto; font-size: 0.75rem; padding: 0.4rem 0.6rem; justify-content: center;">
+              Gunakan Theme 2
+            </button>
+          </div>
+
+          <!-- Option 3: Susanne Kaufmann Skincare -->
+          <div id="theme-card-kaufmann" class="theme-card-option" data-theme="kaufmann">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <span style="font-weight: 800; font-size: 0.925rem; color: #0f172a;">Theme 3 — Skincare Editorial</span>
+              <span id="badge-theme-kaufmann" class="badge" style="background: #e2e8f0; color: #475569; font-size: 0.625rem; padding: 2px 7px;">Pilih Template</span>
+            </div>
+            <p style="font-size: 0.75rem; color: #64748b; line-height: 1.45;">
+              Inspirasi Susanne Kaufmann untuk skincare &amp; wellness premium. Video Hero &amp; Spa Ambient Background, Scent of Ritual, Customer Testimonial Slider, &amp; Insider Loyalty.
+            </p>
+            <button type="button" class="btn btn-secondary btn-apply-theme" data-theme="kaufmann" style="margin-top: auto; font-size: 0.75rem; padding: 0.4rem 0.6rem; justify-content: center;">
+              Gunakan Theme 3
+            </button>
+          </div>
+        </div>
       </section>
 
-      <!-- Right Column: Live Visual Preview -->
+      <!-- 2. TWO-COLUMN SPLIT: FORM IDENTITAS (LEFT) & KUSTOMISASI MEDIA (RIGHT) -->
+      <div class="settings-two-col-grid">
+        
+        <!-- LEFT COLUMN: IDENTITAS TOKO & PREVIEWS -->
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+          
+          <!-- Card: Form Identitas & Kredensial -->
+          <section class="card">
+            <div class="card-header">
+              <div>
+                <h2 class="card-title">Identitas Toko &amp; SEO</h2>
+                <p class="card-sub">Nama brand toko, judul tab browser, dan koneksi API</p>
+              </div>
+            </div>
+
+            <form id="page-settings-form" style="display: flex; flex-direction: column; gap: 0.875rem;">
+              <div class="form-group">
+                <label class="form-label">Nama Toko (Store Name) <span style="color: #ef4444;">*</span></label>
+                <input type="text" id="tab-cfg-store-name" required placeholder="Navanusa Jewellery" class="input-field" />
+                <p style="font-size: 0.6875rem; color: #64748b; margin-top: 0.25rem;">
+                  Ditampilkan pada <strong>Logo Navbar Header</strong> dan <strong>Footer</strong> toko.
+                </p>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Judul Halaman (Page Title / SEO) <span style="color: #ef4444;">*</span></label>
+                <input type="text" id="tab-cfg-store-title" required placeholder="Navanusa Jewellery - Nordic Minimalist Shop" class="input-field" />
+                <p style="font-size: 0.6875rem; color: #64748b; margin-top: 0.25rem;">
+                  Ditampilkan pada <strong>Tab Browser</strong> dan tag <code>&lt;title&gt;</code> halaman utama.
+                </p>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Store ID (D1 Database ID) <span style="color: #ef4444;">*</span></label>
+                <input type="text" id="tab-cfg-store-id" required placeholder="jewellery" class="input-field input-mono" style="font-size: 0.8rem;" />
+                <p style="font-size: 0.6875rem; color: #64748b; margin-top: 0.25rem;">ID unik toko di database D1 multi-tenant.</p>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Worker / API Base URL</label>
+                <input type="url" id="tab-cfg-worker-url" required placeholder="http://localhost:4321" class="input-field input-mono" style="font-size: 0.75rem;" />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Internal API Token (Bearer Token)</label>
+                <input type="password" id="tab-cfg-token" placeholder="INTERNAL_API_TOKEN" class="input-field input-mono" style="font-size: 0.75rem;" />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Cloudflare Pages Deploy Hook URL</label>
+                <input type="url" id="tab-cfg-deploy-hook" placeholder="https://api.cloudflare.com/client/v4/pages/webhooks/deploy_hooks/..." class="input-field input-mono" style="font-size: 0.75rem;" />
+              </div>
+
+              <div style="padding-top: 0.5rem; border-top: 1px solid #f1f5f9;">
+                <button type="submit" id="btn-save-page-settings" class="btn btn-primary btn-sync-large" style="width: 100%;">
+                  <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
+                  <span>Simpan Pengaturan ke Database (D1)</span>
+                </button>
+              </div>
+            </form>
+          </section>
+
+          <!-- Card: Pratinjau Identitas Website (Tab & Navbar) -->
+          <section class="card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title" style="font-size: 0.95rem;">Pratinjau Identitas Website</h3>
+                <p class="card-sub">Tampilan navbar brand dan tab browser saat ini</p>
+              </div>
+              <span class="badge" style="background:#eef2ff; color:#4338ca;">Real-time</span>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+              <!-- 1. Browser Tab Mockup -->
+              <div>
+                <label class="form-label" style="margin-bottom: 0.4rem;">1. Tab Browser:</label>
+                <div style="background: #e2e8f0; border-radius: 8px 8px 0 0; padding: 6px 10px 0; display: flex; align-items: center; gap: 6px;">
+                  <div style="display: flex; gap: 5px; margin-right: 8px;">
+                    <span style="width: 9px; height: 9px; border-radius: 50%; background: #ef4444; display: inline-block;"></span>
+                    <span style="width: 9px; height: 9px; border-radius: 50%; background: #f59e0b; display: inline-block;"></span>
+                    <span style="width: 9px; height: 9px; border-radius: 50%; background: #10b981; display: inline-block;"></span>
+                  </div>
+                  <div style="background: #ffffff; border-radius: 6px 6px 0 0; padding: 5px 12px; font-size: 0.725rem; font-weight: 600; color: #1e293b; display: flex; align-items: center; gap: 6px; max-width: 280px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; box-shadow: 0 -1px 2px rgba(0,0,0,0.05);">
+                    <span style="font-size: 0.85rem;">🛍️</span>
+                    <span id="preview-tab-title" style="overflow: hidden; text-overflow: ellipsis;">Navanusa Jewellery - Nordic Minimalist Shop</span>
+                    <span style="color: #94a3b8; margin-left: auto; font-size: 0.65rem;">&times;</span>
+                  </div>
+                </div>
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-top: none; padding: 0.6rem 0.85rem; border-radius: 0 0 8px 8px; font-size: 0.6875rem; color: #64748b;">
+                  URL: <code style="color: #4f46e5;">https://domain-anda.com/</code>
+                </div>
+              </div>
+
+              <!-- 2. Navbar Brand Header Mockup -->
+              <div>
+                <label class="form-label" style="margin-bottom: 0.4rem;">2. Header Navbar:</label>
+                <div style="border: 1px solid #e2e8f0; border-radius: 8px; background: #ffffff; padding: 0.85rem 1rem; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 4px rgba(0,0,0,0.03);">
+                  <div style="display: flex; align-items: center; gap: 0.4rem;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="color: #1e293b;">
+                      <path d="M5,22h14c1.103,0,2-0.897,2-2V9c0-0.553-0.447-1-1-1h-3V7c0-2.757-2.243-5-5-5S7,4.243,7,7v1H4C3.447,8,3,8.447,3,9v11 C3,21.103,3.897,22,5,22z M9,7c0-1.654,1.346-3,3-3s3,1.346,3,3v1H9V7z M5,10h2v2h2v-2h6v2h2v-2h2l0.002,10H5V10z"></path>
+                    </svg>
+                    <span id="preview-navbar-name" style="font-weight: 800; font-size: 0.925rem; letter-spacing: 0.05em; color: #1e293b; text-transform: uppercase;">
+                      NAVANUSA JEWELLERY
+                    </span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 0.6rem; color: #475569;">
+                    <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                    <svg width="17" height="17" fill="currentColor" viewBox="0 0 24 24"><path d="M19 6h-2c0-2.76-2.24-5-5-5S7 3.24 7 6H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-7-3c1.66 0 3 1.34 3 3H9c0-1.66 1.34-3 3-3zm7 17H5V8h14v12z"></path></svg>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 3. Status Template Aktif Mockup -->
+              <div>
+                <label class="form-label" style="margin-bottom: 0.4rem;">3. Status Template Aktif:</label>
+                <div style="border: 1px solid #e2e8f0; border-radius: 8px; background: #ffffff; padding: 0.85rem 1rem; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 4px rgba(0,0,0,0.03); gap: 0.6rem;">
+                  <div style="display: flex; align-items: center; gap: 0.6rem;">
+                    <div style="width: 2.2rem; height: 2.2rem; border-radius: 8px; background: #0f172a; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: 800;">
+                      🎨
+                    </div>
+                    <div>
+                      <div id="preview-active-theme-title" style="font-weight: 800; font-size: 0.875rem; color: #0f172a;">
+                        Theme 1: Nordic Minimalist
+                      </div>
+                      <p id="preview-active-theme-sub" style="font-size: 0.6875rem; color: #64748b;">
+                        Katalog &amp; carousel terhubung langsung ke D1.
+                      </p>
+                    </div>
+                  </div>
+                  <a href="/" target="_blank" class="btn btn-secondary" style="font-size: 0.725rem; padding: 0.35rem 0.65rem; flex-shrink: 0;">
+                    <span>Lihat Toko &rarr;</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- RIGHT COLUMN: KUSTOMISASI MEDIA TEMPLATE (SPACIOUS, BEAUTIFUL, MODERN) -->
+        <section class="card" style="display: flex; flex-direction: column; gap: 1.25rem;">
+          <div class="card-header" style="border-bottom: 1px solid #f1f5f9; padding-bottom: 0.85rem; margin-bottom: 0;">
+            <div>
+              <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                <h2 class="card-title" style="display: flex; align-items: center; gap: 0.4rem; font-size: 1.05rem;">
+                  <span>🎬</span>
+                  <span>Kustomisasi Media Template</span>
+                </h2>
+                <span id="theme-media-active-badge" class="badge" style="background: #000000; color: #ffffff; font-size: 0.6875rem; padding: 2px 9px; border-radius: 9999px;">Theme 1 (Nordic)</span>
+              </div>
+              <p class="card-sub" style="margin-top: 0.25rem;">
+                Setiap template memiliki inputan media yang berbeda sesuai tata letaknya. Sisipkan foto atau video langsung dari koleksi <strong>Galeri Toko</strong>.
+              </p>
+            </div>
+          </div>
+
+          <!-- 1. MEDIA INPUTS FOR THEME 1: NORDIC MINIMALIST -->
+          <div id="theme-media-group-nordic" class="theme-media-group">
+            <div class="theme-media-item">
+              <div class="theme-media-header">
+                <div>
+                  <div class="theme-media-title">Lifestyle Featured Showcase Media (Foto / Video)</div>
+                  <div class="theme-media-desc">Tampil di sebelah slider koleksi cincin ('Elegent and Modern'). Cocok untuk foto lifestyle model perhiasan atau video looping elegan.</div>
+                </div>
+                <span class="badge" style="background:#e0f2fe; color:#0369a1; font-size:0.625rem; flex-shrink: 0;">Showcase Media</span>
+              </div>
+              <div class="theme-media-input-row">
+                <input type="text" id="theme-nordic-showcase" placeholder="URL foto atau video dari galeri..." class="input-field input-mono theme-media-input" data-theme="nordic" data-key="showcase_media" style="font-size:0.75rem; flex:1;" />
+                <button type="button" class="btn btn-secondary btn-pick-theme-media" data-target="theme-nordic-showcase" style="font-size:0.75rem; padding:0.45rem 0.85rem; white-space:nowrap;">
+                  🖼️ Pilih dari Galeri
+                </button>
+                <button type="button" class="btn btn-secondary btn-clear-theme-media" data-target="theme-nordic-showcase" title="Reset ke default" style="font-size:0.75rem; padding:0.45rem 0.65rem; color:#ef4444;">
+                  ✕
+                </button>
+              </div>
+              <div id="preview-box-theme-nordic-showcase" class="theme-media-preview-container">
+                <div class="theme-media-empty-preview">
+                  <span>🖼️</span>
+                  <span>Menggunakan gambar default Nordic (/model-jewelry-banner.jpg)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. MEDIA INPUTS FOR THEME 2: IMPULSE LUXURY FASHION -->
+          <div id="theme-media-group-impulse" class="theme-media-group hidden">
+            <!-- Item 1: Hero Slideshow Media -->
+            <div class="theme-media-item">
+              <div class="theme-media-header">
+                <div>
+                  <div class="theme-media-title">1. Hero Slideshow Media (Slide Pertama - Foto / Video)</div>
+                  <div class="theme-media-desc">Slide pembuka utama toko fashion ('Easy by design'). Mendukung video looping sinematik atau foto fashion model resolusi tinggi.</div>
+                </div>
+                <span class="badge" style="background:#fef3c7; color:#b45309; font-size:0.625rem; flex-shrink: 0;">Slide #1 Hero</span>
+              </div>
+              <div class="theme-media-input-row">
+                <input type="text" id="theme-impulse-hero" placeholder="URL foto atau video dari galeri..." class="input-field input-mono theme-media-input" data-theme="impulse" data-key="hero_media" style="font-size:0.75rem; flex:1;" />
+                <button type="button" class="btn btn-secondary btn-pick-theme-media" data-target="theme-impulse-hero" style="font-size:0.75rem; padding:0.45rem 0.85rem; white-space:nowrap;">
+                  🖼️ Pilih dari Galeri
+                </button>
+                <button type="button" class="btn btn-secondary btn-clear-theme-media" data-target="theme-impulse-hero" title="Reset ke default" style="font-size:0.75rem; padding:0.45rem 0.65rem; color:#ef4444;">
+                  ✕
+                </button>
+              </div>
+              <div id="preview-box-theme-impulse-hero" class="theme-media-preview-container">
+                <div class="theme-media-empty-preview">
+                  <span>🎬</span>
+                  <span>Menggunakan media default Hero Impulse</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Item 2: Lookbook Editorial Banner -->
+            <div class="theme-media-item">
+              <div class="theme-media-header">
+                <div>
+                  <div class="theme-media-title">2. Lookbook Editorial Banner (Full-Width Foto / Video)</div>
+                  <div class="theme-media-desc">Banner lebar section 'Made to move with ease' di tengah halaman. Sangat bagus untuk video model fashion bergerak lambat.</div>
+                </div>
+                <span class="badge" style="background:#f1f5f9; color:#475569; font-size:0.625rem; flex-shrink: 0;">Editorial Banner</span>
+              </div>
+              <div class="theme-media-input-row">
+                <input type="text" id="theme-impulse-editorial" placeholder="URL foto atau video dari galeri..." class="input-field input-mono theme-media-input" data-theme="impulse" data-key="editorial_media" style="font-size:0.75rem; flex:1;" />
+                <button type="button" class="btn btn-secondary btn-pick-theme-media" data-target="theme-impulse-editorial" style="font-size:0.75rem; padding:0.45rem 0.85rem; white-space:nowrap;">
+                  🖼️ Pilih dari Galeri
+                </button>
+                <button type="button" class="btn btn-secondary btn-clear-theme-media" data-target="theme-impulse-editorial" title="Reset ke default" style="font-size:0.75rem; padding:0.45rem 0.65rem; color:#ef4444;">
+                  ✕
+                </button>
+              </div>
+              <div id="preview-box-theme-impulse-editorial" class="theme-media-preview-container">
+                <div class="theme-media-empty-preview">
+                  <span>🎬</span>
+                  <span>Menggunakan foto default Lookbook Editorial</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Item 3: Closing Banner -->
+            <div class="theme-media-item">
+              <div class="theme-media-header">
+                <div>
+                  <div class="theme-media-title">3. Closing Collection Banner (Foto / Video Bawah)</div>
+                  <div class="theme-media-desc">Banner penutup section 'Easy to wear, easy to return to' sebelum footer.</div>
+                </div>
+                <span class="badge" style="background:#f1f5f9; color:#475569; font-size:0.625rem; flex-shrink: 0;">Closing Banner</span>
+              </div>
+              <div class="theme-media-input-row">
+                <input type="text" id="theme-impulse-closing" placeholder="URL foto atau video dari galeri..." class="input-field input-mono theme-media-input" data-theme="impulse" data-key="closing_media" style="font-size:0.75rem; flex:1;" />
+                <button type="button" class="btn btn-secondary btn-pick-theme-media" data-target="theme-impulse-closing" style="font-size:0.75rem; padding:0.45rem 0.85rem; white-space:nowrap;">
+                  🖼️ Pilih dari Galeri
+                </button>
+                <button type="button" class="btn btn-secondary btn-clear-theme-media" data-target="theme-impulse-closing" title="Reset ke default" style="font-size:0.75rem; padding:0.45rem 0.65rem; color:#ef4444;">
+                  ✕
+                </button>
+              </div>
+              <div id="preview-box-theme-impulse-closing" class="theme-media-preview-container">
+                <div class="theme-media-empty-preview">
+                  <span>🎬</span>
+                  <span>Menggunakan foto default Closing Banner</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. MEDIA INPUTS FOR THEME 3: KAUFMANN HOLISTIC SPA -->
+          <div id="theme-media-group-kaufmann" class="theme-media-group hidden">
+            <!-- Item 1: Hero Video Background -->
+            <div class="theme-media-item">
+              <div class="theme-media-header">
+                <div>
+                  <div class="theme-media-title">1. Hero Background Video / Foto (Atas)</div>
+                  <div class="theme-media-desc">Video loop latar belakang utama header ('New: Body Wash &amp; Body Scrub for the Senses'). Memberi kesan mewah &amp; menenangkan.</div>
+                </div>
+                <span class="badge" style="background:#ecfdf5; color:#065f46; font-size:0.625rem; flex-shrink: 0;">Hero Background</span>
+              </div>
+              <div class="theme-media-input-row">
+                <input type="text" id="theme-kaufmann-hero" placeholder="URL video MP4 atau foto dari galeri..." class="input-field input-mono theme-media-input" data-theme="kaufmann" data-key="hero_video" style="font-size:0.75rem; flex:1;" />
+                <button type="button" class="btn btn-secondary btn-pick-theme-media" data-target="theme-kaufmann-hero" style="font-size:0.75rem; padding:0.45rem 0.85rem; white-space:nowrap;">
+                  🖼️ Pilih dari Galeri
+                </button>
+                <button type="button" class="btn btn-secondary btn-clear-theme-media" data-target="theme-kaufmann-hero" title="Reset ke default" style="font-size:0.75rem; padding:0.45rem 0.65rem; color:#ef4444;">
+                  ✕
+                </button>
+              </div>
+              <div id="preview-box-theme-kaufmann-hero" class="theme-media-preview-container">
+                <div class="theme-media-empty-preview">
+                  <span>🎥</span>
+                  <span>Menggunakan video default lotion application</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Item 2: Scent of Ritual Video -->
+            <div class="theme-media-item">
+              <div class="theme-media-header">
+                <div>
+                  <div class="theme-media-title">2. 'The Scent of the Ritual' Media (Vertikal Video / Foto)</div>
+                  <div class="theme-media-desc">Video vertikal slow-motion atau foto ritual botani di samping kutipan aroma ('Sensorial Botanical Harmony').</div>
+                </div>
+                <span class="badge" style="background:#ecfdf5; color:#065f46; font-size:0.625rem; flex-shrink: 0;">Vertical Scent</span>
+              </div>
+              <div class="theme-media-input-row">
+                <input type="text" id="theme-kaufmann-scent" placeholder="URL video MP4 atau foto dari galeri..." class="input-field input-mono theme-media-input" data-theme="kaufmann" data-key="scent_video" style="font-size:0.75rem; flex:1;" />
+                <button type="button" class="btn btn-secondary btn-pick-theme-media" data-target="theme-kaufmann-scent" style="font-size:0.75rem; padding:0.45rem 0.85rem; white-space:nowrap;">
+                  🖼️ Pilih dari Galeri
+                </button>
+                <button type="button" class="btn btn-secondary btn-clear-theme-media" data-target="theme-kaufmann-scent" title="Reset ke default" style="font-size:0.75rem; padding:0.45rem 0.65rem; color:#ef4444;">
+                  ✕
+                </button>
+              </div>
+              <div id="preview-box-theme-kaufmann-scent" class="theme-media-preview-container">
+                <div class="theme-media-empty-preview">
+                  <span>🎥</span>
+                  <span>Menggunakan video default serum dropper</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Item 3: Our Story Spa Ambient Video -->
+            <div class="theme-media-item">
+              <div class="theme-media-header">
+                <div>
+                  <div class="theme-media-title">3. 'Our Story' Spa Ambient Media (Full-Width Video / Foto)</div>
+                  <div class="theme-media-desc">Video ambient suasana spa atau foto warisan brand ('Our story began in the spa'). Menampilkan ketenangan alam &amp; relaksasi.</div>
+                </div>
+                <span class="badge" style="background:#ecfdf5; color:#065f46; font-size:0.625rem; flex-shrink: 0;">Spa Story</span>
+              </div>
+              <div class="theme-media-input-row">
+                <input type="text" id="theme-kaufmann-story" placeholder="URL video MP4 atau foto dari galeri..." class="input-field input-mono theme-media-input" data-theme="kaufmann" data-key="story_video" style="font-size:0.75rem; flex:1;" />
+                <button type="button" class="btn btn-secondary btn-pick-theme-media" data-target="theme-kaufmann-story" style="font-size:0.75rem; padding:0.45rem 0.85rem; white-space:nowrap;">
+                  🖼️ Pilih dari Galeri
+                </button>
+                <button type="button" class="btn btn-secondary btn-clear-theme-media" data-target="theme-kaufmann-story" title="Reset ke default" style="font-size:0.75rem; padding:0.45rem 0.65rem; color:#ef4444;">
+                  ✕
+                </button>
+              </div>
+              <div id="preview-box-theme-kaufmann-story" class="theme-media-preview-container">
+                <div class="theme-media-empty-preview">
+                  <span>🎥</span>
+                  <span>Menggunakan video default indoor spa pool</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Action Bar inside Right Column -->
+          <div style="margin-top: auto; padding-top: 1rem; border-top: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap;">
+            <p style="font-size: 0.725rem; color: #64748b; margin: 0;">
+              * Media yang disimpan otomatis terhubung ke storefront dan database D1.
+            </p>
+            <button type="button" id="btn-save-media-shortcut" class="btn btn-emerald" style="padding: 0.5rem 1.25rem; font-weight: 700; font-size: 0.8125rem;">
+              <span>💾 Simpan Media ke D1</span>
+            </button>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 4: MEDIA GALLERY (PHOTOS & VIDEOS) -->
+    <!-- ======================================================== -->
+    <div id="tab-gallery-content" class="tab-pane-grid hidden">
+      <!-- Left Column: Upload Media & Add via URL -->
       <section class="card">
         <div class="card-header">
           <div>
-            <h2 class="card-title">Live Preview Tampilan Website</h2>
-            <p class="card-sub">Pratinjau langsung navbar brand dan tab browser saat ini</p>
+            <h2 class="card-title">Upload Foto & Video</h2>
+            <p class="card-sub">Simpan ke Cloud MinIO & kelola koleksi media toko</p>
           </div>
-          <span class="badge" style="background:#eef2ff; color:#4338ca;">
-            Real-time
-          </span>
         </div>
 
-        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
-          <!-- 1. Browser Tab Mockup -->
-          <div>
-            <label class="form-label" style="margin-bottom: 0.5rem;">1. Pratinjau Tab Browser:</label>
-            <div style="background: #e2e8f0; border-radius: 8px 8px 0 0; padding: 6px 10px 0; display: flex; align-items: center; gap: 6px;">
-              <div style="display: flex; gap: 5px; margin-right: 8px;">
-                <span style="width: 10px; height: 10px; border-radius: 50%; background: #ef4444; display: inline-block;"></span>
-                <span style="width: 10px; height: 10px; border-radius: 50%; background: #f59e0b; display: inline-block;"></span>
-                <span style="width: 10px; height: 10px; border-radius: 50%; background: #10b981; display: inline-block;"></span>
-              </div>
-              <div style="background: #ffffff; border-radius: 8px 8px 0 0; padding: 6px 14px; font-size: 0.775rem; font-weight: 600; color: #1e293b; display: flex; align-items: center; gap: 8px; max-width: 340px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; box-shadow: 0 -1px 2px rgba(0,0,0,0.05);">
-                <span style="font-size: 0.9rem;">🛍️</span>
-                <span id="preview-tab-title" style="overflow: hidden; text-overflow: ellipsis;">Navanusa Jewellery - Nordic Minimalist Shop</span>
-                <span style="color: #94a3b8; margin-left: auto; font-size: 0.7rem;">&times;</span>
-              </div>
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          <!-- Drag & Drop Zone -->
+          <div id="gallery-dropzone" class="gallery-dropzone">
+            <div class="gallery-dropzone-icon">
+              <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+              </svg>
             </div>
-            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-top: none; padding: 0.75rem 1rem; border-radius: 0 0 8px 8px; font-size: 0.7rem; color: #64748b;">
-              URL: <code style="color: #4f46e5;">https://domain-anda.com/</code>
-            </div>
+            <div style="font-weight: 700; font-size: 0.875rem; color: #0f172a;">Tarik & Lepas File ke Sini</div>
+            <div style="font-size: 0.75rem; color: #64748b;">Mendukung Foto (JPG, PNG, WebP) & Video (MP4, WebM)</div>
+            <input type="file" id="gallery-file-input" accept="image/*,video/*" multiple style="display: none;" />
+            <button type="button" id="btn-browse-media" class="btn btn-primary" style="margin-top: 0.5rem; font-size: 0.75rem; padding: 0.35rem 0.85rem;">
+              <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg>
+              <span>Pilih File dari Komputer</span>
+            </button>
           </div>
 
-          <!-- 2. Navbar Brand Header Mockup -->
-          <div>
-            <label class="form-label" style="margin-bottom: 0.5rem;">2. Pratinjau Navbar Header:</label>
-            <div style="border: 1px solid #e2e8f0; border-radius: 10px; background: #ffffff; padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
-              <!-- Center Logo / Name -->
-              <div style="display: flex; align-items: center; gap: 0.5rem;">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" style="color: #1e293b;">
-                  <path d="M5,22h14c1.103,0,2-0.897,2-2V9c0-0.553-0.447-1-1-1h-3V7c0-2.757-2.243-5-5-5S7,4.243,7,7v1H4C3.447,8,3,8.447,3,9v11 C3,21.103,3.897,22,5,22z M9,7c0-1.654,1.346-3,3-3s3,1.346,3,3v1H9V7z M5,10h2v2h2v-2h6v2h2v-2h2l0.002,10H5V10z"></path>
-                </svg>
-                <span id="preview-navbar-name" style="font-weight: 800; font-size: 1.05rem; letter-spacing: 0.05em; color: #1e293b; text-transform: uppercase;">
-                  NAVANUSA JEWELLERY
-                </span>
-              </div>
-
-              <!-- Right Icons Mockup -->
-              <div style="display: flex; align-items: center; gap: 0.75rem; color: #475569;">
-                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg>
-                <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M19 6h-2c0-2.76-2.24-5-5-5S7 3.24 7 6H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-7-3c1.66 0 3 1.34 3 3H9c0-1.66 1.34-3 3-3zm7 17H5V8h14v12z"></path></svg>
-              </div>
-            </div>
-            <p style="font-size: 0.7rem; color: #94a3b8; margin-top: 0.35rem;">* Tampilan header persis seperti yang tampil di bagian atas storefront.</p>
+          <!-- Upload Status Indicator -->
+          <div id="gallery-upload-status" class="hidden" style="padding: 0.75rem; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: var(--radius-sm); font-size: 0.75rem; color: #1e40af; display: flex; align-items: center; gap: 0.5rem;">
+            <div class="spin" style="width: 1rem; height: 1rem; border: 2px solid #2563eb; border-top-color: transparent; border-radius: 9999px;"></div>
+            <span id="gallery-upload-text">Sedang mengunggah media ke MinIO...</span>
           </div>
 
-          <!-- 3. Active Template Info Mockup -->
-          <div>
-            <label class="form-label" style="margin-bottom: 0.5rem;">3. Status Template Aktif Saat Ini:</label>
-            <div style="border: 1px solid #e2e8f0; border-radius: 10px; background: #ffffff; padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,0.04); gap: 0.75rem;">
-              <div style="display: flex; align-items: center; gap: 0.75rem;">
-                <div style="width: 2.5rem; height: 2.5rem; border-radius: 8px; background: #0f172a; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; font-weight: 800;">
-                  🎨
-                </div>
-                <div>
-                  <div id="preview-active-theme-title" style="font-weight: 800; font-size: 0.95rem; color: #0f172a;">
-                    Theme 1: Nordic Minimalist
-                  </div>
-                  <p id="preview-active-theme-sub" style="font-size: 0.725rem; color: #64748b;">
-                    Katalog &amp; carousel terhubung langsung ke database D1.
-                  </p>
-                </div>
-              </div>
-              <a href="/" target="_blank" class="btn btn-secondary" style="font-size: 0.75rem; padding: 0.4rem 0.85rem; flex-shrink: 0;">
-                <span>Lihat Storefront &rarr;</span>
-              </a>
+          <!-- Divider -->
+          <div style="display: flex; align-items: center; gap: 0.5rem; margin: 0.25rem 0;">
+            <div style="flex: 1; height: 1px; background: #e2e8f0;"></div>
+            <span style="font-size: 0.6875rem; font-weight: 700; color: #94a3b8; letter-spacing: 0.05em;">ATAU TAMBAH DARI URL</span>
+            <div style="flex: 1; height: 1px; background: #e2e8f0;"></div>
+          </div>
+
+          <!-- Add via URL Form -->
+          <form id="form-add-media-url" style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <div class="form-group">
+              <label class="form-label">Nama Media (Opsional)</label>
+              <input type="text" id="input-media-name" placeholder="Contoh: Video Demo Cincin Emas" class="input-field" />
             </div>
+
+            <div class="form-group">
+              <label class="form-label">URL Media (Foto atau Video) <span style="color: #ef4444;">*</span></label>
+              <input type="url" id="input-media-url" required placeholder="https://.../video.mp4 atau https://.../photo.webp" class="input-field input-mono" style="font-size: 0.75rem;" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Tipe Media</label>
+              <select id="select-media-type" class="input-field">
+                <option value="auto">Deteksi Otomatis</option>
+                <option value="image">Foto (Gambar)</option>
+                <option value="video">Video</option>
+              </select>
+            </div>
+
+            <button type="submit" class="btn btn-secondary" style="font-weight: 700; justify-content: center; gap: 0.35rem;">
+              <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg>
+              <span>+ Daftarkan ke Galeri</span>
+            </button>
+          </form>
+
+          <!-- Tips Box -->
+          <div style="padding: 0.75rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: var(--radius-sm); font-size: 0.6875rem; color: #64748b; line-height: 1.4;">
+            <div style="font-weight: 700; color: #0f172a; margin-bottom: 0.25rem;">💡 Tips Penggunaan Galeri:</div>
+            <div>• Tiap media bisa langsung disalin atau dipakai untuk <strong>Produk</strong> &amp; <strong>Banner</strong> dengan 1 klik.</div>
+            <div>• File yang diupload otomatis disimpan ke MinIO Object Storage dan siap diakses publik.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Column: Media Grid Library -->
+      <section class="card" style="display: flex; flex-direction: column;">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">Koleksi Media Toko</h2>
+            <p class="card-sub">Daftar semua foto & video yang dapat digunakan untuk toko</p>
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <span id="gallery-total-badge" class="badge">0 Media</span>
+            <button type="button" id="btn-refresh-gallery" class="btn btn-secondary" style="padding: 0.25rem 0.55rem; font-size: 0.72rem;" title="Muat ulang koleksi media">
+              <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter & Search Toolbar -->
+        <div class="gallery-filter-bar">
+          <div class="filter-pills">
+            <button type="button" id="filter-all" class="filter-pill active">Semua</button>
+            <button type="button" id="filter-images" class="filter-pill">📸 Foto</button>
+            <button type="button" id="filter-videos" class="filter-pill">🎥 Video</button>
+          </div>
+
+          <div style="flex: 1; max-width: 240px;">
+            <input type="text" id="gallery-search" placeholder="Cari nama file..." class="input-field" style="font-size: 0.75rem; padding: 0.35rem 0.65rem;" />
+          </div>
+        </div>
+
+        <!-- Grid Cards -->
+        <div id="gallery-grid" class="gallery-grid">
+          <!-- Populated by JS -->
+          <div style="grid-column: 1 / -1; padding: 3rem 1rem; text-align: center; color: #94a3b8; font-size: 0.8125rem;">
+            <div class="spin" style="width: 1.5rem; height: 1.5rem; border: 2px solid #4f46e5; border-top-color: transparent; border-radius: 9999px; margin-bottom: 0.5rem;"></div>
+            <div>Memuat galeri media...</div>
           </div>
         </div>
       </section>
@@ -1485,6 +2280,68 @@ export const prerender = false;
     </div>
   </div>
 
+  <!-- Modal 3: Media Picker Modal (Pilih dari Galeri untuk Form Produk / Banner) -->
+  <div id="media-picker-modal" class="modal-overlay hidden">
+    <div class="modal-card" style="max-width: 680px;">
+      <div class="modal-header">
+        <div>
+          <h3 id="picker-modal-title" style="font-size: 1rem; font-weight: 700; color: #0f172a;">Pilih Media dari Galeri</h3>
+          <p id="picker-modal-sub" style="font-size: 0.75rem; color: #64748b;">Klik salah satu item untuk menggunakannya langsung</p>
+        </div>
+        <button id="btn-picker-close" type="button" class="modal-close">&times;</button>
+      </div>
+
+      <div style="padding-top: 0.75rem;">
+        <div class="gallery-filter-bar" style="margin-bottom: 0.75rem;">
+          <div class="filter-pills">
+            <button type="button" id="picker-filter-all" class="filter-pill active">Semua</button>
+            <button type="button" id="picker-filter-images" class="filter-pill">📸 Foto</button>
+            <button type="button" id="picker-filter-videos" class="filter-pill">🎥 Video</button>
+          </div>
+          <div style="flex: 1; max-width: 220px;">
+            <input type="text" id="picker-search" placeholder="Cari media..." class="input-field" style="font-size: 0.75rem; padding: 0.35rem 0.6rem;" />
+          </div>
+        </div>
+
+        <div id="picker-grid" class="picker-grid">
+          <!-- Populated by JS -->
+        </div>
+
+        <div class="modal-footer" style="margin-top: 0.75rem;">
+          <button type="button" id="btn-picker-cancel" class="btn btn-secondary">Tutup</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 4: Media Preview Modal (Zoom Foto / Play Video) -->
+  <div id="media-preview-modal" class="modal-overlay hidden">
+    <div class="modal-card" style="max-width: 720px; background: #0f172a; color: white;">
+      <div class="modal-header" style="border-bottom-color: #334155;">
+        <div>
+          <h3 id="preview-modal-title" style="font-size: 0.95rem; font-weight: 700; color: #f8fafc;">Preview Media</h3>
+          <p id="preview-modal-meta" style="font-size: 0.75rem; color: #94a3b8;">Metadata</p>
+        </div>
+        <button id="btn-preview-modal-close" type="button" class="modal-close" style="color: #cbd5e1;">&times;</button>
+      </div>
+
+      <div style="padding: 1rem 0; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 280px; max-height: 480px;">
+        <div id="preview-modal-content" style="width: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+          <!-- Image or Video element injected by JS -->
+        </div>
+      </div>
+
+      <div style="padding-top: 0.75rem; border-top: 1px solid #334155; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; flex-wrap: wrap;">
+        <input type="text" id="preview-modal-url" readonly class="input-field input-mono" style="font-size: 0.75rem; background: #1e293b; color: #38bdf8; border-color: #475569; flex: 1;" />
+        <div style="display: flex; gap: 0.4rem;">
+          <button type="button" id="btn-preview-copy" class="btn btn-secondary" style="font-size: 0.75rem;">Salin URL</button>
+          <button type="button" id="btn-preview-use-p" class="btn btn-emerald" style="font-size: 0.75rem;">Pakai Produk</button>
+          <button type="button" id="btn-preview-use-b" class="btn btn-primary" style="font-size: 0.75rem;">Pakai Banner</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script is:inline>
     // State management in localStorage
     const STORAGE_KEY = 'astro_sync_config';
@@ -1493,6 +2350,7 @@ export const prerender = false;
       store_name: 'Navanusa Jewellery',
       store_title: 'Navanusa Jewellery - Nordic Minimalist Shop',
       theme: 'nordic',
+      theme_config: {},
       worker_url: window.location.origin,
       internal_token: '',
       deploy_hook_url: ''
@@ -1520,9 +2378,11 @@ export const prerender = false;
     // DOM Elements - Tab Switching
     const tabBtnProducts = document.getElementById('tab-btn-products');
     const tabBtnBanners = document.getElementById('tab-btn-banners');
+    const tabBtnGallery = document.getElementById('tab-btn-gallery');
     const tabBtnSettings = document.getElementById('tab-btn-settings');
     const tabProductsContent = document.getElementById('tab-products-content');
     const tabBannersContent = document.getElementById('tab-banners-content');
+    const tabGalleryContent = document.getElementById('tab-gallery-content');
     const tabSettingsContent = document.getElementById('tab-settings-content');
 
     // DOM Elements - Page Settings Tab
@@ -1621,6 +2481,54 @@ export const prerender = false;
     const statusMayarWebhook = document.getElementById('status-mayar-webhook');
     const statusBiteshipKey = document.getElementById('status-biteship-key');
 
+    // Gallery DOM Elements
+    let mediaList = [];
+    let activeGalleryFilter = 'all'; // 'all' | 'image' | 'video'
+    let activePickerFilter = 'all';
+    let currentPickerTarget = 'product'; // 'product' | 'banner'
+    let currentPreviewItem = null;
+
+    const galleryCountBadge = document.getElementById('gallery-count-badge');
+    const galleryTotalBadge = document.getElementById('gallery-total-badge');
+    const galleryGrid = document.getElementById('gallery-grid');
+    const galleryDropzone = document.getElementById('gallery-dropzone');
+    const galleryFileInput = document.getElementById('gallery-file-input');
+    const btnBrowseMedia = document.getElementById('btn-browse-media');
+    const galleryUploadStatus = document.getElementById('gallery-upload-status');
+    const galleryUploadText = document.getElementById('gallery-upload-text');
+    const formAddMediaUrl = document.getElementById('form-add-media-url');
+    const inputMediaName = document.getElementById('input-media-name');
+    const inputMediaUrl = document.getElementById('input-media-url');
+    const selectMediaType = document.getElementById('select-media-type');
+    const btnRefreshGallery = document.getElementById('btn-refresh-gallery');
+    const filterAll = document.getElementById('filter-all');
+    const filterImages = document.getElementById('filter-images');
+    const filterVideos = document.getElementById('filter-videos');
+    const gallerySearch = document.getElementById('gallery-search');
+
+    // Picker & Preview Modal Elements
+    const btnGalleryPickProduct = document.getElementById('btn-gallery-pick-product');
+    const btnGalleryPickBanner = document.getElementById('btn-gallery-pick-banner');
+    const mediaPickerModal = document.getElementById('media-picker-modal');
+    const pickerModalTitle = document.getElementById('picker-modal-title');
+    const btnPickerClose = document.getElementById('btn-picker-close');
+    const btnPickerCancel = document.getElementById('btn-picker-cancel');
+    const pickerFilterAll = document.getElementById('picker-filter-all');
+    const pickerFilterImages = document.getElementById('picker-filter-images');
+    const pickerFilterVideos = document.getElementById('picker-filter-videos');
+    const pickerSearch = document.getElementById('picker-search');
+    const pickerGrid = document.getElementById('picker-grid');
+
+    const mediaPreviewModal = document.getElementById('media-preview-modal');
+    const btnPreviewModalClose = document.getElementById('btn-preview-modal-close');
+    const previewModalTitle = document.getElementById('preview-modal-title');
+    const previewModalMeta = document.getElementById('preview-modal-meta');
+    const previewModalContent = document.getElementById('preview-modal-content');
+    const previewModalUrl = document.getElementById('preview-modal-url');
+    const btnPreviewCopy = document.getElementById('btn-preview-copy');
+    const btnPreviewUseP = document.getElementById('btn-preview-use-p');
+    const btnPreviewUseB = document.getElementById('btn-preview-use-b');
+
     function showToast(message, type = 'success') {
       const toast = document.createElement('div');
       toast.className = `toast-item ${type === 'error' ? 'toast-error' : ''}`;
@@ -1661,6 +2569,71 @@ export const prerender = false;
       if (t === 'kaufmann' || t === 'theme3') return 'Theme 3 (Susanne Kaufmann Skincare)';
       if (t === 'impulse' || t === 'theme2') return 'Theme 2 (Impulse Editorial)';
       return 'Theme 1 (Nordic Minimalist)';
+    }
+
+    function isVideoUrl(url) {
+      if (!url) return false;
+      const clean = url.split('?')[0].toLowerCase();
+      return clean.endsWith('.mp4') || clean.endsWith('.webm') || clean.endsWith('.mov') || clean.endsWith('.ogg') || clean.endsWith('.mkv');
+    }
+
+    function updateMediaPreview(inputId) {
+      const input = document.getElementById(inputId);
+      const previewBox = document.getElementById('preview-box-' + inputId);
+      if (!input || !previewBox) return;
+
+      const url = input.value.trim();
+      if (!url) {
+        let defaultMsg = 'Menggunakan media default template';
+        if (inputId.includes('nordic')) defaultMsg = 'Menggunakan gambar default Nordic (/model-jewelry-banner.jpg)';
+        else if (inputId.includes('impulse-hero')) defaultMsg = 'Menggunakan foto default Hero Impulse';
+        else if (inputId.includes('impulse-editorial')) defaultMsg = 'Menggunakan foto default Lookbook';
+        else if (inputId.includes('impulse-closing')) defaultMsg = 'Menggunakan foto default Closing Banner';
+        else if (inputId.includes('kaufmann-hero')) defaultMsg = 'Menggunakan video default lotion application';
+        else if (inputId.includes('kaufmann-scent')) defaultMsg = 'Menggunakan video default serum dropper';
+        else if (inputId.includes('kaufmann-story')) defaultMsg = 'Menggunakan video default indoor spa pool';
+
+        previewBox.innerHTML = `
+          <div class="theme-media-empty-preview">
+            <span>🎬</span>
+            <span>${defaultMsg}</span>
+          </div>
+        `;
+        return;
+      }
+
+      if (isVideoUrl(url)) {
+        previewBox.innerHTML = `
+          <video src="${url}" autoplay muted loop playsinline style="width: 100%; height: 100%; object-fit: cover;"></video>
+          <span style="position: absolute; bottom: 6px; right: 8px; font-size: 0.65rem; background: rgba(0,0,0,0.75); color: #38bdf8; padding: 2px 7px; border-radius: 4px; font-weight: 700; letter-spacing: 0.05em;">VIDEO LOOP</span>
+        `;
+      } else {
+        previewBox.innerHTML = `
+          <img src="${url}" alt="Preview Media" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null; this.src='https://placehold.co/400x150?text=Preview+Gagal';" />
+          <span style="position: absolute; bottom: 6px; right: 8px; font-size: 0.65rem; background: rgba(0,0,0,0.75); color: #ffffff; padding: 2px 7px; border-radius: 4px; font-weight: 700; letter-spacing: 0.05em;">FOTO</span>
+        `;
+      }
+    }
+
+    function loadThemeConfigToInputs(cfg) {
+      if (!cfg) return;
+      const ids = [
+        ['theme-nordic-showcase', cfg.nordic?.showcase_media],
+        ['theme-impulse-hero', cfg.impulse?.hero_media],
+        ['theme-impulse-editorial', cfg.impulse?.editorial_media],
+        ['theme-impulse-closing', cfg.impulse?.closing_media],
+        ['theme-kaufmann-hero', cfg.kaufmann?.hero_video],
+        ['theme-kaufmann-scent', cfg.kaufmann?.scent_video],
+        ['theme-kaufmann-story', cfg.kaufmann?.story_video],
+      ];
+
+      ids.forEach(([id, val]) => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.value = val || '';
+          updateMediaPreview(id);
+        }
+      });
     }
 
     function applyThemeUI(themeName) {
@@ -1726,6 +2699,20 @@ export const prerender = false;
           ? 'Katalog fashion minimalis, editorial banner & quick view terhubung langsung ke database D1.'
           : 'Katalog perhiasan & hero carousel terhubung langsung ke database D1.';
       }
+
+      // 5. Update Per-Theme Media Customizer visibility & Badge
+      const themeMediaActiveBadge = document.getElementById('theme-media-active-badge');
+      const groupNordic = document.getElementById('theme-media-group-nordic');
+      const groupImpulse = document.getElementById('theme-media-group-impulse');
+      const groupKaufmann = document.getElementById('theme-media-group-kaufmann');
+
+      if (themeMediaActiveBadge) {
+        themeMediaActiveBadge.textContent = isKaufmann ? 'Theme 3 (Susanne Kaufmann)' : isImpulse ? 'Theme 2 (Impulse)' : 'Theme 1 (Nordic)';
+      }
+
+      if (groupNordic) groupNordic.classList.toggle('hidden', isImpulse || isKaufmann);
+      if (groupImpulse) groupImpulse.classList.toggle('hidden', !isImpulse);
+      if (groupKaufmann) groupKaufmann.classList.toggle('hidden', !isKaufmann);
     }
 
     async function switchTheme(targetTheme) {
@@ -1791,6 +2778,9 @@ export const prerender = false;
 
       updateLivePreviews();
       applyThemeUI(currentConfig.theme || 'nordic');
+      if (currentConfig.theme_config) {
+        loadThemeConfigToInputs(currentConfig.theme_config);
+      }
     }
 
     function saveConfig(cfg) {
@@ -1820,6 +2810,10 @@ export const prerender = false;
               currentConfig.theme = data.theme;
               applyThemeUI(data.theme);
             }
+            if (data.theme_config) {
+              currentConfig.theme_config = data.theme_config;
+              loadThemeConfigToInputs(data.theme_config);
+            }
             saveConfig(currentConfig);
             updateLivePreviews();
           }
@@ -1848,6 +2842,7 @@ export const prerender = false;
             name: newCfg.store_name,
             title: newCfg.store_title,
             theme: newCfg.theme || currentConfig.theme || 'nordic',
+            theme_config: newCfg.theme_config || currentConfig.theme_config || {},
           })
         });
 
@@ -2207,16 +3202,457 @@ export const prerender = false;
       integrationsModal.classList.add('hidden');
     }
 
+    // ========================================================
+    // MEDIA GALLERY & PICKER SYSTEM (PHOTO & VIDEO)
+    // ========================================================
+
+    function formatBytes(bytes) {
+      if (!bytes || bytes <= 0) return '0 B';
+      const k = 1024;
+      const sizes = ['B', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '-';
+      try {
+        const d = new Date(dateStr);
+        return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+      } catch (_) {
+        return dateStr;
+      }
+    }
+
+    function isVideoUrl(url) {
+      if (!url) return false;
+      const clean = url.split('?')[0].toLowerCase();
+      return clean.endsWith('.mp4') || clean.endsWith('.webm') || clean.endsWith('.mov') || clean.endsWith('.mkv') || clean.includes('/video/');
+    }
+
+    async function loadMediaGallery() {
+      try {
+        const local = localStorage.getItem('astro_wails_media_gallery');
+        if (local) {
+          mediaList = JSON.parse(local);
+        } else {
+          mediaList = getDefaultMediaSamples();
+        }
+      } catch (err) {
+        console.warn('Error loading media gallery:', err);
+        mediaList = getDefaultMediaSamples();
+      }
+
+      updateMediaBadges();
+      renderMediaGallery();
+    }
+
+    function getDefaultMediaSamples() {
+      return [
+        {
+          id: 'sample-1',
+          name: 'cincin-emas-berlian-lux.jpg',
+          type: 'image',
+          url: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=800&q=80',
+          size: 1420000,
+          mime_type: 'image/jpeg',
+          created_at: new Date().toISOString(),
+          store_id: currentConfig.store_id || 'jewellery'
+        },
+        {
+          id: 'sample-2',
+          name: 'kalung-emas-mewah-collection.jpg',
+          type: 'image',
+          url: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=800&q=80',
+          size: 1850000,
+          mime_type: 'image/jpeg',
+          created_at: new Date().toISOString(),
+          store_id: currentConfig.store_id || 'jewellery'
+        },
+        {
+          id: 'sample-3',
+          name: 'video-showcase-jewellery-demo.mp4',
+          type: 'video',
+          url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+          size: 15400000,
+          mime_type: 'video/mp4',
+          created_at: new Date().toISOString(),
+          store_id: currentConfig.store_id || 'jewellery'
+        }
+      ];
+    }
+
+    function updateMediaBadges() {
+      const count = mediaList.length;
+      if (galleryCountBadge) galleryCountBadge.textContent = count;
+      if (galleryTotalBadge) galleryTotalBadge.textContent = `${count} Media`;
+    }
+
+    async function saveMediaItem(item) {
+      if (!item.id) {
+        item.id = 'media-' + Date.now();
+      }
+      if (!item.created_at) {
+        item.created_at = new Date().toISOString();
+      }
+      if (!item.store_id) {
+        item.store_id = currentConfig.store_id || 'jewellery';
+      }
+
+      const idx = mediaList.findIndex(m => m.id === item.id);
+      if (idx >= 0) {
+        mediaList[idx] = item;
+      } else {
+        mediaList.unshift(item);
+      }
+
+      try {
+        localStorage.setItem('astro_wails_media_gallery', JSON.stringify(mediaList));
+      } catch (e) {}
+
+      updateMediaBadges();
+      renderMediaGallery();
+    }
+
+    async function deleteMediaItem(id) {
+      const item = mediaList.find(m => m.id === id);
+      const name = item ? item.name : 'item ini';
+      if (!confirm(`Hapus "${name}" dari galeri media?`)) return;
+
+      mediaList = mediaList.filter(m => m.id !== id);
+
+      try {
+        localStorage.setItem('astro_wails_media_gallery', JSON.stringify(mediaList));
+      } catch (e) {}
+
+      updateMediaBadges();
+      renderMediaGallery();
+      showToast('Media berhasil dihapus dari galeri', 'success');
+    }
+
+    function renderMediaGallery() {
+      if (!galleryGrid) return;
+
+      const searchQuery = (gallerySearch?.value || '').trim().toLowerCase();
+      const filtered = mediaList.filter(item => {
+        if (activeGalleryFilter === 'image' && item.type !== 'image') return false;
+        if (activeGalleryFilter === 'video' && item.type !== 'video') return false;
+        if (searchQuery && !item.name.toLowerCase().includes(searchQuery) && !item.url.toLowerCase().includes(searchQuery)) {
+          return false;
+        }
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        galleryGrid.innerHTML = `
+          <div style="grid-column: 1 / -1; padding: 3rem 1.5rem; text-align: center; color: #94a3b8; background: #f8fafc; border-radius: var(--radius-md); border: 1px dashed #cbd5e1;">
+            <svg width="40" height="40" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin: 0 auto 0.75rem; color: #cbd5e1;">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+            <div style="font-weight: 700; color: #475569; font-size: 0.875rem;">Belum ada media ditemukan</div>
+            <div style="font-size: 0.75rem; margin-top: 0.25rem;">Tarik file ke kotak upload atau tambah tautan URL di sebelah kiri.</div>
+          </div>
+        `;
+        return;
+      }
+
+      galleryGrid.innerHTML = filtered.map(item => {
+        const isVid = item.type === 'video';
+        const typeLabel = isVid ? '🎥 Video' : '📸 Foto';
+        const badgeClass = isVid ? 'media-type-badge video' : 'media-type-badge';
+
+        return `
+          <div class="media-card" data-id="${item.id}">
+            <div class="media-thumb-wrap">
+              <span class="${badgeClass}">${typeLabel}</span>
+              ${isVid ? `
+                <video src="${item.url}" preload="metadata" muted playsinline style="width: 100%; height: 100%; object-fit: cover;"></video>
+                <div style="position: absolute; width: 2.25rem; height: 2.25rem; border-radius: 50%; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; color: white;">
+                  <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </div>
+              ` : `
+                <img class="media-thumb-img" src="${item.url}" alt="${item.name}" loading="lazy" onerror="this.src='https://placehold.co/400x300?text=Gambar+Rusak'" />
+              `}
+
+              <!-- Hover Overlay -->
+              <div class="media-thumb-overlay">
+                <button type="button" class="media-action-circle btn-media-preview-action" data-id="${item.id}" title="Preview / Buka">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                </button>
+                <button type="button" class="media-action-circle btn-media-copy-action" data-url="${item.url}" title="Salin URL">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="media-card-body">
+              <div class="media-name" title="${item.name}">${item.name}</div>
+              <div class="media-meta">
+                <span>${formatBytes(item.size)}</span>
+                <span>${formatDate(item.created_at)}</span>
+              </div>
+            </div>
+
+            <div class="media-card-footer">
+              <div class="media-use-btn-group">
+                <button type="button" class="btn-use-media btn-use-product btn-media-use-product" data-url="${item.url}" title="Gunakan sebagai foto produk">
+                  <span>+ Produk</span>
+                </button>
+                <button type="button" class="btn-use-media btn-use-banner btn-media-use-banner" data-url="${item.url}" title="Gunakan sebagai banner carousel">
+                  <span>+ Banner</span>
+                </button>
+              </div>
+              <div class="media-bottom-actions">
+                <button type="button" class="btn-media-link btn-media-copy-action" data-url="${item.url}">
+                  <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                  <span>Salin URL</span>
+                </button>
+                <button type="button" class="btn-media-delete btn-media-delete-action" data-id="${item.id}" title="Hapus dari galeri">
+                  <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                  <span>Hapus</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      galleryGrid.querySelectorAll('.btn-media-use-product').forEach(b => {
+        b.addEventListener('click', (e) => {
+          e.stopPropagation();
+          useMediaForProduct(b.dataset.url);
+        });
+      });
+
+      galleryGrid.querySelectorAll('.btn-media-use-banner').forEach(b => {
+        b.addEventListener('click', (e) => {
+          e.stopPropagation();
+          useMediaForBanner(b.dataset.url);
+        });
+      });
+
+      galleryGrid.querySelectorAll('.btn-media-copy-action').forEach(b => {
+        b.addEventListener('click', (e) => {
+          e.stopPropagation();
+          copyMediaUrl(b.dataset.url);
+        });
+      });
+
+      galleryGrid.querySelectorAll('.btn-media-preview-action').forEach(b => {
+        b.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const it = mediaList.find(m => m.id === b.dataset.id);
+          if (it) openMediaPreview(it);
+        });
+      });
+
+      galleryGrid.querySelectorAll('.btn-media-delete-action').forEach(b => {
+        b.addEventListener('click', (e) => {
+          e.stopPropagation();
+          deleteMediaItem(b.dataset.id);
+        });
+      });
+    }
+
+    function copyMediaUrl(url) {
+      if (!url) return;
+      navigator.clipboard.writeText(url).then(() => {
+        showToast('URL media disalin ke clipboard!', 'success');
+      }).catch(() => {
+        showToast('URL: ' + url, 'success');
+      });
+    }
+
+    function useMediaForProduct(url) {
+      if (!url) return;
+      pImage.value = url;
+      imagePreview.src = url;
+      imagePreviewContainer.classList.remove('hidden');
+
+      tabBtnProducts.click();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      showToast('Media diterapkan ke formulir Produk!', 'success');
+    }
+
+    function useMediaForBanner(url) {
+      if (!url) return;
+      bImage.value = url;
+      bannerImagePreview.src = url;
+      bannerImagePreviewContainer.classList.remove('hidden');
+
+      tabBtnBanners.click();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      showToast('Media diterapkan ke formulir Banner!', 'success');
+    }
+
+    // Media Picker Modal
+    function openMediaPicker(target) {
+      currentPickerTarget = target;
+      if (target === 'product') {
+        pickerModalTitle.textContent = 'Pilih Media untuk Produk';
+      } else if (target === 'banner') {
+        pickerModalTitle.textContent = 'Pilih Media untuk Banner';
+      } else if (typeof target === 'string' && target.startsWith('theme-')) {
+        pickerModalTitle.textContent = 'Pilih Foto / Video untuk Template';
+      } else {
+        pickerModalTitle.textContent = 'Pilih Media dari Galeri';
+      }
+      mediaPickerModal.classList.remove('hidden');
+      renderMediaPicker();
+    }
+
+    function closeMediaPicker() {
+      mediaPickerModal.classList.add('hidden');
+    }
+
+    function renderMediaPicker() {
+      if (!pickerGrid) return;
+
+      const q = (pickerSearch?.value || '').trim().toLowerCase();
+      const filtered = mediaList.filter(item => {
+        if (activePickerFilter === 'image' && item.type !== 'image') return false;
+        if (activePickerFilter === 'video' && item.type !== 'video') return false;
+        if (q && !item.name.toLowerCase().includes(q) && !item.url.toLowerCase().includes(q)) return false;
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        pickerGrid.innerHTML = `
+          <div style="grid-column: 1 / -1; padding: 2rem; text-align: center; color: #94a3b8; font-size: 0.8125rem;">
+            Tidak ada media yang cocok. Buka tab Galeri untuk menambahkan foto/video baru.
+          </div>
+        `;
+        return;
+      }
+
+      pickerGrid.innerHTML = filtered.map(item => {
+        const isVid = item.type === 'video';
+        return `
+          <div class="picker-item" data-url="${item.url}" title="Klik untuk gunakan">
+            ${isVid ? `
+              <div style="height: 85px; background: #0f172a; display: flex; align-items: center; justify-content: center; position: relative;">
+                <video src="${item.url}" preload="metadata" muted style="width: 100%; height: 100%; object-fit: cover;"></video>
+                <span style="position: absolute; font-size: 0.65rem; background: rgba(225,29,72,0.9); color: white; padding: 0.1rem 0.35rem; border-radius: 4px; font-weight: 700;">VIDEO</span>
+              </div>
+            ` : `
+              <img class="picker-item-thumb" src="${item.url}" alt="${item.name}" loading="lazy" onerror="this.src='https://placehold.co/200x150?text=Foto'" />
+            `}
+            <div class="picker-item-title">${item.name}</div>
+          </div>
+        `;
+      }).join('');
+
+      pickerGrid.querySelectorAll('.picker-item').forEach(el => {
+        el.addEventListener('click', () => {
+          const url = el.dataset.url;
+          if (currentPickerTarget === 'product') {
+            useMediaForProduct(url);
+          } else if (currentPickerTarget === 'banner') {
+            useMediaForBanner(url);
+          } else if (typeof currentPickerTarget === 'string' && currentPickerTarget.startsWith('theme-')) {
+            const input = document.getElementById(currentPickerTarget);
+            if (input) {
+              input.value = url;
+              updateMediaPreview(currentPickerTarget);
+              showToast('Media template berhasil disisipkan dari galeri!', 'success');
+            }
+          }
+          closeMediaPicker();
+        });
+      });
+    }
+
+    // Media Preview Modal
+    function openMediaPreview(item) {
+      currentPreviewItem = item;
+      previewModalTitle.textContent = item.name || 'Preview Media';
+      previewModalMeta.textContent = `${item.type === 'video' ? 'Video' : 'Foto'} • ${formatBytes(item.size || 0)} • ${formatDate(item.created_at)}`;
+      previewModalUrl.value = item.url;
+
+      if (item.type === 'video' || isVideoUrl(item.url)) {
+        previewModalContent.innerHTML = `
+          <video src="${item.url}" controls autoplay playsinline style="max-width: 100%; max-height: 420px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+            Browser Anda tidak mendukung tag video.
+          </video>
+        `;
+      } else {
+        previewModalContent.innerHTML = `
+          <img src="${item.url}" alt="${item.name}" style="max-width: 100%; max-height: 420px; object-fit: contain; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5);" />
+        `;
+      }
+
+      mediaPreviewModal.classList.remove('hidden');
+    }
+
+    function closeMediaPreview() {
+      if (previewModalContent) {
+        previewModalContent.innerHTML = '';
+      }
+      mediaPreviewModal.classList.add('hidden');
+    }
+
+    // Upload Media Multi-Files (Drag & Drop or File Input)
+    async function handleMediaFilesUpload(files) {
+      if (!files || files.length === 0) return;
+
+      galleryUploadStatus.classList.remove('hidden');
+
+      let successCount = 0;
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        galleryUploadText.textContent = `Mengunggah (${i + 1}/${files.length}): ${file.name}...`;
+
+        const isVid = file.type.startsWith('video/') || isVideoUrl(file.name);
+        const mediaType = isVid ? 'video' : 'image';
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+          const res = await fetch('https://minio.navanusa.com/api/upload', {
+            method: 'POST',
+            body: formData,
+          });
+
+          const resData = await res.json();
+          if (!resData.ok || !resData.data?.url) {
+            throw new Error(resData.error || 'Gagal upload file');
+          }
+
+          const mediaItem = {
+            name: file.name,
+            type: mediaType,
+            url: resData.data.url,
+            size: file.size || resData.data.size || 0,
+            mime_type: file.type || (isVid ? 'video/mp4' : 'image/jpeg'),
+            created_at: new Date().toISOString(),
+            store_id: currentConfig.store_id || 'jewellery'
+          };
+
+          await saveMediaItem(mediaItem);
+          successCount++;
+        } catch (err) {
+          console.warn('Gagal upload ke MinIO:', err);
+          showToast(`Upload ${file.name} gagal: ${err.message}`, 'error');
+        }
+      }
+
+      galleryUploadStatus.classList.add('hidden');
+      if (successCount > 0) {
+        showToast(`${successCount} file berhasil diunggah ke Galeri!`, 'success');
+      }
+    }
+
     // ==========================================
     // EVENT LISTENERS
     // ==========================================
     function setupEventListeners() {
       // Tab Switching
       function switchTab(activeBtn, activeContent) {
-        [tabBtnProducts, tabBtnBanners, tabBtnSettings].forEach(btn => btn?.classList.remove('active'));
-        [tabProductsContent, tabBannersContent, tabSettingsContent].forEach(c => c?.classList.add('hidden'));
-        activeBtn.classList.add('active');
-        activeContent.classList.remove('hidden');
+        [tabBtnProducts, tabBtnBanners, tabBtnGallery, tabBtnSettings].forEach(btn => btn?.classList.remove('active'));
+        [tabProductsContent, tabBannersContent, tabGalleryContent, tabSettingsContent].forEach(c => c?.classList.add('hidden'));
+        activeBtn?.classList.add('active');
+        activeContent?.classList.remove('hidden');
       }
 
       tabBtnProducts.addEventListener('click', () => switchTab(tabBtnProducts, tabProductsContent));
@@ -2224,9 +3660,151 @@ export const prerender = false;
         switchTab(tabBtnBanners, tabBannersContent);
         if (bannersList.length === 0) loadBanners();
       });
+      tabBtnGallery?.addEventListener('click', () => {
+        switchTab(tabBtnGallery, tabGalleryContent);
+        renderMediaGallery();
+      });
       tabBtnSettings.addEventListener('click', () => {
         switchTab(tabBtnSettings, tabSettingsContent);
         fetchStoreSettingsFromD1();
+      });
+
+      // Picker & Preview Modal Listeners
+      btnGalleryPickProduct?.addEventListener('click', () => openMediaPicker('product'));
+      btnGalleryPickBanner?.addEventListener('click', () => openMediaPicker('banner'));
+      btnPickerClose?.addEventListener('click', closeMediaPicker);
+      btnPickerCancel?.addEventListener('click', closeMediaPicker);
+      mediaPickerModal?.addEventListener('click', (e) => {
+        if (e.target === mediaPickerModal) closeMediaPicker();
+      });
+
+      pickerFilterAll?.addEventListener('click', () => {
+        activePickerFilter = 'all';
+        pickerFilterAll.classList.add('active');
+        pickerFilterImages.classList.remove('active');
+        pickerFilterVideos.classList.remove('active');
+        renderMediaPicker();
+      });
+      pickerFilterImages?.addEventListener('click', () => {
+        activePickerFilter = 'image';
+        pickerFilterImages.classList.add('active');
+        pickerFilterAll.classList.remove('active');
+        pickerFilterVideos.classList.remove('active');
+        renderMediaPicker();
+      });
+      pickerFilterVideos?.addEventListener('click', () => {
+        activePickerFilter = 'video';
+        pickerFilterVideos.classList.add('active');
+        pickerFilterAll.classList.remove('active');
+        pickerFilterImages.classList.remove('active');
+        renderMediaPicker();
+      });
+      pickerSearch?.addEventListener('input', renderMediaPicker);
+
+      btnPreviewModalClose?.addEventListener('click', closeMediaPreview);
+      mediaPreviewModal?.addEventListener('click', (e) => {
+        if (e.target === mediaPreviewModal) closeMediaPreview();
+      });
+      btnPreviewCopy?.addEventListener('click', () => {
+        if (currentPreviewItem) copyMediaUrl(currentPreviewItem.url);
+      });
+      btnPreviewUseP?.addEventListener('click', () => {
+        if (currentPreviewItem) {
+          useMediaForProduct(currentPreviewItem.url);
+          closeMediaPreview();
+        }
+      });
+      btnPreviewUseB?.addEventListener('click', () => {
+        if (currentPreviewItem) {
+          useMediaForBanner(currentPreviewItem.url);
+          closeMediaPreview();
+        }
+      });
+
+      // Gallery Toolbar & Filters
+      filterAll?.addEventListener('click', () => {
+        activeGalleryFilter = 'all';
+        filterAll.classList.add('active');
+        filterImages.classList.remove('active');
+        filterVideos.classList.remove('active');
+        renderMediaGallery();
+      });
+      filterImages?.addEventListener('click', () => {
+        activeGalleryFilter = 'image';
+        filterImages.classList.add('active');
+        filterAll.classList.remove('active');
+        filterVideos.classList.remove('active');
+        renderMediaGallery();
+      });
+      filterVideos?.addEventListener('click', () => {
+        activeGalleryFilter = 'video';
+        filterVideos.classList.add('active');
+        filterAll.classList.remove('active');
+        filterImages.classList.remove('active');
+        renderMediaGallery();
+      });
+      gallerySearch?.addEventListener('input', renderMediaGallery);
+      btnRefreshGallery?.addEventListener('click', loadMediaGallery);
+
+      // Gallery Upload File Inputs & Dropzone
+      btnBrowseMedia?.addEventListener('click', () => galleryFileInput.click());
+      galleryFileInput?.addEventListener('change', (e) => {
+        if (e.target.files && e.target.files.length > 0) {
+          handleMediaFilesUpload(e.target.files);
+          galleryFileInput.value = '';
+        }
+      });
+
+      if (galleryDropzone) {
+        galleryDropzone.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          galleryDropzone.classList.add('drag-over');
+        });
+        galleryDropzone.addEventListener('dragleave', () => {
+          galleryDropzone.classList.remove('drag-over');
+        });
+        galleryDropzone.addEventListener('drop', (e) => {
+          e.preventDefault();
+          galleryDropzone.classList.remove('drag-over');
+          if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            handleMediaFilesUpload(e.dataTransfer.files);
+          }
+        });
+        galleryDropzone.addEventListener('click', (e) => {
+          if (e.target !== btnBrowseMedia && !btnBrowseMedia.contains(e.target)) {
+            galleryFileInput.click();
+          }
+        });
+      }
+
+      // Form Add Media URL
+      formAddMediaUrl?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const url = inputMediaUrl.value.trim();
+        if (!url) return;
+
+        let type = selectMediaType.value;
+        if (type === 'auto') {
+          type = isVideoUrl(url) ? 'video' : 'image';
+        }
+
+        const name = inputMediaName.value.trim() || url.split('/').pop().split('?')[0] || (type === 'video' ? 'video-item.mp4' : 'image-item.jpg');
+
+        const item = {
+          name: name,
+          type: type,
+          url: url,
+          size: 0,
+          mime_type: type === 'video' ? 'video/mp4' : 'image/jpeg',
+          created_at: new Date().toISOString(),
+          store_id: currentConfig.store_id || 'jewellery'
+        };
+
+        await saveMediaItem(item);
+        inputMediaUrl.value = '';
+        inputMediaName.value = '';
+        selectMediaType.value = 'auto';
+        showToast('Media baru berhasil didaftarkan ke galeri!', 'success');
       });
 
       // Product Form slug auto-fill & image preview
@@ -2246,10 +3824,15 @@ export const prerender = false;
         }
       });
 
-      // MinIO Image Upload Handler
+      // MinIO Image & Video Upload Handler
       async function uploadFileToMinio(file, targetInput, previewImg, previewContainer, btnTextEl, defaultText) {
-        if (!file || !file.type.startsWith('image/')) {
-          showToast('Pilih file gambar yang valid (JPG, PNG, WebP)', 'error');
+        if (!file) return;
+
+        const isImage = file.type.startsWith('image/');
+        const isVideo = file.type.startsWith('video/') || isVideoUrl(file.name);
+
+        if (!isImage && !isVideo) {
+          showToast('Pilih file gambar (JPG, PNG, WebP) atau video (MP4, WebM)', 'error');
           return;
         }
 
@@ -2273,13 +3856,31 @@ export const prerender = false;
 
           const data = await res.json();
           if (!data.ok || !data.data?.url) {
-            throw new Error(data.error || 'Gagal mengunggah gambar');
+            throw new Error(data.error || 'Gagal mengunggah media');
           }
 
-          targetInput.value = data.data.url;
-          previewImg.src = data.data.url;
-          previewContainer.classList.remove('hidden');
-          showToast('Gambar berhasil diunggah ke MinIO!', 'success');
+          const mediaUrl = data.data.url;
+          targetInput.value = mediaUrl;
+
+          if (previewImg) {
+            previewImg.src = mediaUrl;
+          }
+          if (previewContainer) {
+            previewContainer.classList.remove('hidden');
+          }
+
+          // Otomatis daftarkan file yang diupload ke Galeri Media
+          await saveMediaItem({
+            name: file.name,
+            type: isVideo ? 'video' : 'image',
+            url: mediaUrl,
+            size: file.size || data.data.size || 0,
+            mime_type: file.type || (isVideo ? 'video/mp4' : 'image/jpeg'),
+            created_at: new Date().toISOString(),
+            store_id: currentConfig.store_id || 'jewellery'
+          });
+
+          showToast('Media berhasil diunggah dan disimpan ke Galeri!', 'success');
         } catch (err) {
           showToast('Gagal upload: ' + err.message, 'error');
         } finally {
@@ -2440,13 +4041,34 @@ export const prerender = false;
         const token = (isModal ? cfgToken.value : tabCfgToken.value).trim();
         const deployHook = (isModal ? cfgDeployHook.value : tabCfgDeployHook.value).trim();
 
+        let themeConfig = currentConfig.theme_config || {};
+        if (!isModal) {
+          themeConfig = {
+            nordic: {
+              showcase_media: document.getElementById('theme-nordic-showcase')?.value.trim() || '',
+            },
+            impulse: {
+              hero_media: document.getElementById('theme-impulse-hero')?.value.trim() || '',
+              editorial_media: document.getElementById('theme-impulse-editorial')?.value.trim() || '',
+              closing_media: document.getElementById('theme-impulse-closing')?.value.trim() || '',
+            },
+            kaufmann: {
+              hero_video: document.getElementById('theme-kaufmann-hero')?.value.trim() || '',
+              scent_video: document.getElementById('theme-kaufmann-scent')?.value.trim() || '',
+              story_video: document.getElementById('theme-kaufmann-story')?.value.trim() || '',
+            },
+          };
+          currentConfig.theme_config = themeConfig;
+        }
+
         const newCfg = {
           store_id: storeId,
           store_name: storeName,
           store_title: storeTitle,
           worker_url: workerUrl,
           internal_token: token,
-          deploy_hook_url: deployHook
+          deploy_hook_url: deployHook,
+          theme_config: themeConfig,
         };
 
         if (isModal) closeSettings();
@@ -2458,6 +4080,44 @@ export const prerender = false;
       settingsForm.addEventListener('submit', (e) => onSettingsSubmit(e, true));
       if (pageSettingsForm) {
         pageSettingsForm.addEventListener('submit', (e) => onSettingsSubmit(e, false));
+      }
+
+      // Event Listeners: Per-Theme Media Customizer
+      document.querySelectorAll('.theme-media-input').forEach(input => {
+        input.addEventListener('input', () => {
+          updateMediaPreview(input.id);
+        });
+      });
+
+      document.querySelectorAll('.btn-pick-theme-media').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const target = btn.dataset.target;
+          if (target) openMediaPicker(target);
+        });
+      });
+
+      document.querySelectorAll('.btn-clear-theme-media').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const target = btn.dataset.target;
+          const input = document.getElementById(target);
+          if (input) {
+            input.value = '';
+            updateMediaPreview(target);
+            showToast('Media template direset ke default', 'success');
+          }
+        });
+      });
+
+      // Quick Save Media to D1 Button Shortcut
+      const btnSaveMediaShortcut = document.getElementById('btn-save-media-shortcut');
+      if (btnSaveMediaShortcut && pageSettingsForm) {
+        btnSaveMediaShortcut.addEventListener('click', () => {
+          if (pageSettingsForm.requestSubmit) {
+            pageSettingsForm.requestSubmit();
+          } else {
+            pageSettingsForm.dispatchEvent(new Event('submit', { cancelable: true }));
+          }
+        });
       }
 
       // Test Mayar Connection
@@ -2729,6 +4389,7 @@ export const prerender = false;
       fetchStoreSettingsFromD1();
       loadProducts();
       loadBanners();
+      loadMediaGallery();
       loadStoreIntegrations();
       setupEventListeners();
     });

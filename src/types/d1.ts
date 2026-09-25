@@ -4,6 +4,7 @@ export interface Store {
   title?: string | null;
   domain: string | null;
   theme?: string | null;
+  theme_config?: string | null;
   mayar_api_key?: string | null;
   mayar_webhook_secret?: string | null;
   biteship_api_key?: string | null;

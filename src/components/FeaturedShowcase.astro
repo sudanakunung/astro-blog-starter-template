@@ -4,13 +4,24 @@ interface Props {
   titleLine1?: string;
   titleLine2?: string;
   subtitle?: string;
+  customMedia?: string;
 }
 
 const {
   titleLine1 = 'Elegent and',
   titleLine2 = 'Modern',
   subtitle = 'Experience Luxury Redefined with Our Modern and Elegant Jewelry Pieces.',
+  customMedia,
 } = Astro.props;
+
+function isVideoUrl(url?: string): boolean {
+  if (!url) return false;
+  const clean = url.split('?')[0].toLowerCase();
+  return clean.endsWith('.mp4') || clean.endsWith('.webm') || clean.endsWith('.mov') || clean.endsWith('.ogg') || clean.endsWith('.mkv');
+}
+
+const mediaSrc = customMedia || '/model-jewelry-banner.jpg';
+const isVideo = isVideoUrl(mediaSrc);
 
 const items = [
   {
@@ -90,12 +101,23 @@ const items = [
 
         <!-- Model Image Container -->
         <div class="w-full md:w-[52%] h-72 md:h-[420px] relative overflow-hidden self-end md:self-stretch">
-          <img
-            src="/model-jewelry-banner.jpg"
-            alt="Elegent and Modern Jewellery"
-            class="w-full h-full object-cover object-top md:object-center transform hover:scale-102 transition-transform duration-700"
-            loading="lazy"
-          />
+          {isVideo ? (
+            <video
+              src={mediaSrc}
+              autoplay
+              muted
+              loop
+              playsinline
+              class="w-full h-full object-cover object-top md:object-center transform hover:scale-102 transition-transform duration-700"
+            ></video>
+          ) : (
+            <img
+              src={mediaSrc}
+              alt="Elegent and Modern Jewellery"
+              class="w-full h-full object-cover object-top md:object-center transform hover:scale-102 transition-transform duration-700"
+              loading="lazy"
+            />
+          )}
           <!-- Subtle gradient overlay blending on mobile -->
           <div class="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-[#f7f5f2] via-transparent to-transparent opacity-60 md:opacity-40 pointer-events-none"></div>
         </div>

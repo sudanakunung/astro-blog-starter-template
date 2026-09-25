@@ -147,6 +147,13 @@ export async function initDatabase(db: D1Database): Promise<{ success: boolean; 
     // Column already exists — safe to ignore
   }
 
+  // Add theme_config column to stores if missing (safe ALTER)
+  try {
+    await db.prepare(`ALTER TABLE stores ADD COLUMN theme_config TEXT`).run();
+  } catch (e) {
+    // Column already exists — safe to ignore
+  }
+
   // Add customer_id column to orders if missing
   try {
     await db.prepare(`ALTER TABLE products ADD COLUMN category TEXT`).run();

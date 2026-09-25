@@ -2,24 +2,43 @@
 // Section 3: HERO SECTION (VIDEO BACKGROUND)
 interface Props {
   brandName?: string;
+  heroMedia?: string;
 }
 
-const { brandName = 'SUSANNE KAUFMANN' } = Astro.props;
+const { brandName = 'SUSANNE KAUFMANN', heroMedia } = Astro.props;
+
+function isVideoUrl(url?: string): boolean {
+  if (!url) return true;
+  const clean = url.split('?')[0].toLowerCase();
+  return clean.endsWith('.mp4') || clean.endsWith('.webm') || clean.endsWith('.mov') || clean.endsWith('.ogg') || clean.endsWith('.mkv');
+}
+
+const mediaSrc = heroMedia || 'https://assets.mixkit.co/videos/preview/mixkit-hands-applying-lotion-to-face-41135-large.mp4';
+const isVideo = isVideoUrl(mediaSrc);
 ---
 
 <section class="relative w-full h-[85vh] min-h-[580px] max-h-[920px] overflow-hidden bg-[#2D2A26] flex items-center">
-  <!-- Video Background with Autoplay & Fallback Poster -->
-  <video
-    autoplay
-    muted
-    loop
-    playsinline
-    poster="https://images.unsplash.com/photo-1556228720-195a672e8a03?q=80&w=1920&auto=format&fit=crop"
-    class="absolute inset-0 w-full h-full object-cover object-center"
-    style="filter: brightness(0.88) contrast(1.05);"
-  >
-    <source src="https://assets.mixkit.co/videos/preview/mixkit-hands-applying-lotion-to-face-41135-large.mp4" type="video/mp4" />
-  </video>
+  <!-- Video / Photo Background with Autoplay & Fallback Poster -->
+  {isVideo ? (
+    <video
+      autoplay
+      muted
+      loop
+      playsinline
+      poster="https://images.unsplash.com/photo-1556228720-195a672e8a03?q=80&w=1920&auto=format&fit=crop"
+      class="absolute inset-0 w-full h-full object-cover object-center"
+      style="filter: brightness(0.88) contrast(1.05);"
+    >
+      <source src={mediaSrc} type="video/mp4" />
+    </video>
+  ) : (
+    <img
+      src={mediaSrc}
+      alt={brandName}
+      class="absolute inset-0 w-full h-full object-cover object-center"
+      style="filter: brightness(0.88) contrast(1.05);"
+    />
+  )}
 
   <!-- Editorial Warm Tint Gradient Overlays -->
   <div class="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent pointer-events-none"></div>

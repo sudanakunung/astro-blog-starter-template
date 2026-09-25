@@ -2,9 +2,19 @@
 // Section 6: "THE SCENT OF THE RITUAL" SECTION (VIDEO BACKGROUND)
 interface Props {
   brandName?: string;
+  scentMedia?: string;
 }
 
-const { brandName = 'SUSANNE KAUFMANN' } = Astro.props;
+const { brandName = 'SUSANNE KAUFMANN', scentMedia } = Astro.props;
+
+function isVideoUrl(url?: string): boolean {
+  if (!url) return true;
+  const clean = url.split('?')[0].toLowerCase();
+  return clean.endsWith('.mp4') || clean.endsWith('.webm') || clean.endsWith('.mov') || clean.endsWith('.ogg') || clean.endsWith('.mkv');
+}
+
+const mediaSrc = scentMedia || 'https://assets.mixkit.co/videos/preview/mixkit-close-up-of-skin-care-serum-dropper-41138-large.mp4';
+const isVideo = isVideoUrl(mediaSrc);
 ---
 
 <section id="scent" class="w-full bg-[#FAF8F5] border-t border-b border-[#E8E4DC] overflow-hidden">
@@ -40,17 +50,25 @@ const { brandName = 'SUSANNE KAUFMANN' } = Astro.props;
 
     <!-- Right Column: Vertical Cinematic Video with Artistic Cut-off Brand Overlay -->
     <div class="relative w-full h-[420px] lg:h-auto min-h-[460px] overflow-hidden bg-[#2D2A26] flex items-center justify-center">
-      <!-- Full-Height Slow-Motion Vertical Video -->
-      <video
-        autoplay
-        muted
-        loop
-        playsinline
-        poster="https://images.unsplash.com/photo-1608248597359-5b77c5e2ef9a?q=80&w=1200&auto=format&fit=crop"
-        class="absolute inset-0 w-full h-full object-cover object-center"
-      >
-        <source src="https://assets.mixkit.co/videos/preview/mixkit-close-up-of-skin-care-serum-dropper-41138-large.mp4" type="video/mp4" />
-      </video>
+      <!-- Full-Height Slow-Motion Vertical Video or Photo -->
+      {isVideo ? (
+        <video
+          autoplay
+          muted
+          loop
+          playsinline
+          poster="https://images.unsplash.com/photo-1608248597359-5b77c5e2ef9a?q=80&w=1200&auto=format&fit=crop"
+          class="absolute inset-0 w-full h-full object-cover object-center"
+        >
+          <source src={mediaSrc} type="video/mp4" />
+        </video>
+      ) : (
+        <img
+          src={mediaSrc}
+          alt="The scent of the ritual"
+          class="absolute inset-0 w-full h-full object-cover object-center"
+        />
+      )}
 
       <!-- Editorial Tint Overlays -->
       <div class="absolute inset-0 bg-black/25 pointer-events-none"></div>

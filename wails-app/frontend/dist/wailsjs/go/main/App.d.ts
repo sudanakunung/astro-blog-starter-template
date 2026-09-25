@@ -4,6 +4,8 @@ import {models} from '../models';
 
 export function DeleteBanner(arg1:string):Promise<void>;
 
+export function DeleteMediaItem(arg1:string):Promise<void>;
+
 export function FetchBanners():Promise<Array<models.Banner>>;
 
 export function FetchProducts():Promise<Array<models.Product>>;
@@ -14,9 +16,13 @@ export function GenerateUUID():Promise<string>;
 
 export function GetConfig():Promise<models.StoreConfig>;
 
+export function GetMediaList():Promise<Array<models.MediaItem>>;
+
 export function GetStoreSettingsStatus():Promise<models.StoreSettingsStatus>;
 
 export function SaveConfig(arg1:models.StoreConfig):Promise<void>;
+
+export function SaveMediaItem(arg1:models.MediaItem):Promise<models.MediaItem>;
 
 export function SaveStoreSettings(arg1:models.StoreSettings):Promise<void>;
 

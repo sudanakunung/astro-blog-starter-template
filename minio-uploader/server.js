@@ -31,14 +31,14 @@ const storage = multer.memoryStorage();
 const upload = multer({
   storage: storage,
   limits: {
-    fileSize: 15 * 1024 * 1024, // Maksimal 15 MB
+    fileSize: 100 * 1024 * 1024, // Maksimal 100 MB (Mendukung video)
   },
   fileFilter: (req, file, cb) => {
-    // Validasi hanya menerima file gambar
-    if (file.mimetype.startsWith('image/')) {
+    // Validasi menerima file gambar atau video
+    if (file.mimetype.startsWith('image/') || file.mimetype.startsWith('video/')) {
       cb(null, true);
     } else {
-      cb(new Error('Hanya file gambar (JPEG, PNG, WebP, GIF, SVG) yang diperbolehkan!'), false);
+      cb(new Error('Hanya file gambar (JPG, PNG, WebP, GIF) dan video (MP4, WebM, MOV) yang diperbolehkan!'), false);
     }
   },
 });

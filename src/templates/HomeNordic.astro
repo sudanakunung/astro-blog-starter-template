@@ -10,9 +10,10 @@ import type { CarouselSlide } from '../types/store';
 interface Props {
   products: D1Product[];
   slides: CarouselSlide[];
+  themeConfig?: Record<string, any>;
 }
 
-const { products, slides } = Astro.props;
+const { products, slides, themeConfig = {} } = Astro.props;
 ---
 
 <!-- Hero Carousel -->
@@ -25,7 +26,7 @@ const { products, slides } = Astro.props;
 <ProductGrid products={products} title="Katalog Produk" />
 
 <!-- Featured Showcase ("Elegent and Modern" & "Hidden Halo Ring") -->
-<FeaturedShowcase />
+<FeaturedShowcase customMedia={themeConfig.showcase_media} />
 
 <!-- Trust Features Section ("We offer the best!") -->
 <TrustFeatures />

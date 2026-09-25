@@ -41,6 +41,16 @@ const themeParam = url.searchParams.get('theme')?.toLowerCase();
 const activeTheme = themeParam || store.theme || 'nordic';
 const isImpulse = activeTheme === 'impulse' || activeTheme === 'theme2';
 const isKaufmann = activeTheme === 'kaufmann' || activeTheme === 'theme3';
+
+// 4. Parse themeConfig from store.theme_config
+let themeConfig: Record<string, any> = {};
+if (store.theme_config) {
+  try {
+    themeConfig = typeof store.theme_config === 'string' ? JSON.parse(store.theme_config) : store.theme_config;
+  } catch (e) {
+    themeConfig = {};
+  }
+}
 ---
 
 <ShopLayout
@@ -63,10 +73,24 @@ const isKaufmann = activeTheme === 'kaufmann' || activeTheme === 'theme3';
   hideFooter={isImpulse || isKaufmann}
 >
   {isKaufmann ? (
-    <HomeKaufmann brandName={store.name || 'SUSANNE KAUFMANN'} dbProducts={products} slides={slides} />
+    <HomeKaufmann
+      brandName={store.name || 'SUSANNE KAUFMANN'}
+      dbProducts={products}
+      slides={slides}
+      themeConfig={themeConfig?.kaufmann || {}}
+    />
   ) : isImpulse ? (
-    <HomeImpulse brandName={store.name || 'IMPULSE'} dbProducts={products} slides={slides} />
+    <HomeImpulse
+      brandName={store.name || 'IMPULSE'}
+      dbProducts={products}
+      slides={slides}
+      themeConfig={themeConfig?.impulse || {}}
+    />
   ) : (
-    <HomeNordic products={products} slides={slides} />
+    <HomeNordic
+      products={products}
+      slides={slides}
+      themeConfig={themeConfig?.nordic || {}}
+    />
   )}
 </ShopLayout>

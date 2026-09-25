@@ -20,9 +20,15 @@ interface Props {
   brandName?: string;
   dbProducts?: D1Product[];
   slides?: CarouselSlide[];
+  themeConfig?: Record<string, any>;
 }
 
-const { brandName = 'IMPULSE', dbProducts = [], slides = [] } = Astro.props;
+const {
+  brandName = 'IMPULSE',
+  dbProducts = [],
+  slides = [],
+  themeConfig = {},
+} = Astro.props;
 
 // Section 5 Products: Everyday Essentials
 const everydayEssentials: ImpulseProduct[] = [
@@ -145,7 +151,7 @@ const displayAllNew = mappedDbProducts.length > 5 ? mappedDbProducts.slice(5, 10
   <ImpulseHeader brandName={brandName} />
 
   <!-- 3. Hero Section with Shoppable Hotspots & Database Banners -->
-  <ImpulseHero slides={slides} />
+  <ImpulseHero slides={slides} customHeroMedia={themeConfig.hero_media} />
 
   <!-- 4. Category Grid (4 Columns) -->
   <ImpulseCategoryGrid />
@@ -168,13 +174,13 @@ const displayAllNew = mappedDbProducts.length > 5 ? mappedDbProducts.slice(5, 10
   />
 
   <!-- 8. Full-Width Editorial Banner ("Made to move with ease") -->
-  <ImpulseEditorialBanner />
+  <ImpulseEditorialBanner mediaUrl={themeConfig.editorial_media} />
 
   <!-- 9. Journal/Blog Teaser -->
   <ImpulseJournalTeaser />
 
   <!-- 10. Full-Width Closing Banner ("Easy to wear, easy to return to") -->
-  <ImpulseClosingBanner />
+  <ImpulseClosingBanner mediaUrl={themeConfig.closing_media} />
 
   <!-- 11. Collection Link Grid (Mixed size: 4 small + 2 large) -->
   <ImpulseCollectionLinks />

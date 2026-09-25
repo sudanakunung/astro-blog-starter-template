@@ -46,6 +46,32 @@ export namespace models {
 	        this.error = source["error"];
 	    }
 	}
+	export class MediaItem {
+	    id: string;
+	    name: string;
+	    type: string;
+	    url: string;
+	    size: number;
+	    mime_type: string;
+	    created_at: string;
+	    store_id: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new MediaItem(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.id = source["id"];
+	        this.name = source["name"];
+	        this.type = source["type"];
+	        this.url = source["url"];
+	        this.size = source["size"];
+	        this.mime_type = source["mime_type"];
+	        this.created_at = source["created_at"];
+	        this.store_id = source["store_id"];
+	    }
+	}
 	export class Product {
 	    id: string;
 	    store_id: string;

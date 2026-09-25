@@ -17,6 +17,7 @@ type App struct {
 	syncService     *services.SyncService
 	settingsService *services.SettingsService
 	configStorage   *storage.ConfigStorage
+	mediaStorage    *storage.MediaStorage
 }
 
 // NewApp creates a new App application struct
@@ -25,6 +26,7 @@ func NewApp() *App {
 		syncService:     services.NewSyncService(),
 		settingsService: services.NewSettingsService(),
 		configStorage:   storage.NewConfigStorage(),
+		mediaStorage:    storage.NewMediaStorage(),
 	}
 }
 
@@ -162,3 +164,23 @@ func (a *App) GenerateSlug(name string) string {
 func (a *App) GenerateUUID() string {
 	return uuid.NewString()
 }
+
+// GetMediaList mengambil daftar foto dan video dari media storage
+func (a *App) GetMediaList() ([]models.MediaItem, error) {
+	return a.mediaStorage.LoadAll()
+}
+
+// SaveMediaItem menyimpan atau mengupdate item media
+func (a *App) SaveMediaItem(item models.MediaItem) (models.MediaItem, error) {
+	cfg, _ := a.configStorage.Load()
+	if item.StoreID == "" {
+		item.StoreID = cfg.StoreID
+	}
+	return a.mediaStorage.Save(item)
+}
+
+// DeleteMediaItem menghapus item media berdasarkan ID
+func (a *App) DeleteMediaItem(id string) error {
+	return a.mediaStorage.Delete(id)
+}
+

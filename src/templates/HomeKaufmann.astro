@@ -18,12 +18,14 @@ interface Props {
   brandName?: string;
   dbProducts?: D1Product[];
   slides?: CarouselSlide[];
+  themeConfig?: Record<string, any>;
 }
 
 const {
   brandName = 'SUSANNE KAUFMANN',
   dbProducts = [],
   slides = [],
+  themeConfig = {},
 } = Astro.props;
 ---
 
@@ -35,7 +37,7 @@ const {
   <KaufmannNavbar brandName={brandName} />
 
   <!-- 3. HERO SECTION (Video Background - Body care application, left text overlay, 2 outline buttons) -->
-  <KaufmannHero brandName={brandName} />
+  <KaufmannHero brandName={brandName} heroMedia={themeConfig.hero_video} />
 
   <!-- 4. TRUST BAR (3 poin horizontal: Natural Ingredients, Complimentary Shipping, Made in Austria/Switzerland) -->
   <KaufmannTrustBar />
@@ -44,13 +46,13 @@ const {
   <KaufmannRitualGrid dbProducts={dbProducts} />
 
   <!-- 6. "THE SCENT OF THE RITUAL" (Vertical video, scent notes, cut-off brand overlay) -->
-  <KaufmannScentSection brandName={brandName} />
+  <KaufmannScentSection brandName={brandName} scentMedia={themeConfig.scent_video} />
 
   <!-- 7. "SHOP BY COLLECTION" (4 columns category cards with zoom hover) -->
   <KaufmannCollections />
 
   <!-- 8. "OUR STORY" (Full-width spa ambient video background, text on right) -->
-  <KaufmannStory />
+  <KaufmannStory storyMedia={themeConfig.story_video} />
 
   <!-- 9. "WHAT OUR CUSTOMERS SAY" (Horizontal scrollable/swipeable review carousel) -->
   <KaufmannReviews />

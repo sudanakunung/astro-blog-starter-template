@@ -18,8 +18,10 @@ function hasWails() {
 // DOM Elements - Tabs
 const tabBtnProducts = document.getElementById('tab-btn-products');
 const tabBtnBanners = document.getElementById('tab-btn-banners');
+const tabBtnGallery = document.getElementById('tab-btn-gallery');
 const tabProductsContent = document.getElementById('tab-products-content');
 const tabBannersContent = document.getElementById('tab-banners-content');
+const tabGalleryContent = document.getElementById('tab-gallery-content');
 
 // DOM Elements - Products
 const form = document.getElementById('product-form');
@@ -103,6 +105,54 @@ const btnTestBiteship = document.getElementById('btn-test-biteship');
 const statusMayarKey = document.getElementById('status-mayar-key');
 const statusMayarWebhook = document.getElementById('status-mayar-webhook');
 const statusBiteshipKey = document.getElementById('status-biteship-key');
+
+// Gallery DOM Elements
+let mediaList = [];
+let activeGalleryFilter = 'all'; // 'all' | 'image' | 'video'
+let activePickerFilter = 'all';
+let currentPickerTarget = 'product'; // 'product' | 'banner'
+let currentPreviewItem = null;
+
+const galleryCountBadge = document.getElementById('gallery-count-badge');
+const galleryTotalBadge = document.getElementById('gallery-total-badge');
+const galleryGrid = document.getElementById('gallery-grid');
+const galleryDropzone = document.getElementById('gallery-dropzone');
+const galleryFileInput = document.getElementById('gallery-file-input');
+const btnBrowseMedia = document.getElementById('btn-browse-media');
+const galleryUploadStatus = document.getElementById('gallery-upload-status');
+const galleryUploadText = document.getElementById('gallery-upload-text');
+const formAddMediaUrl = document.getElementById('form-add-media-url');
+const inputMediaName = document.getElementById('input-media-name');
+const inputMediaUrl = document.getElementById('input-media-url');
+const selectMediaType = document.getElementById('select-media-type');
+const btnRefreshGallery = document.getElementById('btn-refresh-gallery');
+const filterAll = document.getElementById('filter-all');
+const filterImages = document.getElementById('filter-images');
+const filterVideos = document.getElementById('filter-videos');
+const gallerySearch = document.getElementById('gallery-search');
+
+// Picker & Preview Modal Elements
+const btnGalleryPickProduct = document.getElementById('btn-gallery-pick-product');
+const btnGalleryPickBanner = document.getElementById('btn-gallery-pick-banner');
+const mediaPickerModal = document.getElementById('media-picker-modal');
+const pickerModalTitle = document.getElementById('picker-modal-title');
+const btnPickerClose = document.getElementById('btn-picker-close');
+const btnPickerCancel = document.getElementById('btn-picker-cancel');
+const pickerFilterAll = document.getElementById('picker-filter-all');
+const pickerFilterImages = document.getElementById('picker-filter-images');
+const pickerFilterVideos = document.getElementById('picker-filter-videos');
+const pickerSearch = document.getElementById('picker-search');
+const pickerGrid = document.getElementById('picker-grid');
+
+const mediaPreviewModal = document.getElementById('media-preview-modal');
+const btnPreviewModalClose = document.getElementById('btn-preview-modal-close');
+const previewModalTitle = document.getElementById('preview-modal-title');
+const previewModalMeta = document.getElementById('preview-modal-meta');
+const previewModalContent = document.getElementById('preview-modal-content');
+const previewModalUrl = document.getElementById('preview-modal-url');
+const btnPreviewCopy = document.getElementById('btn-preview-copy');
+const btnPreviewUseP = document.getElementById('btn-preview-use-p');
+const btnPreviewUseB = document.getElementById('btn-preview-use-b');
 
 function showToast(message, type = 'success') {
   const toast = document.createElement('div');
@@ -531,23 +581,630 @@ function closeIntegrations() {
   integrationsModal.classList.add('hidden');
 }
 
+// ========================================================
+// MEDIA GALLERY & PICKER SYSTEM (PHOTO & VIDEO)
+// ========================================================
+
+function formatBytes(bytes) {
+  if (!bytes || bytes <= 0) return '0 B';
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '-';
+  try {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+  } catch (_) {
+    return dateStr;
+  }
+}
+
+function isVideoUrl(url) {
+  if (!url) return false;
+  const clean = url.split('?')[0].toLowerCase();
+  return clean.endsWith('.mp4') || clean.endsWith('.webm') || clean.endsWith('.mov') || clean.endsWith('.mkv') || clean.includes('/video/');
+}
+
+async function loadMediaGallery() {
+  try {
+    if (hasWails() && window.go.main.App.GetMediaList) {
+      const items = await window.go.main.App.GetMediaList();
+      if (Array.isArray(items) && items.length > 0) {
+        mediaList = items;
+      } else {
+        const local = localStorage.getItem('astro_wails_media_gallery');
+        if (local) {
+          mediaList = JSON.parse(local);
+        } else {
+          mediaList = getDefaultMediaSamples();
+        }
+      }
+    } else {
+      const local = localStorage.getItem('astro_wails_media_gallery');
+      if (local) {
+        mediaList = JSON.parse(local);
+      } else {
+        mediaList = getDefaultMediaSamples();
+      }
+    }
+  } catch (err) {
+    console.warn('Error loading media gallery:', err);
+    const local = localStorage.getItem('astro_wails_media_gallery');
+    mediaList = local ? JSON.parse(local) : getDefaultMediaSamples();
+  }
+
+  updateMediaBadges();
+  renderMediaGallery();
+}
+
+function getDefaultMediaSamples() {
+  return [
+    {
+      id: 'sample-1',
+      name: 'cincin-emas-berlian-lux.jpg',
+      type: 'image',
+      url: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=800&q=80',
+      size: 1420000,
+      mime_type: 'image/jpeg',
+      created_at: new Date().toISOString(),
+      store_id: currentConfig.store_id || 'navanusa'
+    },
+    {
+      id: 'sample-2',
+      name: 'kalung-emas-mewah-collection.jpg',
+      type: 'image',
+      url: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=800&q=80',
+      size: 1850000,
+      mime_type: 'image/jpeg',
+      created_at: new Date().toISOString(),
+      store_id: currentConfig.store_id || 'navanusa'
+    },
+    {
+      id: 'sample-3',
+      name: 'video-showcase-jewellery-demo.mp4',
+      type: 'video',
+      url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+      size: 15400000,
+      mime_type: 'video/mp4',
+      created_at: new Date().toISOString(),
+      store_id: currentConfig.store_id || 'navanusa'
+    }
+  ];
+}
+
+function updateMediaBadges() {
+  const count = mediaList.length;
+  if (galleryCountBadge) galleryCountBadge.textContent = count;
+  if (galleryTotalBadge) galleryTotalBadge.textContent = `${count} Media`;
+}
+
+async function saveMediaItem(item) {
+  if (!item.id) {
+    item.id = (hasWails() && window.go.main.App.GenerateUUID) ? await window.go.main.App.GenerateUUID() : 'media-' + Date.now();
+  }
+  if (!item.created_at) {
+    item.created_at = new Date().toISOString();
+  }
+  if (!item.store_id) {
+    item.store_id = currentConfig.store_id || 'navanusa';
+  }
+
+  const idx = mediaList.findIndex(m => m.id === item.id);
+  if (idx >= 0) {
+    mediaList[idx] = item;
+  } else {
+    mediaList.unshift(item);
+  }
+
+  try {
+    if (hasWails() && window.go.main.App.SaveMediaItem) {
+      await window.go.main.App.SaveMediaItem(item);
+    }
+  } catch (e) {
+    console.warn('Backend save media error:', e);
+  }
+  try {
+    localStorage.setItem('astro_wails_media_gallery', JSON.stringify(mediaList));
+  } catch (e) {}
+
+  updateMediaBadges();
+  renderMediaGallery();
+}
+
+async function deleteMediaItem(id) {
+  const item = mediaList.find(m => m.id === id);
+  const name = item ? item.name : 'item ini';
+  if (!confirm(`Hapus "${name}" dari galeri media?`)) return;
+
+  mediaList = mediaList.filter(m => m.id !== id);
+
+  try {
+    if (hasWails() && window.go.main.App.DeleteMediaItem) {
+      await window.go.main.App.DeleteMediaItem(id);
+    }
+  } catch (e) {
+    console.warn('Backend delete media error:', e);
+  }
+  try {
+    localStorage.setItem('astro_wails_media_gallery', JSON.stringify(mediaList));
+  } catch (e) {}
+
+  updateMediaBadges();
+  renderMediaGallery();
+  showToast('Media berhasil dihapus dari galeri', 'success');
+}
+
+function renderMediaGallery() {
+  if (!galleryGrid) return;
+
+  const searchQuery = (gallerySearch?.value || '').trim().toLowerCase();
+  const filtered = mediaList.filter(item => {
+    if (activeGalleryFilter === 'image' && item.type !== 'image') return false;
+    if (activeGalleryFilter === 'video' && item.type !== 'video') return false;
+    if (searchQuery && !item.name.toLowerCase().includes(searchQuery) && !item.url.toLowerCase().includes(searchQuery)) {
+      return false;
+    }
+    return true;
+  });
+
+  if (filtered.length === 0) {
+    galleryGrid.innerHTML = `
+      <div style="grid-column: 1 / -1; padding: 3rem 1.5rem; text-align: center; color: #94a3b8; background: #f8fafc; border-radius: var(--radius-md); border: 1px dashed #cbd5e1;">
+        <svg width="40" height="40" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin: 0 auto 0.75rem; color: #cbd5e1;">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+        </svg>
+        <div style="font-weight: 700; color: #475569; font-size: 0.875rem;">Belum ada media ditemukan</div>
+        <div style="font-size: 0.75rem; margin-top: 0.25rem;">Tarik file ke kotak upload atau tambah tautan URL di sebelah kiri.</div>
+      </div>
+    `;
+    return;
+  }
+
+  galleryGrid.innerHTML = filtered.map(item => {
+    const isVid = item.type === 'video';
+    const typeLabel = isVid ? '🎥 Video' : '📸 Foto';
+    const badgeClass = isVid ? 'media-type-badge video' : 'media-type-badge';
+
+    return `
+      <div class="media-card" data-id="${item.id}">
+        <div class="media-thumb-wrap">
+          <span class="${badgeClass}">${typeLabel}</span>
+          ${isVid ? `
+            <video src="${item.url}" preload="metadata" muted playsinline style="width: 100%; height: 100%; object-fit: cover;"></video>
+            <div style="position: absolute; width: 2.25rem; height: 2.25rem; border-radius: 50%; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; color: white;">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </div>
+          ` : `
+            <img class="media-thumb-img" src="${item.url}" alt="${item.name}" loading="lazy" onerror="this.src='https://placehold.co/400x300?text=Gambar+Rusak'" />
+          `}
+
+          <!-- Hover Overlay -->
+          <div class="media-thumb-overlay">
+            <button type="button" class="media-action-circle btn-media-preview-action" data-id="${item.id}" title="Preview / Buka">
+              <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+            </button>
+            <button type="button" class="media-action-circle btn-media-copy-action" data-url="${item.url}" title="Salin URL">
+              <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="media-card-body">
+          <div class="media-name" title="${item.name}">${item.name}</div>
+          <div class="media-meta">
+            <span>${formatBytes(item.size)}</span>
+            <span>${formatDate(item.created_at)}</span>
+          </div>
+        </div>
+
+        <div class="media-card-footer">
+          <div class="media-use-btn-group">
+            <button type="button" class="btn-use-media btn-use-product btn-media-use-product" data-url="${item.url}" title="Gunakan sebagai foto produk">
+              <span>+ Produk</span>
+            </button>
+            <button type="button" class="btn-use-media btn-use-banner btn-media-use-banner" data-url="${item.url}" title="Gunakan sebagai banner carousel">
+              <span>+ Banner</span>
+            </button>
+          </div>
+          <div class="media-bottom-actions">
+            <button type="button" class="btn-media-link btn-media-copy-action" data-url="${item.url}">
+              <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+              <span>Salin URL</span>
+            </button>
+            <button type="button" class="btn-media-delete btn-media-delete-action" data-id="${item.id}" title="Hapus dari galeri">
+              <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              <span>Hapus</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  galleryGrid.querySelectorAll('.btn-media-use-product').forEach(b => {
+    b.addEventListener('click', (e) => {
+      e.stopPropagation();
+      useMediaForProduct(b.dataset.url);
+    });
+  });
+
+  galleryGrid.querySelectorAll('.btn-media-use-banner').forEach(b => {
+    b.addEventListener('click', (e) => {
+      e.stopPropagation();
+      useMediaForBanner(b.dataset.url);
+    });
+  });
+
+  galleryGrid.querySelectorAll('.btn-media-copy-action').forEach(b => {
+    b.addEventListener('click', (e) => {
+      e.stopPropagation();
+      copyMediaUrl(b.dataset.url);
+    });
+  });
+
+  galleryGrid.querySelectorAll('.btn-media-preview-action').forEach(b => {
+    b.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const it = mediaList.find(m => m.id === b.dataset.id);
+      if (it) openMediaPreview(it);
+    });
+  });
+
+  galleryGrid.querySelectorAll('.btn-media-delete-action').forEach(b => {
+    b.addEventListener('click', (e) => {
+      e.stopPropagation();
+      deleteMediaItem(b.dataset.id);
+    });
+  });
+}
+
+function copyMediaUrl(url) {
+  if (!url) return;
+  navigator.clipboard.writeText(url).then(() => {
+    showToast('URL media disalin ke clipboard!', 'success');
+  }).catch(() => {
+    showToast('URL: ' + url, 'success');
+  });
+}
+
+function useMediaForProduct(url) {
+  if (!url) return;
+  pImage.value = url;
+  imagePreview.src = url;
+  imagePreviewContainer.classList.remove('hidden');
+
+  tabBtnProducts.click();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  showToast('Media diterapkan ke formulir Produk!', 'success');
+}
+
+function useMediaForBanner(url) {
+  if (!url) return;
+  bImage.value = url;
+  bannerImagePreview.src = url;
+  bannerImagePreviewContainer.classList.remove('hidden');
+
+  tabBtnBanners.click();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  showToast('Media diterapkan ke formulir Banner!', 'success');
+}
+
+// Media Picker Modal
+function openMediaPicker(target) {
+  currentPickerTarget = target;
+  pickerModalTitle.textContent = target === 'product' ? 'Pilih Media untuk Produk' : 'Pilih Media untuk Banner';
+  mediaPickerModal.classList.remove('hidden');
+  renderMediaPicker();
+}
+
+function closeMediaPicker() {
+  mediaPickerModal.classList.add('hidden');
+}
+
+function renderMediaPicker() {
+  if (!pickerGrid) return;
+
+  const q = (pickerSearch?.value || '').trim().toLowerCase();
+  const filtered = mediaList.filter(item => {
+    if (activePickerFilter === 'image' && item.type !== 'image') return false;
+    if (activePickerFilter === 'video' && item.type !== 'video') return false;
+    if (q && !item.name.toLowerCase().includes(q) && !item.url.toLowerCase().includes(q)) return false;
+    return true;
+  });
+
+  if (filtered.length === 0) {
+    pickerGrid.innerHTML = `
+      <div style="grid-column: 1 / -1; padding: 2rem; text-align: center; color: #94a3b8; font-size: 0.8125rem;">
+        Tidak ada media yang cocok. Buka tab Galeri untuk menambahkan foto/video baru.
+      </div>
+    `;
+    return;
+  }
+
+  pickerGrid.innerHTML = filtered.map(item => {
+    const isVid = item.type === 'video';
+    return `
+      <div class="picker-item" data-url="${item.url}" title="Klik untuk gunakan">
+        ${isVid ? `
+          <div style="height: 85px; background: #0f172a; display: flex; align-items: center; justify-content: center; position: relative;">
+            <video src="${item.url}" preload="metadata" muted style="width: 100%; height: 100%; object-fit: cover;"></video>
+            <span style="position: absolute; font-size: 0.65rem; background: rgba(225,29,72,0.9); color: white; padding: 0.1rem 0.35rem; border-radius: 4px; font-weight: 700;">VIDEO</span>
+          </div>
+        ` : `
+          <img class="picker-item-thumb" src="${item.url}" alt="${item.name}" loading="lazy" onerror="this.src='https://placehold.co/200x150?text=Foto'" />
+        `}
+        <div class="picker-item-title">${item.name}</div>
+      </div>
+    `;
+  }).join('');
+
+  pickerGrid.querySelectorAll('.picker-item').forEach(el => {
+    el.addEventListener('click', () => {
+      const url = el.dataset.url;
+      if (currentPickerTarget === 'product') {
+        useMediaForProduct(url);
+      } else {
+        useMediaForBanner(url);
+      }
+      closeMediaPicker();
+    });
+  });
+}
+
+// Media Preview Modal
+function openMediaPreview(item) {
+  currentPreviewItem = item;
+  previewModalTitle.textContent = item.name || 'Preview Media';
+  previewModalMeta.textContent = `${item.type === 'video' ? 'Video' : 'Foto'} • ${formatBytes(item.size || 0)} • ${formatDate(item.created_at)}`;
+  previewModalUrl.value = item.url;
+
+  if (item.type === 'video' || isVideoUrl(item.url)) {
+    previewModalContent.innerHTML = `
+      <video src="${item.url}" controls autoplay playsinline style="max-width: 100%; max-height: 420px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+        Browser Anda tidak mendukung tag video.
+      </video>
+    `;
+  } else {
+    previewModalContent.innerHTML = `
+      <img src="${item.url}" alt="${item.name}" style="max-width: 100%; max-height: 420px; object-fit: contain; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5);" />
+    `;
+  }
+
+  mediaPreviewModal.classList.remove('hidden');
+}
+
+function closeMediaPreview() {
+  if (previewModalContent) {
+    previewModalContent.innerHTML = '';
+  }
+  mediaPreviewModal.classList.add('hidden');
+}
+
+// Upload Media Multi-Files (Drag & Drop or File Input)
+async function handleMediaFilesUpload(files) {
+  if (!files || files.length === 0) return;
+
+  galleryUploadStatus.classList.remove('hidden');
+
+  let successCount = 0;
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    galleryUploadText.textContent = `Mengunggah (${i + 1}/${files.length}): ${file.name}...`;
+
+    const isVid = file.type.startsWith('video/') || isVideoUrl(file.name);
+    const mediaType = isVid ? 'video' : 'image';
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const res = await fetch('https://minio.navanusa.com/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const resData = await res.json();
+      if (!resData.ok || !resData.data?.url) {
+        throw new Error(resData.error || 'Gagal upload file');
+      }
+
+      const mediaItem = {
+        name: file.name,
+        type: mediaType,
+        url: resData.data.url,
+        size: file.size || resData.data.size || 0,
+        mime_type: file.type || (isVid ? 'video/mp4' : 'image/jpeg'),
+        created_at: new Date().toISOString(),
+        store_id: currentConfig.store_id || 'navanusa'
+      };
+
+      await saveMediaItem(mediaItem);
+      successCount++;
+    } catch (err) {
+      console.warn('Gagal upload ke MinIO:', err);
+      showToast(`Upload ${file.name} gagal: ${err.message}`, 'error');
+    }
+  }
+
+  galleryUploadStatus.classList.add('hidden');
+  if (successCount > 0) {
+    showToast(`${successCount} file berhasil diunggah ke Galeri!`, 'success');
+  }
+}
+
 function setupEventListeners() {
   // Tabs
   tabBtnProducts.addEventListener('click', () => {
     tabBtnProducts.classList.add('active');
     tabBtnBanners.classList.remove('active');
+    tabBtnGallery.classList.remove('active');
     tabProductsContent.classList.remove('hidden');
     tabBannersContent.classList.add('hidden');
+    tabGalleryContent.classList.add('hidden');
   });
 
   tabBtnBanners.addEventListener('click', () => {
     tabBtnBanners.classList.add('active');
     tabBtnProducts.classList.remove('active');
+    tabBtnGallery.classList.remove('active');
     tabBannersContent.classList.remove('hidden');
     tabProductsContent.classList.add('hidden');
+    tabGalleryContent.classList.add('hidden');
     if (bannersList.length === 0) {
       loadBanners();
     }
+  });
+
+  tabBtnGallery.addEventListener('click', () => {
+    tabBtnGallery.classList.add('active');
+    tabBtnProducts.classList.remove('active');
+    tabBtnBanners.classList.remove('active');
+    tabGalleryContent.classList.remove('hidden');
+    tabProductsContent.classList.add('hidden');
+    tabBannersContent.classList.add('hidden');
+    renderMediaGallery();
+  });
+
+  // Picker & Preview Modal Listeners
+  btnGalleryPickProduct?.addEventListener('click', () => openMediaPicker('product'));
+  btnGalleryPickBanner?.addEventListener('click', () => openMediaPicker('banner'));
+  btnPickerClose?.addEventListener('click', closeMediaPicker);
+  btnPickerCancel?.addEventListener('click', closeMediaPicker);
+  mediaPickerModal?.addEventListener('click', (e) => {
+    if (e.target === mediaPickerModal) closeMediaPicker();
+  });
+
+  pickerFilterAll?.addEventListener('click', () => {
+    activePickerFilter = 'all';
+    pickerFilterAll.classList.add('active');
+    pickerFilterImages.classList.remove('active');
+    pickerFilterVideos.classList.remove('active');
+    renderMediaPicker();
+  });
+  pickerFilterImages?.addEventListener('click', () => {
+    activePickerFilter = 'image';
+    pickerFilterImages.classList.add('active');
+    pickerFilterAll.classList.remove('active');
+    pickerFilterVideos.classList.remove('active');
+    renderMediaPicker();
+  });
+  pickerFilterVideos?.addEventListener('click', () => {
+    activePickerFilter = 'video';
+    pickerFilterVideos.classList.add('active');
+    pickerFilterAll.classList.remove('active');
+    pickerFilterImages.classList.remove('active');
+    renderMediaPicker();
+  });
+  pickerSearch?.addEventListener('input', renderMediaPicker);
+
+  btnPreviewModalClose?.addEventListener('click', closeMediaPreview);
+  mediaPreviewModal?.addEventListener('click', (e) => {
+    if (e.target === mediaPreviewModal) closeMediaPreview();
+  });
+  btnPreviewCopy?.addEventListener('click', () => {
+    if (currentPreviewItem) copyMediaUrl(currentPreviewItem.url);
+  });
+  btnPreviewUseP?.addEventListener('click', () => {
+    if (currentPreviewItem) {
+      useMediaForProduct(currentPreviewItem.url);
+      closeMediaPreview();
+    }
+  });
+  btnPreviewUseB?.addEventListener('click', () => {
+    if (currentPreviewItem) {
+      useMediaForBanner(currentPreviewItem.url);
+      closeMediaPreview();
+    }
+  });
+
+  // Gallery Toolbar & Filters
+  filterAll?.addEventListener('click', () => {
+    activeGalleryFilter = 'all';
+    filterAll.classList.add('active');
+    filterImages.classList.remove('active');
+    filterVideos.classList.remove('active');
+    renderMediaGallery();
+  });
+  filterImages?.addEventListener('click', () => {
+    activeGalleryFilter = 'image';
+    filterImages.classList.add('active');
+    filterAll.classList.remove('active');
+    filterVideos.classList.remove('active');
+    renderMediaGallery();
+  });
+  filterVideos?.addEventListener('click', () => {
+    activeGalleryFilter = 'video';
+    filterVideos.classList.add('active');
+    filterAll.classList.remove('active');
+    filterImages.classList.remove('active');
+    renderMediaGallery();
+  });
+  gallerySearch?.addEventListener('input', renderMediaGallery);
+  btnRefreshGallery?.addEventListener('click', loadMediaGallery);
+
+  // Gallery Upload File Inputs & Dropzone
+  btnBrowseMedia?.addEventListener('click', () => galleryFileInput.click());
+  galleryFileInput?.addEventListener('change', (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      handleMediaFilesUpload(e.target.files);
+      galleryFileInput.value = '';
+    }
+  });
+
+  if (galleryDropzone) {
+    galleryDropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      galleryDropzone.classList.add('drag-over');
+    });
+    galleryDropzone.addEventListener('dragleave', () => {
+      galleryDropzone.classList.remove('drag-over');
+    });
+    galleryDropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      galleryDropzone.classList.remove('drag-over');
+      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        handleMediaFilesUpload(e.dataTransfer.files);
+      }
+    });
+    galleryDropzone.addEventListener('click', (e) => {
+      if (e.target !== btnBrowseMedia && !btnBrowseMedia.contains(e.target)) {
+        galleryFileInput.click();
+      }
+    });
+  }
+
+  // Form Add Media URL
+  formAddMediaUrl?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const url = inputMediaUrl.value.trim();
+    if (!url) return;
+
+    let type = selectMediaType.value;
+    if (type === 'auto') {
+      type = isVideoUrl(url) ? 'video' : 'image';
+    }
+
+    const name = inputMediaName.value.trim() || url.split('/').pop().split('?')[0] || (type === 'video' ? 'video-item.mp4' : 'image-item.jpg');
+
+    const item = {
+      name: name,
+      type: type,
+      url: url,
+      size: 0,
+      mime_type: type === 'video' ? 'video/mp4' : 'image/jpeg',
+      created_at: new Date().toISOString(),
+      store_id: currentConfig.store_id || 'navanusa'
+    };
+
+    await saveMediaItem(item);
+    inputMediaUrl.value = '';
+    inputMediaName.value = '';
+    selectMediaType.value = 'auto';
+    showToast('Media baru berhasil didaftarkan ke galeri!', 'success');
   });
 
   pName.addEventListener('input', async () => {
@@ -560,10 +1217,15 @@ function setupEventListeners() {
     }
   });
 
-  // MinIO Image Upload Handler
+  // MinIO Image & Video Upload Handler
   async function uploadFileToMinio(file, targetInput, previewImg, previewContainer, btnTextEl, defaultText) {
-    if (!file || !file.type.startsWith('image/')) {
-      showToast('Pilih file gambar yang valid (JPG, PNG, WebP)', 'error');
+    if (!file) return;
+
+    const isImage = file.type.startsWith('image/');
+    const isVideo = file.type.startsWith('video/') || isVideoUrl(file.name);
+
+    if (!isImage && !isVideo) {
+      showToast('Pilih file gambar (JPG, PNG, WebP) atau video (MP4, WebM)', 'error');
       return;
     }
 
@@ -579,13 +1241,31 @@ function setupEventListeners() {
 
       const data = await res.json();
       if (!data.ok || !data.data?.url) {
-        throw new Error(data.error || 'Gagal mengunggah gambar');
+        throw new Error(data.error || 'Gagal mengunggah media');
       }
 
-      targetInput.value = data.data.url;
-      previewImg.src = data.data.url;
-      previewContainer.classList.remove('hidden');
-      showToast('Gambar berhasil diunggah ke MinIO!', 'success');
+      const mediaUrl = data.data.url;
+      targetInput.value = mediaUrl;
+
+      if (previewImg) {
+        previewImg.src = mediaUrl;
+      }
+      if (previewContainer) {
+        previewContainer.classList.remove('hidden');
+      }
+
+      // Otomatis daftarkan file yang diupload ke Galeri Media
+      await saveMediaItem({
+        name: file.name,
+        type: isVideo ? 'video' : 'image',
+        url: mediaUrl,
+        size: file.size || data.data.size || 0,
+        mime_type: file.type || (isVideo ? 'video/mp4' : 'image/jpeg'),
+        created_at: new Date().toISOString(),
+        store_id: currentConfig.store_id || 'navanusa'
+      });
+
+      showToast('Media berhasil diunggah dan disimpan ke Galeri!', 'success');
     } catch (err) {
       showToast('Gagal upload: ' + err.message, 'error');
     } finally {
@@ -1067,6 +1747,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadConfig();
   await loadProducts();
   await loadBanners();
+  await loadMediaGallery();
   await loadStoreIntegrations();
   setupEventListeners();
 });
