@@ -29,13 +29,15 @@ export const POST: APIRoute = async ({ request }) => {
     const trimmedKey = api_key.trim();
 
     if (service === 'mayar') {
-      // Test Mayar API Key by fetching user balance or profile
+      // Test Mayar API Key menggunakan endpoint Dynamic QRIS (/hl/v1/qrcode/create) yang cepat & stabil
       try {
-        const res = await fetch('https://api.mayar.id/hl/v1/user/profile', {
+        const res = await fetch('https://api.mayar.id/hl/v1/qrcode/create', {
+          method: 'POST',
           headers: {
             Authorization: `Bearer ${trimmedKey}`,
             'Content-Type': 'application/json',
           },
+          body: JSON.stringify({ amount: 10000 }),
         });
 
         const data = await res.json().catch(() => ({}));
@@ -44,8 +46,7 @@ export const POST: APIRoute = async ({ request }) => {
           return new Response(
             JSON.stringify({
               ok: true,
-              message: 'Koneksi ke Mayar Payment Gateway Berhasil!',
-              details: (data as any)?.data?.name ? `Akun: ${(data as any).data.name}` : undefined,
+              message: 'Koneksi ke Mayar Payment Gateway & Dynamic QRIS Berhasil!',
             }),
             { status: 200, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
           );

@@ -629,23 +629,21 @@ export const prerender = false;
         localStorage.removeItem(CART_KEY);
         window.dispatchEvent(new CustomEvent('nordic:cart-updated', { detail: { items: [] } }));
 
-        // Jika Mayar berhasil membuat payment link, langsung redirect ke halaman pembayaran Mayar
-        if (data.payment_url) {
-          // Simpan order_id di sessionStorage supaya halaman sukses bisa dicek setelah balik
-          sessionStorage.setItem('last_order_id', data.order_id);
-          sessionStorage.setItem('last_order_name', addr.recipient_name);
-          sessionStorage.setItem('last_order_total', totalAmount.toString());
-          window.location.href = data.payment_url;
-          return;
-        }
+        // Simpan info pesanan di sessionStorage
+        sessionStorage.setItem('last_order_id', data.order_id);
+        sessionStorage.setItem('last_order_name', addr.recipient_name);
+        sessionStorage.setItem('last_order_total', totalAmount.toString());
 
-        // Fallback: redirect ke halaman sukses lokal (jika Mayar tidak tersedia)
+        // Redirect ke halaman sukses dengan menampilkan Dynamic QRIS langsung + tombol link Mayar
         const params = new URLSearchParams({
           order_id: data.order_id,
           total: totalAmount.toString(),
           name: addr.recipient_name,
           phone: addr.phone,
         });
+        if (data.payment_url) params.set('payment_url', data.payment_url);
+        if (data.qr_url) params.set('qr_url', data.qr_url);
+
         window.location.href = `/checkout/success?${params.toString()}`;
       } catch (err) {
         alert('Gagal memproses pesanan: ' + err.message);

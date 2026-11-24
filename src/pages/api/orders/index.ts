@@ -58,13 +58,18 @@ export const POST: APIRoute = async ({ request, locals }) => {
       : String(shipping_address || '');
 
     let paymentUrl: string | undefined;
+    let qrCodeUrl: string | undefined;
     let mayarTransactionId: string | undefined;
 
     if (db) {
       await initDatabase(db);
+    }
 
-      // Buat invoice / payment request ke Mayar (user pilih metode di halaman Mayar)
-      try {
+    // Buat invoice / payment request & Dynamic QRIS ke Mayar
+    try {
+      let decryptedKey = env?.MAYAR_API_KEY || process.env.MAYAR_API_KEY || '';
+
+      if (db) {
         const storeRow = await db
           .prepare('SELECT mayar_api_key FROM stores WHERE id = ?')
           .bind(store_id)
@@ -72,41 +77,45 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
         if (storeRow?.mayar_api_key) {
           const encryptionKey = env?.ENCRYPTION_KEY || process.env.ENCRYPTION_KEY;
-          let decryptedKey = storeRow.mayar_api_key;
+          decryptedKey = storeRow.mayar_api_key;
           try {
             const decrypted = await decryptSecret(storeRow.mayar_api_key, encryptionKey);
             if (decrypted) decryptedKey = decrypted;
           } catch {
             // Gunakan as-is jika tidak dienkripsi
           }
-
-          if (decryptedKey) {
-            const originUrl = new URL(request.url).origin;
-            // Setelah bayar di Mayar, user diarahkan kembali ke halaman sukses kita
-            const redirectUrl = `${originUrl}/checkout/success?order_id=${orderId}&total=${calculatedTotal}&name=${encodeURIComponent(customer_name)}&phone=${encodeURIComponent(customer_phone)}`;
-
-            const mayarRes = await createMayarPayment({
-              apiKey: decryptedKey,
-              orderId,
-              amount: calculatedTotal,
-              customerName: customer_name,
-              customerEmail: customer_email,
-              customerPhone: customer_phone,
-              description: `Pesanan #${orderId} di Navanusa Jewellery`,
-              redirectUrl,
-            });
-
-            if (mayarRes.success && mayarRes.paymentUrl) {
-              paymentUrl = mayarRes.paymentUrl;
-              mayarTransactionId = mayarRes.transactionId;
-            } else if (mayarRes.error) {
-              console.warn('Mayar payment creation warning:', mayarRes.error);
-            }
-          }
         }
-      } catch (mayarErr: any) {
-        console.error('Error generating Mayar payment link:', mayarErr.message);
       }
+
+      if (decryptedKey) {
+        const originUrl = new URL(request.url).origin;
+        // Setelah bayar di Mayar, user diarahkan kembali ke halaman sukses kita
+        const redirectUrl = `${originUrl}/checkout/success?order_id=${orderId}&total=${calculatedTotal}&name=${encodeURIComponent(customer_name)}&phone=${encodeURIComponent(customer_phone)}`;
+
+        const mayarRes = await createMayarPayment({
+          apiKey: decryptedKey,
+          orderId,
+          amount: calculatedTotal,
+          customerName: customer_name,
+          customerEmail: customer_email,
+          customerPhone: customer_phone,
+          description: `Pesanan #${orderId} di Navanusa Jewellery`,
+          redirectUrl,
+        });
+
+        if (mayarRes.success) {
+          paymentUrl = mayarRes.paymentUrl;
+          qrCodeUrl = mayarRes.qrCodeUrl;
+          mayarTransactionId = mayarRes.transactionId;
+        } else if (mayarRes.error) {
+          console.warn('Mayar payment creation warning:', mayarRes.error);
+        }
+      }
+    } catch (mayarErr: any) {
+      console.error('Error generating Mayar payment link:', mayarErr.message);
+    }
+
+    if (db) {
 
       const orderParams = {
         id: orderId,
@@ -146,6 +155,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         total_amount: calculatedTotal,
         shipping_cost: calculatedShipping,
         payment_url: paymentUrl,
+        qr_url: qrCodeUrl,
         mayar_transaction_id: mayarTransactionId,
         status: 'pending',
         message: 'Pesanan berhasil dibuat!',

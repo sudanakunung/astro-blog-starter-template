@@ -16,12 +16,13 @@ export interface CreateMayarPaymentParams {
 export interface CreateMayarPaymentResult {
   success: boolean;
   paymentUrl?: string;
+  qrCodeUrl?: string;
   transactionId?: string;
   error?: string;
 }
 
 /**
- * Membuat Single Payment Request ke Mayar API
+ * Membuat Single Payment Request & Dynamic QRIS ke Mayar API secara paralel
  */
 export async function createMayarPayment(params: CreateMayarPaymentParams): Promise<CreateMayarPaymentResult> {
   const { apiKey, orderId, amount, customerName, customerEmail, customerPhone, description, redirectUrl } = params;
@@ -31,86 +32,88 @@ export async function createMayarPayment(params: CreateMayarPaymentParams): Prom
   }
 
   const trimmedKey = apiKey.trim();
+  const roundedAmount = Math.round(amount);
+  const expiredDate = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
   const payload = {
     name: customerName,
     email: customerEmail || 'customer@jewellery.navanusa.com',
     mobile: customerPhone || '08123456789',
-    amount: Math.round(amount),
+    amount: roundedAmount,
     description: description || `Pembayaran Pesanan #${orderId}`,
-    redirectUrl: redirectUrl || undefined,
+    redirectUrl: redirectUrl || 'https://navanusa.com/checkout/success',
+    expiredAt: expiredDate,
   };
 
-  // 1. Coba endpoint v2 terlebih dahulu
-  try {
-    const res = await fetch('https://api.mayar.id/hl/v2/payment/create', {
+  // Helper fetch dengan timeout agar tidak menggantung jika endpoint lambat
+  async function fetchWithTimeout(url: string, options: RequestInit, timeoutMs = 15000) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const response = await fetch(url, { ...options, signal: controller.signal });
+      clearTimeout(timer);
+      return response;
+    } catch (err) {
+      clearTimeout(timer);
+      throw err;
+    }
+  }
+
+  const headers = {
+    Authorization: `Bearer ${trimmedKey}`,
+    'Content-Type': 'application/json',
+  };
+
+  // Jalankan pembuatan Payment Link (/hl/v1/payment/create) dan Dynamic QRIS (/hl/v1/qrcode/create) secara paralel
+  const [paymentResult, qrResult] = await Promise.allSettled([
+    fetchWithTimeout('https://api.mayar.id/hl/v1/payment/create', {
       method: 'POST',
-      headers: {
-        Authorization: `Bearer ${trimmedKey}`,
-        'Content-Type': 'application/json',
-      },
+      headers,
       body: JSON.stringify(payload),
-    });
+    }).then(async (res) => ({ ok: res.ok, status: res.status, data: (await res.json().catch(() => ({}))) as any })),
 
-    const data = (await res.json().catch(() => ({}))) as any;
+    fetchWithTimeout('https://api.mayar.id/hl/v1/qrcode/create', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ amount: roundedAmount }),
+    }).then(async (res) => ({ ok: res.ok, status: res.status, data: (await res.json().catch(() => ({}))) as any })),
+  ]);
 
-    if (res.ok && (data?.statusCode === 200 || data?.statusCode === 201 || data?.data)) {
+  let paymentUrl: string | undefined;
+  let transactionId: string | undefined;
+  let qrCodeUrl: string | undefined;
+  let errorMsg: string | undefined;
+
+  if (paymentResult.status === 'fulfilled') {
+    const { ok, status, data } = paymentResult.value;
+    if (ok && (data?.statusCode === 200 || data?.statusCode === 201 || data?.data)) {
       const paymentData = data.data || data;
-      const paymentUrl = paymentData.link || paymentData.url || paymentData.paymentUrl;
-      const transactionId = paymentData.id || paymentData.transactionId;
-
-      if (paymentUrl) {
-        return {
-          success: true,
-          paymentUrl,
-          transactionId,
-        };
-      }
+      paymentUrl = paymentData.link || paymentData.url || paymentData.paymentUrl;
+      transactionId = paymentData.transactionId || paymentData.transaction_id || paymentData.id;
+    } else {
+      errorMsg = data?.messages || data?.message || `HTTP ${status}`;
     }
-
-    // Jika v2 mengembalikan error selain 404, catat error tersebut
-    if (res.status !== 404 && data?.messages) {
-      console.warn('Mayar v2 payment create returned error:', data.messages);
-    }
-  } catch (err: any) {
-    console.warn('Gagal memanggil Mayar API v2:', err.message);
+  } else {
+    errorMsg = paymentResult.reason?.message;
   }
 
-  // 2. Fallback ke endpoint v1 jika diperlukan
-  try {
-    const resV1 = await fetch('https://api.mayar.id/hl/v1/payment/create', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${trimmedKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    });
-
-    const dataV1 = (await resV1.json().catch(() => ({}))) as any;
-
-    if (resV1.ok && (dataV1?.statusCode === 200 || dataV1?.statusCode === 201 || dataV1?.data)) {
-      const paymentData = dataV1.data || dataV1;
-      const paymentUrl = paymentData.link || paymentData.url || paymentData.paymentUrl;
-      const transactionId = paymentData.id || paymentData.transactionId;
-
-      if (paymentUrl) {
-        return {
-          success: true,
-          paymentUrl,
-          transactionId,
-        };
-      }
+  if (qrResult.status === 'fulfilled') {
+    const { ok, data } = qrResult.value;
+    if (ok && data?.data?.url) {
+      qrCodeUrl = data.data.url;
     }
+  }
 
-    const errorMessage = dataV1?.messages || dataV1?.message || `HTTP ${resV1.status}`;
+  if (paymentUrl || qrCodeUrl) {
     return {
-      success: false,
-      error: `Gagal membuat pembayaran Mayar: ${errorMessage}`,
-    };
-  } catch (err: any) {
-    return {
-      success: false,
-      error: `Koneksi ke Mayar API gagal: ${err.message}`,
+      success: true,
+      paymentUrl,
+      qrCodeUrl,
+      transactionId,
     };
   }
+
+  return {
+    success: false,
+    error: `Gagal membuat pembayaran Mayar: ${errorMsg || 'Tidak ada respons dari Mayar'}`,
+  };
 }
